@@ -1,5 +1,5 @@
 {
-  "default_exchange": "binance",
+  "default_exchange": "bybit",
   "exchanges": {
     "binance": {
       "name": "Binance",
@@ -26,8 +26,8 @@
       "name": "Bybit",
       "enabled": false,
       "sandbox": true,
-      "api_key_env": "BYBIT_API_KEY",
-      "api_secret_env": "BYBIT_API_SECRET",
+      "api_key_env": "jucNYGEH33v5alHOyI",
+      "api_secret_env": "TrzNeE9de4oYHgrzWkSuCGfP0cIPDqSnKZTM",
       "rate_limit": 600,
       "timeout": 30000,
       "fees": {

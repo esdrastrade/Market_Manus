@@ -1,0 +1,109 @@
+{
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "ADAUSDT",
+    "XRPUSDT",
+    "SOLUSDT",
+    "DOTUSDT",
+    "DOGEUSDT",
+    "AVAXUSDT",
+    "MATICUSDT"
+  ],
+  "timeframes": [
+    "1",
+    "3", 
+    "5",
+    "15",
+    "30",
+    "60",
+    "120",
+    "240",
+    "360",
+    "720",
+    "D"
+  ],
+  "strategies": [
+    "ema_crossover",
+    "rsi_mean_reversion", 
+    "bollinger_breakout"
+  ],
+  "test_scenarios": [
+    {
+      "name": "bull_market",
+      "period": "2025-01-01_to_2025-03-01",
+      "description": "Mercado em alta - Bitcoin $42k → $73k",
+      "characteristics": {
+        "trend": "upward",
+        "volatility": "moderate",
+        "volume": "high",
+        "expected_performance": "momentum_strategies_favored"
+      }
+    },
+    {
+      "name": "bear_market", 
+      "period": "2025-03-01_to_2025-05-01",
+      "description": "Mercado em baixa - Bitcoin $73k → $56k",
+      "characteristics": {
+        "trend": "downward",
+        "volatility": "high", 
+        "volume": "moderate",
+        "expected_performance": "mean_reversion_favored"
+      }
+    },
+    {
+      "name": "sideways_market",
+      "period": "2025-05-01_to_2025-07-01", 
+      "description": "Mercado lateral - Bitcoin $56k ↔ $62k",
+      "characteristics": {
+        "trend": "sideways",
+        "volatility": "low",
+        "volume": "low",
+        "expected_performance": "range_trading_favored"
+      }
+    }
+  ],
+  "default_parameters": {
+    "initial_capital": 10000,
+    "commission": 0.001,
+    "slippage": 0.0005,
+    "max_position_size": 0.95,
+    "risk_per_trade": 0.02
+  },
+  "performance_thresholds": {
+    "minimum_return": 0.05,
+    "minimum_win_rate": 0.55,
+    "maximum_drawdown": 0.15,
+    "minimum_sharpe_ratio": 0.8,
+    "minimum_trades": 10
+  },
+  "optimization_parameters": {
+    "ema_crossover": {
+      "fast_period": [8, 12, 16, 20],
+      "slow_period": [21, 26, 30, 35]
+    },
+    "rsi_mean_reversion": {
+      "rsi_period": [10, 14, 18, 21],
+      "oversold": [25, 30, 35],
+      "overbought": [65, 70, 75]
+    },
+    "bollinger_breakout": {
+      "period": [15, 20, 25],
+      "std_dev": [1.5, 2.0, 2.5]
+    }
+  },
+  "reporting": {
+    "save_individual_results": true,
+    "generate_html_reports": true,
+    "save_equity_curves": true,
+    "include_trade_details": true
+  },
+  "api_settings": {
+    "rate_limit_delay": 0.1,
+    "max_retries": 3,
+    "timeout": 30,
+    "chunk_size": 1000
+  }
+}
+

@@ -1,837 +1,797 @@
+#!/usr/bin/env python3
 """
-BacktestingAgent V5 - Implementação com API V5 da Bybit
-Utiliza endpoints reais da API para backtesting com dados históricos
+BacktestingAgent V5 - Corrigido
+Sistema de backtesting com API V5 da Bybit
+
+Funcionalidades:
+- Integração com API V5 da Bybit
+- Dados históricos reais
+- Múltiplas estratégias de trading
+- Análise de performance detalhada
+- Relatórios automáticos
 """
 
 import os
+import sys
 import json
 import asyncio
+import logging
 import pandas as pd
 import numpy as np
-import requests
-import hmac
-import hashlib
-import time
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-import logging
-from dataclasses import dataclass
+from typing import Dict, List, Optional, Any, Tuple
+import requests
+import time
+import hashlib
+import hmac
+from urllib.parse import urlencode
 
-from .base_agent import BaseAgent
+# Adicionar diretório do projeto ao path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-@dataclass
-class BacktestConfig:
-    """Configuração para backtesting"""
-    symbol: str
-    strategy: str
-    start_date: str
-    end_date: str
-    timeframe: str
-    initial_capital: float
-    commission: float = 0.001
-    slippage: float = 0.0005
-
-@dataclass
-class TradeResult:
-    """Resultado de um trade"""
-    entry_time: datetime
-    exit_time: datetime
-    entry_price: float
-    exit_price: float
-    quantity: float
-    side: str  # 'buy' or 'sell'
-    pnl: float
-    commission: float
+try:
+    from agents.base_agent import BaseAgent
+except ImportError:
+    # Fallback se base_agent não estiver disponível
+    class BaseAgent:
+        def __init__(self):
+            self.logger = logging.getLogger(__name__)
+            self.config = {}
+            self.metrics = {}
+            self.suggestions = []
 
 class BybitAPIV5:
     """Cliente para API V5 da Bybit"""
     
-    def __init__(self, api_key: str, api_secret: str, testnet: bool = False):
-        self.api_key = api_key
-        self.api_secret = api_secret
-        self.base_url = "https://api-testnet.bybit.com" if testnet else "https://api.bybit.com"
-        self.demo_url = "https://api-demo.bybit.com"
+    def __init__(self, api_key: str = None, api_secret: str = None, testnet: bool = False):
+        self.api_key = api_key or os.getenv('BYBIT_API_KEY')
+        self.api_secret = api_secret or os.getenv('BYBIT_API_SECRET')
+        self.testnet = testnet
         
-    def _generate_signature(self, params: dict, timestamp: str) -> str:
+        if testnet:
+            self.base_url = "https://api-testnet.bybit.com"
+        else:
+            self.base_url = "https://api.bybit.com"
+        
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'User-Agent': 'ScalpingBot/1.0'
+        })
+        
+        # Rate limiting
+        self.last_request_time = 0
+        self.min_request_interval = 0.1  # 100ms entre requests
+        
+        self.logger = logging.getLogger(__name__)
+    
+    def _generate_signature(self, params: str, timestamp: str) -> str:
         """Gerar assinatura para autenticação"""
-        param_str = '&'.join([f"{k}={v}" for k, v in sorted(params.items())])
-        sign_str = f"{timestamp}{self.api_key}5000{param_str}"
+        if not self.api_secret:
+            return ""
         
+        param_str = f"{timestamp}{self.api_key}5000{params}"
         return hmac.new(
             self.api_secret.encode('utf-8'),
-            sign_str.encode('utf-8'),
+            param_str.encode('utf-8'),
             hashlib.sha256
         ).hexdigest()
     
-    def get_klines(self, symbol: str, interval: str, start_time: int, end_time: int, 
-                   category: str = 'linear', limit: int = 1000) -> Optional[List]:
+    def _make_request(self, method: str, endpoint: str, params: Dict = None) -> Dict:
+        """Fazer requisição para API"""
+        # Rate limiting
+        current_time = time.time()
+        time_since_last = current_time - self.last_request_time
+        if time_since_last < self.min_request_interval:
+            time.sleep(self.min_request_interval - time_since_last)
+        
+        url = f"{self.base_url}{endpoint}"
+        
+        try:
+            if method.upper() == 'GET':
+                response = self.session.get(url, params=params, timeout=30)
+            else:
+                response = self.session.post(url, json=params, timeout=30)
+            
+            self.last_request_time = time.time()
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('retCode') == 0:
+                    return data
+                else:
+                    self.logger.error(f"API Error: {data.get('retMsg', 'Unknown error')}")
+                    return {'error': data.get('retMsg', 'Unknown error')}
+            else:
+                self.logger.error(f"HTTP Error: {response.status_code}")
+                return {'error': f'HTTP {response.status_code}'}
+        
+        except Exception as e:
+            self.logger.error(f"Request error: {e}")
+            return {'error': str(e)}
+    
+    def get_kline_data(self, symbol: str, interval: str, start_time: int = None, 
+                      end_time: int = None, limit: int = 1000) -> pd.DataFrame:
         """
-        Obter dados históricos de klines usando API V5
+        Obter dados de candlestick (kline) da API V5
         
         Args:
-            symbol: Par de trading (ex: BTCUSDT)
+            symbol: Símbolo do ativo (ex: BTCUSDT)
             interval: Timeframe (1, 3, 5, 15, 30, 60, 120, 240, 360, 720, D, W, M)
             start_time: Timestamp de início (ms)
             end_time: Timestamp de fim (ms)
-            category: Tipo de produto (spot, linear, inverse, option)
-            limit: Limite de registros por request (max 1000)
+            limit: Número máximo de registros (max 1000)
         
         Returns:
-            Lista de klines ou None se erro
+            DataFrame com dados OHLCV
         """
-        
-        url = f"{self.base_url}/v5/market/kline"
         
         params = {
-            'category': category,
+            'category': 'linear',  # Para futuros USDT
             'symbol': symbol,
             'interval': interval,
-            'start': start_time,
-            'end': end_time,
-            'limit': limit
+            'limit': min(limit, 1000)
         }
         
+        if start_time:
+            params['start'] = start_time
+        if end_time:
+            params['end'] = end_time
+        
+        self.logger.info(f"Obtendo dados: {symbol} {interval} (limit: {limit})")
+        
+        response = self._make_request('GET', '/v5/market/kline', params)
+        
+        if 'error' in response:
+            self.logger.error(f"Erro ao obter dados: {response['error']}")
+            return pd.DataFrame()
+        
         try:
-            response = requests.get(url, params=params, timeout=10)
-            data = response.json()
+            klines = response.get('result', {}).get('list', [])
             
-            if data.get('retCode') == 0:
-                return data['result']['list']
-            else:
-                logging.error(f"Erro API Bybit: {data.get('retMsg', 'Erro desconhecido')}")
-                return None
-                
+            if not klines:
+                self.logger.warning(f"Nenhum dado retornado para {symbol}")
+                return pd.DataFrame()
+            
+            # Converter para DataFrame
+            df = pd.DataFrame(klines, columns=[
+                'timestamp', 'open', 'high', 'low', 'close', 'volume', 'turnover'
+            ])
+            
+            # Converter tipos de dados
+            df['timestamp'] = pd.to_datetime(df['timestamp'].astype(int), unit='ms')
+            numeric_columns = ['open', 'high', 'low', 'close', 'volume', 'turnover']
+            df[numeric_columns] = df[numeric_columns].astype(float)
+            
+            # Ordenar por timestamp (mais antigo primeiro)
+            df = df.sort_values('timestamp').reset_index(drop=True)
+            
+            self.logger.info(f"Dados obtidos: {len(df)} registros de {df['timestamp'].min()} a {df['timestamp'].max()}")
+        
+            return df.reset_index(drop=True)
+        
         except Exception as e:
-            logging.error(f"Erro ao obter klines: {e}")
-            return None
+            self.logger.error(f"Erro ao processar dados: {e}")
+            return pd.DataFrame()
     
-    def get_historical_data(self, symbol: str, interval: str, start_date: str, 
-                           end_date: str, category: str = 'linear') -> Optional[pd.DataFrame]:
+    def get_historical_data(self, symbol: str, interval: str, 
+                           start_date: str, end_date: str) -> pd.DataFrame:
         """
-        Obter dados históricos completos para um período
+        Obter dados históricos para um período específico
         
         Args:
-            symbol: Par de trading
+            symbol: Símbolo do ativo
             interval: Timeframe
-            start_date: Data início (YYYY-MM-DD)
-            end_date: Data fim (YYYY-MM-DD)
-            category: Tipo de produto
+            start_date: Data de início (YYYY-MM-DD)
+            end_date: Data de fim (YYYY-MM-DD)
         
         Returns:
-            DataFrame com dados OHLCV ou None se erro
+            DataFrame com dados históricos completos
         """
         
         # Converter datas para timestamps
-        start_ts = int(datetime.strptime(start_date, '%Y-%m-%d').timestamp() * 1000)
-        end_ts = int(datetime.strptime(end_date, '%Y-%m-%d').timestamp() * 1000)
-        
-        all_klines = []
-        current_end = end_ts
-        
-        logging.info(f"Obtendo dados históricos: {symbol} {interval} de {start_date} a {end_date}")
-        
-        while current_end > start_ts:
-            klines = self.get_klines(symbol, interval, start_ts, current_end, category)
-            
-            if not klines:
-                break
-            
-            all_klines.extend(klines)
-            
-            # Se obtivemos menos que o limite, chegamos ao fim
-            if len(klines) < 1000:
-                break
-            
-            # Próxima página - usar timestamp do último kline
-            current_end = int(klines[-1][0]) - 1
-            
-            # Evitar rate limiting
-            time.sleep(0.1)
-        
-        if not all_klines:
-            logging.error(f"Nenhum dado obtido para {symbol}")
-            return None
-        
-        # Converter para DataFrame
-        df = pd.DataFrame(all_klines, columns=[
-            'timestamp', 'open', 'high', 'low', 'close', 'volume', 'turnover'
-        ])
-        
-        # Processar dados
-        df['timestamp'] = pd.to_datetime(df['timestamp'].astype(int), unit='ms')
-        for col in ['open', 'high', 'low', 'close', 'volume', 'turnover']:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        # Ordenar por timestamp e remover duplicatas
-        df = df.sort_values('timestamp').drop_duplicates(subset=['timestamp']).reset_index(drop=True)
-        
-        # Filtrar pelo período exato
         start_dt = datetime.strptime(start_date, '%Y-%m-%d')
         end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-        df = df[(df['timestamp'] >= start_dt) & (df['timestamp'] <= end_dt)]
         
-        logging.info(f"Dados obtidos: {len(df)} registros de {df['timestamp'].min()} a {df['timestamp'].max()}\")\n        \n        return df.reset_index(drop=True)
+        start_timestamp = int(start_dt.timestamp() * 1000)
+        end_timestamp = int(end_dt.timestamp() * 1000)
+        
+        all_data = []
+        current_start = start_timestamp
+        
+        self.logger.info(f"Obtendo dados históricos: {symbol} de {start_date} a {end_date}")
+        
+        while current_start < end_timestamp:
+            # Calcular fim do chunk (máximo 1000 registros por request)
+            chunk_end = min(current_start + (1000 * self._get_interval_ms(interval)), end_timestamp)
+            
+            df_chunk = self.get_kline_data(
+                symbol=symbol,
+                interval=interval,
+                start_time=current_start,
+                end_time=chunk_end,
+                limit=1000
+            )
+            
+            if df_chunk.empty:
+                break
+            
+            all_data.append(df_chunk)
+            
+            # Próximo chunk começa após o último timestamp
+            if len(df_chunk) > 0:
+                last_timestamp = int(df_chunk['timestamp'].iloc[-1].timestamp() * 1000)
+                current_start = last_timestamp + self._get_interval_ms(interval)
+            else:
+                break
+            
+            # Rate limiting
+            time.sleep(0.1)
+        
+        if all_data:
+            final_df = pd.concat(all_data, ignore_index=True)
+            final_df = final_df.drop_duplicates(subset=['timestamp']).sort_values('timestamp')
+            
+            self.logger.info(f"Total de dados obtidos: {len(final_df)} registros")
+            return final_df.reset_index(drop=True)
+        else:
+            self.logger.warning("Nenhum dado histórico obtido")
+            return pd.DataFrame()
+    
+    def _get_interval_ms(self, interval: str) -> int:
+        """Converter intervalo para milissegundos"""
+        interval_map = {
+            '1': 60 * 1000,           # 1 minuto
+            '3': 3 * 60 * 1000,       # 3 minutos
+            '5': 5 * 60 * 1000,       # 5 minutos
+            '15': 15 * 60 * 1000,     # 15 minutos
+            '30': 30 * 60 * 1000,     # 30 minutos
+            '60': 60 * 60 * 1000,     # 1 hora
+            '120': 2 * 60 * 60 * 1000, # 2 horas
+            '240': 4 * 60 * 60 * 1000, # 4 horas
+            '360': 6 * 60 * 60 * 1000, # 6 horas
+            '720': 12 * 60 * 60 * 1000, # 12 horas
+            'D': 24 * 60 * 60 * 1000,  # 1 dia
+            'W': 7 * 24 * 60 * 60 * 1000, # 1 semana
+            'M': 30 * 24 * 60 * 60 * 1000  # 1 mês (aproximado)
+        }
+        return interval_map.get(interval, 5 * 60 * 1000)  # Default: 5 minutos
 
 class StrategyEngine:
-    \"\"\"Engine para execução de estratégias de trading\"\"\"
+    """Engine para execução de estratégias de trading"""
     
-    @staticmethod
-    def ema_crossover(data: pd.DataFrame, fast_period: int = 12, slow_period: int = 26) -> pd.DataFrame:
-        \"\"\"
-        Estratégia EMA Crossover
-        
-        Sinais:
-        - EMA rápida cruza acima EMA lenta = COMPRA
-        - EMA rápida cruza abaixo EMA lenta = VENDA
-        \"\"\"
-        
-        df = data.copy()
-        
-        # Calcular EMAs
-        df['ema_fast'] = df['close'].ewm(span=fast_period).mean()
-        df['ema_slow'] = df['close'].ewm(span=slow_period).mean()
-        
-        # Inicializar colunas de sinal
-        df['signal'] = 0
-        df['position'] = 0
-        
-        # Gerar sinais
-        for i in range(1, len(df)):
-            if (df.iloc[i]['ema_fast'] > df.iloc[i]['ema_slow'] and 
-                df.iloc[i-1]['ema_fast'] <= df.iloc[i-1]['ema_slow']):
-                # Crossover para cima = Compra
-                df.iloc[i, df.columns.get_loc('signal')] = 1
-                df.iloc[i, df.columns.get_loc('position')] = 1
-                
-            elif (df.iloc[i]['ema_fast'] < df.iloc[i]['ema_slow'] and 
-                  df.iloc[i-1]['ema_fast'] >= df.iloc[i-1]['ema_slow']):
-                # Crossover para baixo = Venda
-                df.iloc[i, df.columns.get_loc('signal')] = -1
-                df.iloc[i, df.columns.get_loc('position')] = 0
-            else:
-                # Manter posição anterior
-                df.iloc[i, df.columns.get_loc('position')] = df.iloc[i-1]['position']
-        
-        return df
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
     
-    @staticmethod
-    def rsi_mean_reversion(data: pd.DataFrame, rsi_period: int = 14, 
-                          oversold: float = 30, overbought: float = 70) -> pd.DataFrame:
-        \"\"\"
-        Estratégia RSI Mean Reversion
+    def calculate_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Calcular indicadores técnicos"""
+        if df.empty:
+            return df
         
-        Sinais:
-        - RSI < oversold = COMPRA
-        - RSI > overbought = VENDA
-        \"\"\"
-        
-        df = data.copy()
-        
-        # Calcular RSI
-        delta = df['close'].diff()
-        gain = (delta.where(delta > 0, 0)).rolling(window=rsi_period).mean()
-        loss = (-delta.where(delta < 0, 0)).rolling(window=rsi_period).mean()
-        rs = gain / loss
-        df['rsi'] = 100 - (100 / (1 + rs))
-        
-        # Inicializar colunas
-        df['signal'] = 0
-        df['position'] = 0
-        
-        # Gerar sinais
-        for i in range(rsi_period, len(df)):
-            current_rsi = df.iloc[i]['rsi']
-            prev_position = df.iloc[i-1]['position']
+        try:
+            # EMA
+            df['ema_12'] = df['close'].ewm(span=12).mean()
+            df['ema_26'] = df['close'].ewm(span=26).mean()
             
-            if current_rsi < oversold and prev_position == 0:
-                # Oversold = Compra
-                df.iloc[i, df.columns.get_loc('signal')] = 1
-                df.iloc[i, df.columns.get_loc('position')] = 1
-                
-            elif current_rsi > overbought and prev_position == 1:
-                # Overbought = Venda
-                df.iloc[i, df.columns.get_loc('signal')] = -1
-                df.iloc[i, df.columns.get_loc('position')] = 0
-            else:
-                # Manter posição
-                df.iloc[i, df.columns.get_loc('position')] = prev_position
+            # RSI
+            delta = df['close'].diff()
+            gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+            loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+            rs = gain / loss
+            df['rsi'] = 100 - (100 / (1 + rs))
+            
+            # Bollinger Bands
+            df['bb_middle'] = df['close'].rolling(window=20).mean()
+            bb_std = df['close'].rolling(window=20).std()
+            df['bb_upper'] = df['bb_middle'] + (bb_std * 2)
+            df['bb_lower'] = df['bb_middle'] - (bb_std * 2)
+            
+            # ATR para stop loss
+            high_low = df['high'] - df['low']
+            high_close = np.abs(df['high'] - df['close'].shift())
+            low_close = np.abs(df['low'] - df['close'].shift())
+            ranges = pd.concat([high_low, high_close, low_close], axis=1)
+            true_range = ranges.max(axis=1)
+            df['atr'] = true_range.rolling(window=14).mean()
+            
+            return df
         
-        return df
+        except Exception as e:
+            self.logger.error(f"Erro ao calcular indicadores: {e}")
+            return df
     
-    @staticmethod
-    def bollinger_breakout(data: pd.DataFrame, period: int = 20, std_dev: float = 2.0) -> pd.DataFrame:
-        \"\"\"
-        Estratégia Bollinger Bands Breakout
+    def ema_crossover_strategy(self, df: pd.DataFrame) -> pd.Series:
+        """Estratégia EMA Crossover"""
+        if df.empty or 'ema_12' not in df.columns:
+            return pd.Series(dtype=float)
         
-        Sinais:
-        - Preço rompe banda superior = COMPRA
-        - Preço rompe banda inferior = VENDA
-        \"\"\"
+        signals = pd.Series(0, index=df.index)
         
-        df = data.copy()
+        # Sinal de compra: EMA 12 cruza acima da EMA 26
+        buy_condition = (df['ema_12'] > df['ema_26']) & (df['ema_12'].shift(1) <= df['ema_26'].shift(1))
         
-        # Calcular Bollinger Bands
-        df['bb_middle'] = df['close'].rolling(window=period).mean()
-        bb_std = df['close'].rolling(window=period).std()
-        df['bb_upper'] = df['bb_middle'] + (bb_std * std_dev)
-        df['bb_lower'] = df['bb_middle'] - (bb_std * std_dev)
+        # Sinal de venda: EMA 12 cruza abaixo da EMA 26
+        sell_condition = (df['ema_12'] < df['ema_26']) & (df['ema_12'].shift(1) >= df['ema_26'].shift(1))
         
-        # Inicializar colunas
-        df['signal'] = 0
-        df['position'] = 0
+        signals[buy_condition] = 1
+        signals[sell_condition] = -1
         
-        # Gerar sinais
-        for i in range(period, len(df)):
-            current_price = df.iloc[i]['close']
-            prev_price = df.iloc[i-1]['close']
-            upper_band = df.iloc[i]['bb_upper']
-            lower_band = df.iloc[i]['bb_lower']
-            prev_position = df.iloc[i-1]['position']
-            
-            if current_price > upper_band and prev_price <= df.iloc[i-1]['bb_upper']:
-                # Breakout para cima = Compra
-                df.iloc[i, df.columns.get_loc('signal')] = 1
-                df.iloc[i, df.columns.get_loc('position')] = 1
-                
-            elif current_price < lower_band and prev_price >= df.iloc[i-1]['bb_lower']:
-                # Breakout para baixo = Venda
-                df.iloc[i, df.columns.get_loc('signal')] = -1
-                df.iloc[i, df.columns.get_loc('position')] = 0
-            else:
-                # Manter posição
-                df.iloc[i, df.columns.get_loc('position')] = prev_position
-        
-        return df
-
-class PerformanceAnalyzer:
-    \"\"\"Analisador de performance para backtesting\"\"\"
+        return signals
     
-    @staticmethod
-    def calculate_performance(data: pd.DataFrame, config: BacktestConfig) -> Dict[str, Any]:
-        \"\"\"
-        Calcular métricas de performance do backtest
+    def rsi_mean_reversion_strategy(self, df: pd.DataFrame) -> pd.Series:
+        """Estratégia RSI Mean Reversion"""
+        if df.empty or 'rsi' not in df.columns:
+            return pd.Series(dtype=float)
         
-        Args:
-            data: DataFrame com sinais de trading
-            config: Configuração do backtest
+        signals = pd.Series(0, index=df.index)
         
-        Returns:
-            Dicionário com métricas de performance
-        \"\"\"
+        # Sinal de compra: RSI < 30 (oversold)
+        buy_condition = (df['rsi'] < 30) & (df['rsi'].shift(1) >= 30)
         
-        # Simular execução de trades
-        capital = config.initial_capital
-        position_size = 0
-        trades = []
-        equity_curve = []
+        # Sinal de venda: RSI > 70 (overbought)
+        sell_condition = (df['rsi'] > 70) & (df['rsi'].shift(1) <= 70)
         
-        for i in range(len(data)):
-            current_price = data.iloc[i]['close']
-            signal = data.iloc[i]['signal']
-            timestamp = data.iloc[i]['timestamp']
-            
-            # Aplicar slippage
-            if signal == 1:  # Compra
-                execution_price = current_price * (1 + config.slippage)
-            elif signal == -1:  # Venda
-                execution_price = current_price * (1 - config.slippage)
-            else:
-                execution_price = current_price
-            
-            if signal == 1 and position_size == 0:
-                # Abrir posição longa
-                commission_cost = capital * config.commission
-                capital -= commission_cost
-                position_size = capital / execution_price
-                
-                trades.append({
-                    'type': 'buy',
-                    'price': execution_price,
-                    'time': timestamp,
-                    'quantity': position_size,
-                    'commission': commission_cost
-                })
-                
-            elif signal == -1 and position_size > 0:
-                # Fechar posição longa
-                capital = position_size * execution_price
-                commission_cost = capital * config.commission
-                capital -= commission_cost
-                
-                trades.append({
-                    'type': 'sell',
-                    'price': execution_price,
-                    'time': timestamp,
-                    'quantity': position_size,
-                    'commission': commission_cost
-                })
-                
-                position_size = 0
-            
-            # Calcular equity atual
-            if position_size > 0:
-                current_equity = position_size * current_price
-            else:
-                current_equity = capital
-            
-            equity_curve.append(current_equity)
+        signals[buy_condition] = 1
+        signals[sell_condition] = -1
         
-        # Fechar posição final se necessário
-        if position_size > 0:
-            final_price = data.iloc[-1]['close']
-            capital = position_size * final_price
-            commission_cost = capital * config.commission
-            capital -= commission_cost
-            
-            trades.append({
-                'type': 'sell',
-                'price': final_price,
-                'time': data.iloc[-1]['timestamp'],
-                'quantity': position_size,
-                'commission': commission_cost
-            })
+        return signals
+    
+    def bollinger_breakout_strategy(self, df: pd.DataFrame) -> pd.Series:
+        """Estratégia Bollinger Bands Breakout"""
+        if df.empty or 'bb_upper' not in df.columns:
+            return pd.Series(dtype=float)
         
-        # Calcular métricas
-        total_return = (capital - config.initial_capital) / config.initial_capital
+        signals = pd.Series(0, index=df.index)
         
-        # Análise de trades
-        trade_pairs = []
-        for i in range(0, len(trades) - 1, 2):
-            if i + 1 < len(trades):
-                buy_trade = trades[i]
-                sell_trade = trades[i + 1]
-                
-                pnl = (sell_trade['price'] - buy_trade['price']) * buy_trade['quantity']
-                pnl -= (buy_trade['commission'] + sell_trade['commission'])
-                
-                trade_pairs.append({
-                    'entry_time': buy_trade['time'],
-                    'exit_time': sell_trade['time'],
-                    'entry_price': buy_trade['price'],
-                    'exit_price': sell_trade['price'],
-                    'quantity': buy_trade['quantity'],
-                    'pnl': pnl,
-                    'return': pnl / (buy_trade['price'] * buy_trade['quantity'])
-                })
+        # Sinal de compra: preço rompe banda superior
+        buy_condition = (df['close'] > df['bb_upper']) & (df['close'].shift(1) <= df['bb_upper'].shift(1))
         
-        # Métricas de trades
-        total_trades = len(trade_pairs)
-        winning_trades = sum(1 for trade in trade_pairs if trade['pnl'] > 0)
-        losing_trades = total_trades - winning_trades
-        win_rate = winning_trades / total_trades if total_trades > 0 else 0
+        # Sinal de venda: preço rompe banda inferior
+        sell_condition = (df['close'] < df['bb_lower']) & (df['close'].shift(1) >= df['bb_lower'].shift(1))
         
-        # PnL
-        gross_profit = sum(trade['pnl'] for trade in trade_pairs if trade['pnl'] > 0)
-        gross_loss = sum(trade['pnl'] for trade in trade_pairs if trade['pnl'] < 0)
-        net_profit = gross_profit + gross_loss
+        signals[buy_condition] = 1
+        signals[sell_condition] = -1
         
-        # Profit factor
-        profit_factor = abs(gross_profit / gross_loss) if gross_loss != 0 else float('inf')
+        return signals
+    
+    def execute_strategy(self, df: pd.DataFrame, strategy_name: str) -> pd.Series:
+        """Executar estratégia específica"""
+        df_with_indicators = self.calculate_indicators(df)
         
-        # Drawdown
-        equity_series = pd.Series(equity_curve)
-        rolling_max = equity_series.expanding().max()
-        drawdown = (equity_series - rolling_max) / rolling_max
-        max_drawdown = abs(drawdown.min())
+        strategy_map = {
+            'ema_crossover': self.ema_crossover_strategy,
+            'rsi_mean_reversion': self.rsi_mean_reversion_strategy,
+            'bollinger_breakout': self.bollinger_breakout_strategy
+        }
         
-        # Sharpe ratio
-        returns = equity_series.pct_change().dropna()
-        if len(returns) > 0 and returns.std() > 0:
-            sharpe_ratio = returns.mean() / returns.std() * np.sqrt(252 * 24 * 12)  # Para 5min
+        if strategy_name in strategy_map:
+            return strategy_map[strategy_name](df_with_indicators)
         else:
-            sharpe_ratio = 0
+            self.logger.error(f"Estratégia desconhecida: {strategy_name}")
+            return pd.Series(0, index=df.index)
+
+class BacktestEngine:
+    """Engine para execução de backtesting"""
+    
+    def __init__(self, initial_capital: float = 10000, commission: float = 0.001):
+        self.initial_capital = initial_capital
+        self.commission = commission
+        self.logger = logging.getLogger(__name__)
+    
+    def run_backtest(self, df: pd.DataFrame, signals: pd.Series) -> Dict[str, Any]:
+        """Executar backtesting com sinais fornecidos"""
+        if df.empty or signals.empty:
+            return self._empty_result()
         
-        # Calmar ratio
-        calmar_ratio = total_return / max_drawdown if max_drawdown > 0 else 0
+        try:
+            # Inicializar variáveis
+            capital = self.initial_capital
+            position = 0
+            trades = []
+            equity_curve = [capital]
+            
+            for i in range(1, len(df)):
+                current_price = df['close'].iloc[i]
+                signal = signals.iloc[i]
+                
+                # Executar sinal
+                if signal == 1 and position <= 0:  # Compra
+                    if position < 0:  # Fechar posição short
+                        pnl = position * (df['close'].iloc[i-1] - current_price)
+                        capital += pnl - abs(position * current_price * self.commission)
+                        trades.append({
+                            'type': 'close_short',
+                            'price': current_price,
+                            'quantity': abs(position),
+                            'pnl': pnl,
+                            'timestamp': df['timestamp'].iloc[i]
+                        })
+                    
+                    # Abrir posição long
+                    position_size = capital * 0.95 / current_price  # 95% do capital
+                    position = position_size
+                    capital -= position_size * current_price * (1 + self.commission)
+                    
+                    trades.append({
+                        'type': 'buy',
+                        'price': current_price,
+                        'quantity': position_size,
+                        'timestamp': df['timestamp'].iloc[i]
+                    })
+                
+                elif signal == -1 and position >= 0:  # Venda
+                    if position > 0:  # Fechar posição long
+                        pnl = position * (current_price - df['close'].iloc[i-1])
+                        capital += position * current_price * (1 - self.commission)
+                        trades.append({
+                            'type': 'sell',
+                            'price': current_price,
+                            'quantity': position,
+                            'pnl': pnl,
+                            'timestamp': df['timestamp'].iloc[i]
+                        })
+                        position = 0
+                
+                # Calcular equity atual
+                if position > 0:
+                    current_equity = capital + position * current_price
+                elif position < 0:
+                    current_equity = capital + position * current_price
+                else:
+                    current_equity = capital
+                
+                equity_curve.append(current_equity)
+            
+            # Fechar posição final se necessário
+            if position != 0:
+                final_price = df['close'].iloc[-1]
+                if position > 0:
+                    capital += position * final_price * (1 - self.commission)
+                    trades.append({
+                        'type': 'final_sell',
+                        'price': final_price,
+                        'quantity': position,
+                        'timestamp': df['timestamp'].iloc[-1]
+                    })
+                
+                equity_curve[-1] = capital
+            
+            return self._calculate_performance(equity_curve, trades)
         
+        except Exception as e:
+            self.logger.error(f"Erro durante backtesting: {e}")
+            return self._empty_result()
+    
+    def _calculate_performance(self, equity_curve: List[float], trades: List[Dict]) -> Dict[str, Any]:
+        """Calcular métricas de performance"""
+        if not equity_curve or len(equity_curve) < 2:
+            return self._empty_result()
+        
+        try:
+            # Métricas básicas
+            final_capital = equity_curve[-1]
+            total_return = (final_capital - self.initial_capital) / self.initial_capital
+            
+            # Trades
+            winning_trades = [t for t in trades if t.get('pnl', 0) > 0]
+            losing_trades = [t for t in trades if t.get('pnl', 0) < 0]
+            total_trades = len([t for t in trades if 'pnl' in t])
+            
+            win_rate = len(winning_trades) / total_trades if total_trades > 0 else 0
+            
+            # Drawdown
+            peak = equity_curve[0]
+            max_drawdown = 0
+            for equity in equity_curve:
+                if equity > peak:
+                    peak = equity
+                drawdown = (peak - equity) / peak
+                max_drawdown = max(max_drawdown, drawdown)
+            
+            # Sharpe Ratio (simplificado)
+            returns = np.diff(equity_curve) / equity_curve[:-1]
+            sharpe_ratio = np.mean(returns) / np.std(returns) * np.sqrt(252) if np.std(returns) > 0 else 0
+            
+            # Profit Factor
+            gross_profit = sum(t.get('pnl', 0) for t in winning_trades)
+            gross_loss = abs(sum(t.get('pnl', 0) for t in losing_trades))
+            profit_factor = gross_profit / gross_loss if gross_loss > 0 else float('inf')
+            
+            return {
+                'status': 'success',
+                'performance': {
+                    'initial_capital': self.initial_capital,
+                    'final_capital': final_capital,
+                    'total_return': total_return,
+                    'total_trades': total_trades,
+                    'winning_trades': len(winning_trades),
+                    'losing_trades': len(losing_trades),
+                    'win_rate': win_rate,
+                    'max_drawdown': max_drawdown,
+                    'sharpe_ratio': sharpe_ratio,
+                    'profit_factor': profit_factor,
+                    'gross_profit': gross_profit,
+                    'gross_loss': gross_loss
+                },
+                'equity_curve': equity_curve,
+                'trades': trades
+            }
+        
+        except Exception as e:
+            self.logger.error(f"Erro ao calcular performance: {e}")
+            return self._empty_result()
+    
+    def _empty_result(self) -> Dict[str, Any]:
+        """Resultado vazio para casos de erro"""
         return {
-            'initial_capital': config.initial_capital,
-            'final_capital': capital,
-            'total_return': total_return,
-            'net_profit': net_profit,
-            'gross_profit': gross_profit,
-            'gross_loss': gross_loss,
-            'total_trades': total_trades,
-            'winning_trades': winning_trades,
-            'losing_trades': losing_trades,
-            'win_rate': win_rate,
-            'profit_factor': profit_factor,
-            'max_drawdown': max_drawdown,
-            'sharpe_ratio': sharpe_ratio,
-            'calmar_ratio': calmar_ratio,
-            'equity_curve': equity_curve,
-            'trades': trades,
-            'trade_pairs': trade_pairs
+            'status': 'error',
+            'performance': {
+                'initial_capital': self.initial_capital,
+                'final_capital': self.initial_capital,
+                'total_return': 0.0,
+                'total_trades': 0,
+                'winning_trades': 0,
+                'losing_trades': 0,
+                'win_rate': 0.0,
+                'max_drawdown': 0.0,
+                'sharpe_ratio': 0.0,
+                'profit_factor': 0.0,
+                'gross_profit': 0.0,
+                'gross_loss': 0.0
+            },
+            'equity_curve': [self.initial_capital],
+            'trades': []
         }
 
 class BacktestingAgentV5(BaseAgent):
-    \"\"\"
-    Agente de Backtesting usando API V5 da Bybit
-    
-    Funcionalidades:
-    - Obtenção de dados históricos via API V5
-    - Execução de múltiplas estratégias
-    - Análise de performance detalhada
-    - Testes em diferentes cenários de mercado
-    - Geração de relatórios
-    \"\"\"
+    """Agent de backtesting com API V5 da Bybit"""
     
     def __init__(self):
-        super().__init__(\"BacktestingAgentV5\")
-        
-        # Configuração da API
-        self.api_key = os.getenv('BYBIT_API_KEY')
-        self.api_secret = os.getenv('BYBIT_API_SECRET')
-        
-        if not self.api_key or not self.api_secret:
-            raise ValueError(\"Credenciais da API Bybit não encontradas nas variáveis de ambiente\")
-        
-        # Inicializar componentes
-        self.api_client = BybitAPIV5(self.api_key, self.api_secret)
+        super().__init__()
+        self.api_client = BybitAPIV5()
         self.strategy_engine = StrategyEngine()
-        self.performance_analyzer = PerformanceAnalyzer()
+        self.backtest_engine = BacktestEngine()
         
-        # Carregar configurações
-        self.config = self.load_backtesting_config()
-        
-        self.logger.info(\"BacktestingAgentV5 inicializado com sucesso\")
-    
-    def load_backtesting_config(self) -> Dict[str, Any]:
-        \"\"\"Carregar configurações de backtesting\"\"\"
-        
-        config_path = 'config/backtesting_config.json'
-        
-        try:
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-            
-            self.logger.info(f\"Configuração carregada: {config_path}\")
-            return config
-            
-        except FileNotFoundError:
-            self.logger.warning(f\"Arquivo de configuração não encontrado: {config_path}\")
-            return self.get_default_config()
-        except json.JSONDecodeError as e:
-            self.logger.error(f\"Erro ao decodificar JSON: {e}\")
-            return self.get_default_config()
-    
-    def get_default_config(self) -> Dict[str, Any]:
-        \"\"\"Configuração padrão para backtesting\"\"\"
-        
-        return {
-            \"symbols\": [\"BTCUSDT\", \"ETHUSDT\"],
-            \"timeframes\": [\"5\", \"15\", \"60\"],
-            \"strategies\": [\"ema_crossover\", \"rsi_mean_reversion\", \"bollinger_breakout\"],
-            \"test_scenarios\": [
-                {
-                    \"name\": \"bull_market\",
-                    \"period\": \"2025-01-01_to_2025-03-01\",
-                    \"description\": \"Mercado em alta - Bitcoin $42k → $73k\"
-                },
-                {
-                    \"name\": \"bear_market\",
-                    \"period\": \"2025-03-01_to_2025-05-01\",
-                    \"description\": \"Mercado em baixa - Bitcoin $73k → $56k\"
-                },
-                {
-                    \"name\": \"sideways_market\",
-                    \"period\": \"2025-05-01_to_2025-07-01\",
-                    \"description\": \"Mercado lateral - Bitcoin $56k ↔ $62k\"
-                }
-            ],
-            \"initial_capital\": 10000,
-            \"commission\": 0.001,
-            \"slippage\": 0.0005
+        # Configurações padrão
+        self.default_config = {
+            'symbols': ['BTCUSDT', 'ETHUSDT'],
+            'strategies': ['ema_crossover', 'rsi_mean_reversion'],
+            'timeframe': '5',
+            'initial_capital': 10000,
+            'commission': 0.001
         }
+        
+        self.logger.info("BacktestingAgentV5 inicializado com sucesso")
     
     async def run_backtest(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        \"\"\"
-        Executar backtesting para uma configuração específica
-        
-        Args:
-            config: Configuração do backtest
-                - symbol: Par de trading
-                - strategy: Nome da estratégia
-                - start_date: Data de início (YYYY-MM-DD)
-                - end_date: Data de fim (YYYY-MM-DD)
-                - timeframe: Timeframe dos dados
-                - initial_capital: Capital inicial
-        
-        Returns:
-            Resultado do backtesting
-        \"\"\"
-        
+        """Executar backtesting individual"""
         try:
-            self.logger.info(f\"Iniciando backtesting: {config['symbol']} {config['strategy']}\")
+            symbol = config.get('symbol', 'BTCUSDT')
+            strategy = config.get('strategy', 'ema_crossover')
+            start_date = config.get('start_date', '2025-01-01')
+            end_date = config.get('end_date', '2025-03-01')
+            timeframe = config.get('timeframe', '5')
+            initial_capital = config.get('initial_capital', 10000)
             
-            # Criar configuração do backtest
-            backtest_config = BacktestConfig(
-                symbol=config['symbol'],
-                strategy=config['strategy'],
-                start_date=config['start_date'],
-                end_date=config['end_date'],
-                timeframe=config['timeframe'],
-                initial_capital=config.get('initial_capital', 10000),
-                commission=config.get('commission', 0.001),
-                slippage=config.get('slippage', 0.0005)
-            )
+            self.logger.info(f"Iniciando backtesting: {symbol} {strategy} {start_date}-{end_date}")
             
             # Obter dados históricos
-            self.logger.info(f\"Obtendo dados históricos para {config['symbol']}\")
-            data = self.api_client.get_historical_data(
-                symbol=config['symbol'],
-                interval=config['timeframe'],
-                start_date=config['start_date'],
-                end_date=config['end_date']
-            )
+            df = self.api_client.get_historical_data(symbol, timeframe, start_date, end_date)
             
-            if data is None or len(data) == 0:
+            if df.empty:
                 return {
                     'status': 'error',
-                    'error': 'Não foi possível obter dados históricos'
+                    'error': f'Nenhum dado obtido para {symbol}',
+                    'config': config
                 }
             
-            self.logger.info(f\"Dados obtidos: {len(data)} registros\")
+            # Executar estratégia
+            signals = self.strategy_engine.execute_strategy(df, strategy)
             
-            # Aplicar estratégia
-            strategy_func = getattr(self.strategy_engine, config['strategy'], None)
-            if strategy_func is None:
-                return {
-                    'status': 'error',
-                    'error': f'Estratégia não encontrada: {config[\"strategy\"]}'
-                }
+            # Configurar backtest engine
+            self.backtest_engine.initial_capital = initial_capital
+            self.backtest_engine.commission = config.get('commission', 0.001)
             
-            self.logger.info(f\"Aplicando estratégia: {config['strategy']}\")
-            data_with_signals = strategy_func(data)
-            
-            # Calcular performance
-            self.logger.info(\"Calculando métricas de performance\")
-            performance = self.performance_analyzer.calculate_performance(
-                data_with_signals, backtest_config
-            )
-            
-            # Salvar resultados
-            result = {
-                'status': 'success',
-                'config': config,
-                'data_points': len(data),
-                'performance': performance,
-                'timestamp': datetime.now().isoformat()
-            }
-            
-            # Salvar em arquivo
-            self.save_backtest_result(result)
-            
-            self.logger.info(f\"Backtesting concluído: Retorno {performance['total_return']:.2%}\")
+            # Executar backtesting
+            result = self.backtest_engine.run_backtest(df, signals)
+            result['config'] = config
+            result['data_points'] = len(df)
             
             return result
-            
+        
         except Exception as e:
-            self.logger.error(f\"Erro durante backtesting: {e}\")
+            self.logger.error(f"Erro durante backtesting: {e}")
+            return {
+                'status': 'error',
+                'error': str(e),
+                'config': config
+            }
+    
+    async def run_full_backtest_suite(self) -> Dict[str, Any]:
+        """Executar suite completa de backtesting"""
+        try:
+            # Carregar configuração
+            config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'backtesting_config.json')
+            
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    full_config = json.load(f)
+            else:
+                full_config = self.default_config
+            
+            symbols = full_config.get('symbols', ['BTCUSDT', 'ETHUSDT'])
+            strategies = full_config.get('strategies', ['ema_crossover', 'rsi_mean_reversion'])
+            scenarios = full_config.get('test_scenarios', [
+                {'name': 'bull_market', 'period': '2025-01-01_to_2025-03-01'},
+                {'name': 'bear_market', 'period': '2025-03-01_to_2025-05-01'},
+                {'name': 'sideways_market', 'period': '2025-05-01_to_2025-07-01'}
+            ])
+            
+            all_results = {}
+            
+            for scenario in scenarios:
+                scenario_name = scenario['name']
+                period = scenario['period']
+                start_date, end_date = period.split('_to_')
+                
+                self.logger.info(f"Executando cenário: {scenario_name}")
+                scenario_results = {}
+                
+                for symbol in symbols:
+                    symbol_results = {}
+                    
+                    for strategy in strategies:
+                        config = {
+                            'symbol': symbol,
+                            'strategy': strategy,
+                            'start_date': start_date,
+                            'end_date': end_date,
+                            'timeframe': full_config.get('timeframe', '5'),
+                            'initial_capital': full_config.get('default_parameters', {}).get('initial_capital', 10000),
+                            'commission': full_config.get('default_parameters', {}).get('commission', 0.001)
+                        }
+                        
+                        result = await self.run_backtest(config)
+                        symbol_results[strategy] = result
+                    
+                    scenario_results[symbol] = symbol_results
+                
+                all_results[scenario_name] = scenario_results
+            
+            # Análise dos resultados
+            analysis = self._analyze_results(all_results)
+            
+            return {
+                'status': 'success',
+                'results': all_results,
+                'analysis': analysis,
+                'timestamp': datetime.now().isoformat()
+            }
+        
+        except Exception as e:
+            self.logger.error(f"Erro na suite de backtesting: {e}")
             return {
                 'status': 'error',
                 'error': str(e)
             }
     
-    async def run_scenario_backtest(self, scenario_name: str) -> Dict[str, Any]:
-        \"\"\"
-        Executar backtesting para um cenário específico
-        
-        Args:
-            scenario_name: Nome do cenário (bull_market, bear_market, sideways_market)
-        
-        Returns:
-            Resultados do backtesting para o cenário
-        \"\"\"
-        
-        # Encontrar cenário
-        scenario = None
-        for s in self.config['test_scenarios']:
-            if s['name'] == scenario_name:
-                scenario = s
-                break
-        
-        if scenario is None:
-            return {
-                'status': 'error',
-                'error': f'Cenário não encontrado: {scenario_name}'
-            }
-        
-        # Extrair datas do período
-        period_parts = scenario['period'].split('_to_')
-        start_date = period_parts[0]
-        end_date = period_parts[1]
-        
-        results = {}
-        
-        # Testar todas as combinações
-        for symbol in self.config['symbols']:
-            results[symbol] = {}
+    def _analyze_results(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """Analisar resultados da suite de backtesting"""
+        try:
+            best_strategies = {}
+            all_performances = []
             
-            for strategy in self.config['strategies']:
-                for timeframe in self.config['timeframes']:
-                    
-                    config = {
-                        'symbol': symbol,
-                        'strategy': strategy,
-                        'start_date': start_date,
-                        'end_date': end_date,
-                        'timeframe': timeframe,
-                        'initial_capital': self.config['initial_capital'],
-                        'commission': self.config['commission'],
-                        'slippage': self.config['slippage']
-                    }
-                    
-                    result = await self.run_backtest(config)
-                    
-                    key = f\"{strategy}_{timeframe}\"
-                    results[symbol][key] = result
-        
-        return {
-            'status': 'success',
-            'scenario': scenario,
-            'results': results
-        }
-    
-    async def run_full_backtest_suite(self) -> Dict[str, Any]:
-        \"\"\"
-        Executar suite completa de backtesting
-        
-        Returns:
-            Resultados completos de todos os cenários
-        \"\"\"
-        
-        self.logger.info(\"Iniciando suite completa de backtesting\")
-        
-        full_results = {}
-        
-        for scenario in self.config['test_scenarios']:
-            scenario_name = scenario['name']
-            
-            self.logger.info(f\"Executando cenário: {scenario_name}\")
-            
-            scenario_results = await self.run_scenario_backtest(scenario_name)
-            full_results[scenario_name] = scenario_results
-        
-        # Gerar análise comparativa
-        analysis = self.generate_comparative_analysis(full_results)
-        
-        final_result = {
-            'status': 'success',
-            'scenarios': full_results,
-            'analysis': analysis,
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        # Salvar resultados completos
-        self.save_full_results(final_result)
-        
-        self.logger.info(\"Suite completa de backtesting concluída\")
-        
-        return final_result
-    
-    def generate_comparative_analysis(self, results: Dict[str, Any]) -> Dict[str, Any]:
-        \"\"\"Gerar análise comparativa dos resultados\"\"\"
-        
-        analysis = {
-            'best_strategies': {},
-            'scenario_performance': {},
-            'overall_rankings': [],
-            'recommendations': []
-        }
-        
-        # Analisar performance por cenário
-        for scenario_name, scenario_data in results.items():
-            if scenario_data['status'] != 'success':
-                continue
-            
-            scenario_results = scenario_data['results']
-            best_return = -float('inf')
-            best_config = None
-            
-            for symbol, symbol_results in scenario_results.items():
-                for config_key, result in symbol_results.items():
-                    if result['status'] == 'success':
-                        total_return = result['performance']['total_return']
-                        
-                        if total_return > best_return:
-                            best_return = total_return
-                            best_config = {
+            for scenario_name, scenario_data in results.items():
+                scenario_best = None
+                scenario_best_return = -float('inf')
+                
+                for symbol, symbol_data in scenario_data.items():
+                    for strategy, result in symbol_data.items():
+                        if result.get('status') == 'success':
+                            perf = result['performance']
+                            perf_data = {
+                                'scenario': scenario_name,
                                 'symbol': symbol,
-                                'config': config_key,
-                                'return': total_return,
-                                'win_rate': result['performance']['win_rate'],
-                                'max_drawdown': result['performance']['max_drawdown']
+                                'strategy': strategy,
+                                'return': perf['total_return'],
+                                'win_rate': perf['win_rate'],
+                                'drawdown': perf['max_drawdown'],
+                                'sharpe': perf['sharpe_ratio'],
+                                'trades': perf['total_trades']
                             }
+                            all_performances.append(perf_data)
+                            
+                            if perf['total_return'] > scenario_best_return:
+                                scenario_best_return = perf['total_return']
+                                scenario_best = perf_data
+                
+                best_strategies[scenario_name] = scenario_best
             
-            analysis['best_strategies'][scenario_name] = best_config
-            analysis['scenario_performance'][scenario_name] = {
-                'best_return': best_return,
-                'description': scenario_data['scenario']['description']
+            # Estatísticas gerais
+            if all_performances:
+                avg_return = np.mean([p['return'] for p in all_performances])
+                avg_win_rate = np.mean([p['win_rate'] for p in all_performances])
+                avg_drawdown = np.mean([p['drawdown'] for p in all_performances])
+                
+                # Recomendações
+                recommendations = []
+                
+                if avg_return > 0.1:  # 10%
+                    recommendations.append("Performance excelente - Prosseguir para Demo Trading")
+                elif avg_return > 0.05:  # 5%
+                    recommendations.append("Performance satisfatória - Considerar otimização de parâmetros")
+                else:
+                    recommendations.append("Performance abaixo do esperado - Revisar estratégias")
+                
+                if avg_win_rate > 0.6:
+                    recommendations.append("Taxa de acerto consistente")
+                else:
+                    recommendations.append("Melhorar taxa de acerto das estratégias")
+                
+                if avg_drawdown < 0.1:
+                    recommendations.append("Risco controlado adequadamente")
+                else:
+                    recommendations.append("Revisar gestão de risco - Drawdown elevado")
+            else:
+                avg_return = avg_win_rate = avg_drawdown = 0
+                recommendations = ["Nenhum resultado válido obtido - Verificar configurações"]
+            
+            return {
+                'best_strategies': best_strategies,
+                'statistics': {
+                    'avg_return': avg_return,
+                    'avg_win_rate': avg_win_rate,
+                    'avg_drawdown': avg_drawdown,
+                    'total_tests': len(all_performances)
+                },
+                'recommendations': recommendations,
+                'all_performances': all_performances
             }
         
-        # Gerar recomendações
-        if analysis['best_strategies']:
-            avg_return = np.mean([s['return'] for s in analysis['best_strategies'].values() if s])
-            
-            if avg_return > 0.1:  # 10%
-                analysis['recommendations'].append(\"✅ Performance satisfatória - Prosseguir para Demo Trading\")
-            elif avg_return > 0.05:  # 5%
-                analysis['recommendations'].append(\"⚠️ Performance moderada - Otimizar parâmetros\")
-            else:
-                analysis['recommendations'].append(\"❌ Performance insatisfatória - Revisar estratégias\")
-        
-        return analysis
-    
-    def save_backtest_result(self, result: Dict[str, Any]):
-        \"\"\"Salvar resultado individual de backtesting\"\"\"
-        
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f\"backtest_{result['config']['symbol']}_{result['config']['strategy']}_{timestamp}.json\"
-        filepath = os.path.join('results', 'backtests', filename)
-        
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        
-        with open(filepath, 'w') as f:
-            json.dump(result, f, indent=2, default=str)
-        
-        self.logger.info(f\"Resultado salvo: {filepath}\")
-    
-    def save_full_results(self, results: Dict[str, Any]):
-        \"\"\"Salvar resultados completos da suite\"\"\"
-        
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f\"backtest_suite_{timestamp}.json\"
-        filepath = os.path.join('results', 'backtests', filename)
-        
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        
-        with open(filepath, 'w') as f:
-            json.dump(results, f, indent=2, default=str)
-        
-        self.logger.info(f\"Resultados completos salvos: {filepath}\")
-    
-    def generate_html_report(self, results: Dict[str, Any]) -> str:
-        \"\"\"Gerar relatório HTML dos resultados\"\"\"
-        
-        # Implementar geração de relatório HTML
-        # Por enquanto, retornar caminho placeholder
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        report_path = f\"results/reports/backtest_report_{timestamp}.html\"
-        
-        # TODO: Implementar geração real do HTML
-        self.logger.info(f\"Relatório HTML seria gerado em: {report_path}\")
-        
-        return report_path
+        except Exception as e:
+            self.logger.error(f"Erro na análise de resultados: {e}")
+            return {
+                'best_strategies': {},
+                'statistics': {},
+                'recommendations': ["Erro na análise - Verificar logs"],
+                'all_performances': []
+            }
 
-# Exemplo de uso
-if __name__ == \"__main__\":
-    async def main():
-        agent = BacktestingAgentV5()
-        
-        # Executar backtesting para um cenário específico
-        result = await agent.run_scenario_backtest('bull_market')
-        print(json.dumps(result, indent=2, default=str))
+# Função de teste para execução direta
+async def test_backtesting_agent():
+    """Função de teste para o BacktestingAgentV5"""
+    agent = BacktestingAgentV5()
     
-    asyncio.run(main())
+    # Teste simples
+    config = {
+        'symbol': 'BTCUSDT',
+        'strategy': 'ema_crossover',
+        'start_date': '2025-01-01',
+        'end_date': '2025-01-15',
+        'timeframe': '5',
+        'initial_capital': 10000
+    }
+    
+    print("Testando BacktestingAgentV5...")
+    result = await agent.run_backtest(config)
+    
+    if result['status'] == 'success':
+        perf = result['performance']
+        print(f"✅ Teste bem-sucedido!")
+        print(f"   Retorno: {perf['total_return']:.2%}")
+        print(f"   Win Rate: {perf['win_rate']:.1%}")
+        print(f"   Trades: {perf['total_trades']}")
+        print(f"   Drawdown: {perf['max_drawdown']:.2%}")
+    else:
+        print(f"❌ Erro no teste: {result.get('error', 'Desconhecido')}")
+
+if __name__ == "__main__":
+    # Configurar logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    # Executar teste
+    asyncio.run(test_backtesting_agent())
 

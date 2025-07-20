@@ -1,109 +1,85 @@
 {
-  "symbols": [
-    "BTCUSDT",
-    "ETHUSDT",
-    "BNBUSDT",
-    "ADAUSDT",
-    "XRPUSDT",
-    "SOLUSDT",
-    "DOTUSDT",
-    "DOGEUSDT",
-    "AVAXUSDT",
-    "MATICUSDT"
-  ],
-  "timeframes": [
-    "1",
-    "3", 
-    "5",
-    "15",
-    "30",
-    "60",
-    "120",
-    "240",
-    "360",
-    "720",
-    "D"
-  ],
+  "version": "2.0",
+  "integration": {
+    "risk_management": true,
+    "market_analysis": true,
+    "orchestrator": true
+  },
+  "symbols": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "ADAUSDT", "XRPUSDT"],
   "strategies": [
-    "ema_crossover",
-    "rsi_mean_reversion", 
-    "bollinger_breakout"
+    "ema_crossover_optimized",
+    "rsi_mean_reversion_optimized", 
+    "bollinger_breakout_optimized"
   ],
-  "test_scenarios": [
-    {
-      "name": "bull_market",
-      "period": "2025-01-01_to_2025-03-01",
-      "description": "Mercado em alta - Bitcoin $42k → $73k",
-      "characteristics": {
-        "trend": "upward",
-        "volatility": "moderate",
-        "volume": "high",
-        "expected_performance": "momentum_strategies_favored"
-      }
-    },
-    {
-      "name": "bear_market", 
-      "period": "2025-03-01_to_2025-05-01",
-      "description": "Mercado em baixa - Bitcoin $73k → $56k",
-      "characteristics": {
-        "trend": "downward",
-        "volatility": "high", 
-        "volume": "moderate",
-        "expected_performance": "mean_reversion_favored"
-      }
-    },
-    {
-      "name": "sideways_market",
-      "period": "2025-05-01_to_2025-07-01", 
-      "description": "Mercado lateral - Bitcoin $56k ↔ $62k",
-      "characteristics": {
-        "trend": "sideways",
-        "volatility": "low",
-        "volume": "low",
-        "expected_performance": "range_trading_favored"
-      }
-    }
-  ],
+  "timeframes": ["5", "15", "30", "60"],
   "default_parameters": {
     "initial_capital": 10000,
     "commission": 0.001,
-    "slippage": 0.0005,
-    "max_position_size": 0.95,
-    "risk_per_trade": 0.02
+    "slippage": 0.0002,
+    "use_risk_management": true,
+    "use_market_filters": true
   },
-  "performance_thresholds": {
-    "minimum_return": 0.05,
-    "minimum_win_rate": 0.55,
-    "maximum_drawdown": 0.15,
-    "minimum_sharpe_ratio": 0.8,
-    "minimum_trades": 10
-  },
-  "optimization_parameters": {
-    "ema_crossover": {
-      "fast_period": [8, 12, 16, 20],
-      "slow_period": [21, 26, 30, 35]
+  "strategy_parameters": {
+    "ema_crossover_optimized": {
+      "fast_period": 21,
+      "slow_period": 50,
+      "trend_period": 200,
+      "volume_multiplier": 1.5,
+      "adx_threshold": 25,
+      "atr_stop_multiplier": 2.0
     },
-    "rsi_mean_reversion": {
-      "rsi_period": [10, 14, 18, 21],
-      "oversold": [25, 30, 35],
-      "overbought": [65, 70, 75]
-    },
-    "bollinger_breakout": {
-      "period": [15, 20, 25],
-      "std_dev": [1.5, 2.0, 2.5]
+    "rsi_mean_reversion_optimized": {
+      "rsi_period": 14,
+      "oversold": 25,
+      "overbought": 75,
+      "atr_stop_multiplier": 1.5,
+      "take_profit_ratio": 2.0,
+      "volatility_threshold": 1.2
     }
   },
-  "reporting": {
-    "save_individual_results": true,
-    "generate_html_reports": true,
-    "save_equity_curves": true,
-    "include_trade_details": true
-  },
-  "api_settings": {
-    "rate_limit_delay": 0.1,
-    "max_retries": 3,
-    "timeout": 30,
-    "chunk_size": 1000
+  "test_scenarios": [
+    {
+      "name": "bull_market_2024_q1",
+      "period": "2024-01-01_to_2024-03-31",
+      "market_type": "bull",
+      "description": "Bull market Q1 2024"
+    },
+    {
+      "name": "bear_market_2024_q2",
+      "period": "2024-04-01_to_2024-06-30", 
+      "market_type": "bear",
+      "description": "Bear market Q2 2024"
+    },
+    {
+      "name": "sideways_market_2024_q3",
+      "period": "2024-07-01_to_2024-09-30",
+      "market_type": "sideways", 
+      "description": "Sideways market Q3 2024"
+    },
+    {
+      "name": "volatile_market_2024_q4",
+      "period": "2024-10-01_to_2024-12-31",
+      "market_type": "volatile",
+      "description": "Volatile market Q4 2024"
+    }
+  ],
+  "personalization_levels": {
+    "basic": {
+      "user_inputs": ["symbol", "timeframe", "period"],
+      "auto_config": ["strategy", "risk_params", "filters"]
+    },
+    "intermediate": {
+      "user_inputs": ["symbol", "timeframe", "period", "strategy", "risk_level"],
+      "auto_config": ["detailed_params", "filters"]
+    },
+    "advanced": {
+      "user_inputs": ["symbol", "timeframe", "period", "strategy", "risk_params"],
+      "auto_config": ["filters"]
+    },
+    "expert": {
+      "user_inputs": ["all_parameters"],
+      "auto_config": []
+    }
   }
 }
 

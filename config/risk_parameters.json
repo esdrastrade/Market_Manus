@@ -1,59 +1,39 @@
 {
-  "risk_limits": {
-    "max_drawdown": 0.10,
-    "daily_loss_limit": 0.05,
-    "weekly_loss_limit": 0.15,
-    "monthly_loss_limit": 0.25,
-    "max_consecutive_losses": 5,
-    "max_open_positions": 3
+  "version": "2.0",
+  "last_updated": "2025-07-20",
+  "risk_management": {
+    "max_position_size": 0.10,
+    "stop_loss_percentage": 0.02,
+    "take_profit_percentage": 0.04,
+    "max_daily_loss": 0.05,
+    "max_drawdown": 0.15,
+    "risk_per_trade": 0.01,
+    "max_concurrent_trades": 3,
+    "position_sizing_method": "fixed_percentage"
+  },
+  "adaptive_risk": {
+    "enabled": true,
+    "volatility_adjustment": true,
+    "market_regime_adjustment": true,
+    "drawdown_scaling": true
+  },
+  "stop_loss_methods": {
+    "atr_multiplier": 2.0,
+    "percentage_based": 0.02,
+    "support_resistance": true,
+    "trailing_stop": false
   },
   "position_sizing": {
-    "base_risk_per_trade": 0.02,
-    "min_position_size_usd": 10,
-    "max_position_size_usd": 10000,
-    "confidence_multiplier": true,
-    "drawdown_adjustment": true,
-    "volatility_adjustment": true
+    "kelly_criterion": false,
+    "fixed_percentage": true,
+    "volatility_adjusted": false,
+    "equity_curve_based": false
   },
-  "stop_loss": {
-    "default_percentage": 0.005,
-    "min_percentage": 0.002,
-    "max_percentage": 0.020,
-    "atr_multiplier": 1.5,
-    "dynamic_adjustment": true
-  },
-  "take_profit": {
-    "default_percentage": 0.010,
-    "min_percentage": 0.005,
-    "max_percentage": 0.050,
-    "risk_reward_ratio": 2.0,
-    "partial_profit_levels": [0.005, 0.008, 0.012]
-  },
-  "trailing_stop": {
-    "enabled": true,
-    "activation_percentage": 0.003,
-    "trail_percentage": 0.002,
-    "min_profit_before_trail": 0.002
-  },
-  "circuit_breakers": {
-    "enabled": true,
-    "drawdown_pause_threshold": 0.08,
-    "loss_streak_pause_threshold": 4,
-    "volatility_pause_threshold": 0.05,
-    "pause_duration_minutes": 60
-  },
-  "alerts": {
-    "drawdown_warning_threshold": 0.05,
-    "drawdown_critical_threshold": 0.08,
-    "loss_streak_warning": 3,
-    "large_loss_threshold": 0.01,
-    "notification_channels": ["telegram", "email", "discord"]
-  },
-  "recovery": {
-    "reduce_size_after_loss": true,
-    "size_reduction_factor": 0.5,
-    "recovery_period_trades": 10,
-    "gradual_size_increase": true
+  "risk_limits": {
+    "max_correlation": 0.7,
+    "sector_concentration": 0.3,
+    "single_position_limit": 0.1,
+    "total_exposure_limit": 0.8
   }
 }
 

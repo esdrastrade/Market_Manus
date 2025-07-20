@@ -474,7 +474,7 @@ class BacktestingAgentV5(BaseAgent):
     """Agente de Backtesting com API V5 Bybit e gestão de risco integrada"""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(name="BacktestingAgentV5")
         self.api_client = BybitAPIV5()
         self.strategy_engine = StrategyEngine()
         self.backtest_engine = BacktestEngine()

@@ -1,33 +1,33 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
-MARKET MANUS - Strategy Factory
-Ponto de entrada principal do sistema
+Market Manus - Ponto de Entrada Principal
+Sistema de Trading Automatizado para Criptoativos
 """
 
 import sys
 import os
+from pathlib import Path
 
-# Adicionar src ao path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+# Adicionar src ao path para imports
+project_root = Path(__file__).parent
+src_path = project_root / "src"
+sys.path.insert(0, str(src_path))
 
 def main():
-    """Função principal do sistema"""
+    """Funcao principal"""
     try:
-        from cli.strategy_factory_cli_v2 import StrategyFactoryCLIV2
-        
-        print("🏭 Iniciando Market Manus Strategy Factory...")
-        cli = StrategyFactoryCLIV2()
-        cli.run()
-        
-    except ImportError as e:
-        print(f"❌ Erro de importação: {e}")
-        print("💡 Certifique-se de que todos os módulos estão instalados")
-        sys.exit(1)
-    except KeyboardInterrupt:
-        print("\n\n👋 Programa interrompido pelo usuário")
-    except Exception as e:
-        print(f"❌ Erro fatal: {e}")
-        sys.exit(1)
+        # Tentar importar CLI principal
+        from market_manus.cli.main import main as cli_main
+        cli_main()
+    except ImportError:
+        # Fallback para CLI existente
+        try:
+            from src.cli.market_manus_cli_complete_final import main as fallback_main
+            fallback_main()
+        except ImportError:
+            print("Erro: Nao foi possivel encontrar o CLI principal")
+            print("Verifique se a estrutura do projeto esta correta")
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()

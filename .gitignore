@@ -1,54 +1,66 @@
-﻿# Logs
-*.log
-logs/*.log
-*.log.*
-
-# Cache e dados temporários
-data/cache/*
-!data/cache/.gitkeep
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Configurações locais e credenciais
-config/local_*.json
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
 .env
-.env.local
-*.key
-*_secret*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Relatórios temporários
-reports/temp_*
-exports/temp_*
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# IDEs e editores
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Project specific
+data/historical/*
+data/cache/*
+data/exports/*
+logs/*.log
+backup_before_migration/
+*.db
+*.sqlite
+*.sqlite3
+
+# OS specific
 .DS_Store
 Thumbs.db
-
-# Python
-*.egg-info/
-dist/
-build/
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Sistema
-desktop.ini
-.directory
-
-# Jupyter Notebooks
-.ipynb_checkpoints/
-*.ipynb
-
-# Virtual environments
-venv/
-env/
-ENV/

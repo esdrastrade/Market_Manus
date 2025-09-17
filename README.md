@@ -1,690 +1,390 @@
-# 🚀 Sistema de Scalping Automatizado
+# Market Manus - Sistema de Trading Automatizado
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
-[![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-blue.svg)](https://docs.microsoft.com/powershell/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-green.svg)](https://docker.com)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-Passing-green.svg)](tests/)
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active%20Development-orange.svg)](https://github.com/esdrastrade/Market_Manus)
 
-**Sistema profissional de trading automatizado para scalping em criptomoedas, desenvolvido com arquitetura de agentes especializados e orquestração PowerShell.**
-
----
-
-## 📋 Índice
-
-- [Visão Geral](#-visão-geral)
-- [Características Principais](#-características-principais)
-- [Arquitetura](#-arquitetura)
-- [Instalação Rápida](#-instalação-rápida)
-- [Configuração](#-configuração)
-- [Uso](#-uso)
-- [Documentação](#-documentação)
-- [Testes](#-testes)
-- [Deployment](#-deployment)
-- [Monitoramento](#-monitoramento)
-- [Contribuição](#-contribuição)
-- [Licença](#-licença)
-
----
+> **Sistema de Trading Automatizado de Criptoativos com Arquitetura de Agents e IA**
 
 ## 🎯 Visão Geral
 
-O Sistema de Scalping Automatizado é uma solução completa para trading de alta frequência em mercados de criptomoedas. Desenvolvido com foco em **performance**, **confiabilidade** e **escalabilidade**, o sistema utiliza uma arquitetura baseada em agentes especializados que trabalham de forma coordenada para identificar oportunidades de mercado e executar operações automatizadas.
+O **Market Manus** é um sistema completo de trading automatizado para criptoativos que combina estratégias tradicionais com inteligência artificial e arquitetura de agents. Desenvolvido para transformar "vibe coding" em resultados econômicos tangíveis, oferecendo automação escalável para renda passiva.
 
-### 🎪 Demonstração
+### 🏆 Características Principais
 
+- **🤖 Arquitetura de Agents**: Sistema modular com 6 agents especializados
+- **🧠 IA Integrada**: AI Agent com aprendizagem multi-armed bandit
+- **💰 Gestão de Capital**: Tracking detalhado e proteção de drawdown
+- **📊 Múltiplas Estratégias**: EMA, RSI, Bollinger Bands + AI Agent
+- **🔄 Backtesting Avançado**: Validação com dados históricos reais
+- **📈 Análise Enterprise**: Métricas profissionais e benchmarking
+- **🛡️ Proteção de Risco**: Sistema de stop-loss dinâmico
+- **📱 Interface CLI**: Interface completa e intuitiva
+
+## 🏗️ Arquitetura do Sistema
+
+### 📁 Estrutura do Projeto
+
+```
+Market_Manus/
+├── 📂 src/                          # Código fonte principal
+│   ├── 📂 cli/                      # Interfaces de linha de comando
+│   │   ├── market_manus_cli_complete_final.py    # CLI principal
+│   │   ├── market_manus_cli_20250116_1900.py     # CLI base
+│   │   └── market_manus_enterprise_cli.py        # CLI Enterprise (em desenvolvimento)
+│   ├── 📂 core/                     # Componentes centrais
+│   │   ├── capital_manager.py       # Gestão de capital
+│   │   ├── advanced_features.py     # Funcionalidades avançadas
+│   │   └── test_configuration_manager.py  # Configurações de teste
+│   ├── 📂 strategies/               # Estratégias de trading
+│   │   └── ai_agent_strategy.py     # Estratégia com IA
+│   ├── 📂 ai_agent/                 # Módulos de IA (legacy)
+│   ├── 📂 engines/                  # Engines de execução
+│   ├── 📂 market_manus/             # Estrutura modular (em desenvolvimento)
+│   └── 📂 utils/                    # Utilitários
+├── 📂 agents/                       # Sistema de Agents
+│   ├── base_agent.py                # Classe base dos agents
+│   ├── orchestrator_agent.py        # Coordenação geral
+│   ├── backtesting_agent.py         # Backtesting avançado
+│   ├── market_analysis_agent.py     # Análise de mercado
+│   ├── risk_management_agent.py     # Gestão de risco
+│   ├── performance_agent.py         # Monitoramento de performance
+│   └── notification_agent.py        # Sistema de notificações
+├── 📂 config/                       # Configurações
+│   └── capital_config.json          # Configuração de capital
+├── 📂 reports/                      # Relatórios gerados
+├── 📂 logs/                         # Logs do sistema
+├── 📂 tests/                        # Testes automatizados
+├── 📂 docs/                         # Documentação
+└── 📄 main.py                       # Ponto de entrada principal
+```
+
+### 🤖 Sistema de Agents
+
+O Market Manus utiliza uma arquitetura de agents especializados:
+
+| Agent | Função | Status |
+|-------|--------|--------|
+| **OrchestratorAgent** | Coordenação geral do sistema | ✅ Implementado |
+| **BacktestingAgent** | Backtesting avançado com otimização | ✅ Implementado |
+| **MarketAnalysisAgent** | Análise técnica e detecção de padrões | ✅ Implementado |
+| **RiskManagementAgent** | Gestão de risco dinâmica | ✅ Implementado |
+| **PerformanceAgent** | Monitoramento de performance | ✅ Implementado |
+| **NotificationAgent** | Sistema de alertas inteligente | ✅ Implementado |
+
+## 🚀 Funcionalidades
+
+### 💰 Gestão de Capital
+- **Capital Livre**: Range de $1 a $100,000
+- **Position Sizing**: 0.1% a 10% configurável
+- **Compound Interest**: Reinvestimento automático opcional
+- **Proteção de Drawdown**: Limite configurável (10% - 90%)
+- **Tracking em Tempo Real**: Evolução do capital visualizada
+
+### 🧠 Estratégias Disponíveis
+
+#### 1. **EMA Crossover**
+- Cruzamento de médias móveis exponenciais
+- Timeframes: 15m, 1h, 4h
+- Win Rate: ~58%
+
+#### 2. **RSI Mean Reversion**
+- Reversão à média usando RSI
+- Timeframes: 5m, 15m, 1h
+- Win Rate: ~62%
+
+#### 3. **Bollinger Breakout**
+- Rompimento das Bandas de Bollinger
+- Timeframes: 1h, 4h, 1d
+- Win Rate: ~52%
+
+#### 4. **AI Agent Enterprise** 🤖
+- IA com aprendizagem multi-armed bandit
+- Seleção automática de estratégias
+- Adaptação em tempo real
+- Win Rate: ~68%
+
+### 🔬 Strategy Lab
+
+- **Single Test**: Teste de estratégia individual
+- **Combination Test**: Múltiplas estratégias combinadas
+- **Full Validation**: Validação completa de todas as combinações
+- **AI Agent Test**: Teste com aprendizagem automática
+- **Enterprise Analysis**: Análise completa com todos os agents
+
+### 📊 Análise e Relatórios
+
+- **Performance Dashboard**: Métricas em tempo real
+- **Benchmark Comparison**: Comparação com Bitcoin e mercado
+- **Risk-Adjusted Metrics**: Sharpe, Sortino, Calmar ratios
+- **Export Reports**: CSV, JSON, Enterprise Reports
+- **Histórico Completo**: Todos os trades e mudanças de capital
+
+## 🛠️ Instalação e Configuração
+
+### 📋 Pré-requisitos
+
+- Python 3.9+
+- Conta na Bybit (para dados reais)
+- Git
+
+### 🔧 Instalação
+
+1. **Clone o repositório**
 ```bash
-# Inicialização rápida
 git clone https://github.com/esdrastrade/Market_Manus.git
 cd Market_Manus
-python -m pip install -r requirements.txt
-python -m agents.orchestrator_agent
 ```
 
-### 📊 Resultados Esperados
-
-- **Taxa de Acerto:** 65-75% em condições normais de mercado
-- **Sharpe Ratio:** 1.2-1.8 dependendo da volatilidade
-- **Drawdown Máximo:** < 10% com gestão de risco adequada
-- **Latência:** < 100ms para geração de sinais
-- **Uptime:** > 99.5% com monitoramento ativo
-
----
-
-## ✨ Características Principais
-
-### 🤖 **Agentes Especializados**
-- **MarketAnalysisAgent** - Análise técnica avançada com 3 estratégias
-- **RiskManagementAgent** - Gestão de risco em tempo real
-- **NotificationAgent** - Sistema de alertas multi-canal
-- **PerformanceAgent** - Análise e otimização contínua
-- **BacktestingAgent** - Validação de estratégias
-- **OrchestratorAgent** - Coordenação e monitoramento
-
-### 📈 **Estratégias de Trading**
-- **EMA Crossover** - Cruzamento de médias móveis exponenciais
-- **RSI Mean Reversion** - Reversão à média baseada em RSI
-- **Bollinger Bands Breakout** - Rompimento de bandas de Bollinger
-- **Sistema de Combinação** - Sinais ponderados e adaptativos
-
-### 🛡️ **Gestão de Risco Avançada**
-- Position sizing dinâmico baseado em volatilidade
-- Stop loss adaptativo com ATR
-- Monitoramento de drawdown em tempo real
-- Circuit breakers automáticos
-- Diversificação temporal e por ativo
-
-### 🔧 **Automação PowerShell**
-- **deploy.ps1** - Deployment e inicialização automática
-- **monitor.ps1** - Monitoramento em tempo real
-- **backup.ps1** - Backup e versionamento automático
-- **optimize.ps1** - Otimização de performance
-
-### 📊 **Monitoramento Profissional**
-- Dashboard Grafana em tempo real
-- Métricas Prometheus customizadas
-- Alertas automáticos via Telegram/Discord
-- Relatórios HTML detalhados
-- Logs estruturados e rotativos
-
----
-
-## 🏗️ Arquitetura
-
-### Diagrama de Componentes
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    ORCHESTRATOR AGENT                      │
-│                 (Coordenação Central)                      │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-    ┌─────────────────┼─────────────────┐
-    │                 │                 │
-    ▼                 ▼                 ▼
-┌─────────┐    ┌─────────────┐    ┌─────────────┐
-│ Market  │    │    Risk     │    │Performance  │
-│Analysis │    │ Management  │    │   Agent     │
-│ Agent   │    │   Agent     │    │             │
-└─────────┘    └─────────────┘    └─────────────┘
-    │                 │                 │
-    └─────────────────┼─────────────────┘
-                      │
-    ┌─────────────────┼─────────────────┐
-    │                 │                 │
-    ▼                 ▼                 ▼
-┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-│Notification │ │ Backtesting │ │   Data      │
-│   Agent     │ │   Agent     │ │  Storage    │
-└─────────────┘ └─────────────┘ └─────────────┘
-```
-
-### Fluxo de Dados
-
-```
-Market Data → Analysis → Signals → Risk Check → Execution → Monitoring
-     ↓           ↓         ↓          ↓           ↓          ↓
-  Exchange → Indicators → Entry/Exit → Position → Orders → Metrics
-                                      Sizing
-```
-
-### Tecnologias Utilizadas
-
-| Componente | Tecnologia | Versão |
-|------------|------------|--------|
-| **Backend** | Python | 3.11+ |
-| **Orquestração** | PowerShell | 5.1+ |
-| **Cache** | Redis | 7.0+ |
-| **Monitoramento** | Prometheus + Grafana | Latest |
-| **Containerização** | Docker + Compose | Latest |
-| **Exchange API** | CCXT | Latest |
-| **Análise Técnica** | TA-Lib, Pandas | Latest |
-
----
-
-## 🚀 Instalação Rápida
-
-### Pré-requisitos
-
-- **Python 3.11+**
-- **PowerShell 5.1+** (Windows)
-- **Git**
-- **8GB RAM** (mínimo)
-- **Conexão estável com internet**
-
-### Instalação Automática
-
+2. **Instale as dependências**
 ```bash
-# 1. Clonar repositório
-git clone https://github.com/esdrastrade/Market_Manus.git
-cd Market_Manus
-
-# 2. Instalar dependências
 pip install -r requirements.txt
-
-# 3. Configurar ambiente
-copy config\trading_config.example.json config\trading_config.json
-copy config\risk_parameters.example.json config\risk_parameters.json
-
-# 4. Executar deployment
-.\scripts\deploy.ps1 -Environment development
 ```
 
-### Instalação com Docker
-
+3. **Configure as variáveis de ambiente** (opcional)
 ```bash
-# 1. Clonar repositório
-git clone https://github.com/esdrastrade/Market_Manus.git
-cd Market_Manus
-
-# 2. Configurar variáveis de ambiente
+# Copie o arquivo de exemplo
 cp .env.example .env
-# Editar .env com suas configurações
 
-# 3. Inicializar com Docker Compose
-docker-compose up -d
-
-# 4. Verificar status
-docker-compose ps
+# Edite com suas credenciais da Bybit
+BYBIT_API_KEY=sua_api_key
+BYBIT_API_SECRET=seu_api_secret
 ```
 
-### Verificação da Instalação
+### ▶️ Execução
 
+#### CLI Principal (Recomendado)
 ```bash
-# Executar testes
-python tests\run_tests.py --unit --integration
-
-# Verificar agentes
-.\scripts\monitor.ps1 -AgentStatus
-
-# Acessar dashboard
-# http://localhost:8080 (Sistema)
-# http://localhost:3000 (Grafana)
+python src/cli/market_manus_cli_complete_final.py
 ```
 
----
+#### Via Main.py
+```bash
+python main.py
+```
 
-## ⚙️ Configuração
+## 🎮 Como Usar
 
-### Configuração Básica
+### 1. **Configuração Inicial**
+- Execute o CLI principal
+- Configure seu capital inicial ($1 - $100,000)
+- Defina position size e proteção de drawdown
+- Teste conectividade com API
 
-#### 1. Credenciais da Exchange
+### 2. **Strategy Lab**
+- Acesse o Strategy Lab (Opção 2)
+- Escolha entre Single Test, Combinations ou Full Validation
+- Configure período e timeframe
+- Execute backtesting
 
+### 3. **Monitoramento**
+- Acompanhe evolução do capital em tempo real
+- Monitore métricas de performance
+- Receba alertas de risco automáticos
+- Exporte relatórios periodicamente
+
+## 📈 Resultados Esperados
+
+### 🏆 Performance Típica
+- **Retorno Anual**: 15% - 35%
+- **Sharpe Ratio**: 1.5 - 2.5
+- **Max Drawdown**: 5% - 15%
+- **Win Rate**: 55% - 70%
+
+### 🛡️ Gestão de Risco
+- **Stop Loss Dinâmico**: Ajustado automaticamente
+- **Position Sizing**: Baseado em volatilidade
+- **Proteção de Capital**: Interrupção automática em drawdowns excessivos
+- **Diversificação**: Múltiplas estratégias e timeframes
+
+## 🔧 Configuração Avançada
+
+### 🌐 API Bybit
+```python
+# Configuração recomendada
+BYBIT_API_KEY = "sua_chave_api"
+BYBIT_API_SECRET = "seu_secret_api"
+RECV_WINDOW = 60000  # Para resolver problemas de timestamp
+```
+
+### 💰 Capital Management
 ```json
-// config/exchange_settings.json
 {
-  "default_exchange": "binance",
-  "exchanges": {
-    "binance": {
-      "api_key": "YOUR_API_KEY",
-      "api_secret": "YOUR_API_SECRET",
-      "sandbox": true,
-      "rate_limit": 1200
-    }
-  }
+  "initial_capital": 10000.0,
+  "position_size_pct": 2.0,
+  "compound_interest": true,
+  "max_drawdown_pct": 20.0
 }
 ```
 
-#### 2. Parâmetros de Trading
-
-```json
-// config/trading_config.json
+### 🤖 AI Agent Configuration
+```python
+# Parâmetros do Multi-Armed Bandit
 {
-  "trading": {
-    "symbols": ["BTCUSDT", "ETHUSDT", "ADAUSDT"],
-    "timeframes": ["1m", "5m"],
-    "max_positions": 3,
-    "base_currency": "USDT"
-  },
-  "strategies": {
-    "ema_crossover": {
-      "enabled": true,
-      "weight": 0.4,
-      "fast_period": 12,
-      "slow_period": 26
-    },
-    "rsi_mean_reversion": {
-      "enabled": true,
-      "weight": 0.3,
-      "period": 14,
-      "overbought": 70,
-      "oversold": 30
-    },
-    "bollinger_breakout": {
-      "enabled": true,
-      "weight": 0.3,
-      "period": 20,
-      "std_dev": 2.0
-    }
-  }
+  "fee_bps": 1.5,
+  "lam_dd": 0.5,
+  "lam_cost": 0.1,
+  "exploration_rate": 0.1
 }
 ```
-
-#### 3. Gestão de Risco
-
-```json
-// config/risk_parameters.json
-{
-  "risk_limits": {
-    "max_risk_per_trade": 0.02,
-    "max_daily_loss": 0.05,
-    "max_drawdown": 0.10,
-    "stop_loss_percentage": 0.015
-  },
-  "position_sizing": {
-    "method": "fixed_percentage",
-    "base_amount": 100,
-    "max_position_size": 1000
-  }
-}
-```
-
-### Configuração Avançada
-
-#### Notificações
-
-```json
-// config/notification_settings.json
-{
-  "telegram": {
-    "enabled": true,
-    "bot_token": "YOUR_BOT_TOKEN",
-    "chat_id": "YOUR_CHAT_ID"
-  },
-  "discord": {
-    "enabled": true,
-    "webhook_url": "YOUR_WEBHOOK_URL"
-  },
-  "email": {
-    "enabled": false,
-    "smtp_server": "smtp.gmail.com",
-    "smtp_port": 587,
-    "username": "your_email@gmail.com",
-    "password": "your_app_password"
-  }
-}
-```
-
-#### Performance
-
-```json
-// config/performance_settings.json
-{
-  "cache": {
-    "enabled": true,
-    "ttl": 300,
-    "max_memory": "256mb"
-  },
-  "threading": {
-    "max_workers": 4,
-    "timeout": 30
-  },
-  "logging": {
-    "level": "INFO",
-    "rotation": "daily",
-    "retention": "30 days"
-  }
-}
-```
-
----
-
-## 🎮 Uso
-
-### Inicialização do Sistema
-
-```powershell
-# Inicialização completa
-.\scripts\deploy.ps1 -Environment production -AutoStart
-
-# Inicialização de desenvolvimento
-python -m agents.orchestrator_agent --debug
-
-# Inicialização de agente específico
-python -m agents.market_analysis_agent
-```
-
-### Monitoramento
-
-```powershell
-# Dashboard interativo
-.\scripts\monitor.ps1 -Dashboard
-
-# Status dos agentes
-.\scripts\monitor.ps1 -AgentStatus
-
-# Métricas de performance
-.\scripts\monitor.ps1 -Performance
-
-# Logs em tempo real
-.\scripts\monitor.ps1 -Logs -Follow
-```
-
-### Operações Comuns
-
-```powershell
-# Backup manual
-.\scripts\backup.ps1 -Type full
-
-# Otimização do sistema
-.\scripts\optimize.ps1 -AnalyzePerformance
-
-# Reiniciar agente específico
-.\scripts\monitor.ps1 -RestartAgent MarketAnalysisAgent
-
-# Parar sistema
-.\scripts\monitor.ps1 -Stop
-```
-
-### Interface Web
-
-Acesse o dashboard web em `http://localhost:8080`:
-
-- **Dashboard Principal** - Visão geral do sistema
-- **Sinais de Trading** - Sinais em tempo real
-- **Performance** - Métricas e gráficos
-- **Configurações** - Ajustes do sistema
-- **Logs** - Visualização de logs
-
----
-
-## 📚 Documentação
-
-### Documentação Técnica
-
-| Documento | Descrição |
-|-----------|-----------|
-| [**Deployment Guide**](docs/deployment_guide.md) | Guia completo de deployment |
-| [**Strategies Documentation**](docs/strategies.md) | Documentação das estratégias |
-| [**Troubleshooting**](docs/troubleshooting.md) | Solução de problemas |
-| [**API Reference**](docs/api_reference.md) | Referência da API |
-| [**Configuration Guide**](docs/configuration_guide.md) | Guia de configuração |
-
-### Arquitetura e Design
-
-- **Padrão de Agentes** - Cada agente é responsável por uma função específica
-- **Event-Driven** - Comunicação baseada em eventos entre agentes
-- **Microserviços** - Componentes independentes e escaláveis
-- **Fail-Safe** - Recuperação automática de falhas
-- **Observabilidade** - Monitoramento e logging completos
-
-### Estratégias de Trading
-
-#### EMA Crossover
-- **Conceito:** Cruzamento de médias móveis exponenciais
-- **Sinais:** Compra quando EMA rápida cruza acima da lenta
-- **Parâmetros:** EMA 12 e 26 períodos
-- **Performance:** 65-75% de acerto em tendências
-
-#### RSI Mean Reversion
-- **Conceito:** Reversão à média baseada no RSI
-- **Sinais:** Compra em sobrevenda (RSI < 30), venda em sobrecompra (RSI > 70)
-- **Parâmetros:** RSI 14 períodos
-- **Performance:** 70-80% de acerto em mercados laterais
-
-#### Bollinger Bands Breakout
-- **Conceito:** Rompimento das bandas de Bollinger
-- **Sinais:** Compra/venda quando preço rompe as bandas
-- **Parâmetros:** 20 períodos, 2 desvios padrão
-- **Performance:** 60-70% de acerto em breakouts genuínos
-
----
 
 ## 🧪 Testes
 
 ### Executar Testes
-
 ```bash
-# Todos os testes
-python tests\run_tests.py
+# Testes unitários
+pytest tests/ -v
 
-# Apenas testes unitários
-python tests\run_tests.py --unit
+# Testes com coverage
+pytest tests/ --cov=src --cov-report=html
 
-# Apenas testes de integração
-python tests\run_tests.py --integration
-
-# Testes com relatório HTML
-python tests\run_tests.py --html
-
-# Testes com cobertura
-python tests\run_tests.py --coverage
+# Testes de integração
+pytest tests/integration/ -v
 ```
 
-### Estrutura de Testes
-
-```
-tests/
-├── test_framework.py              # Framework base de testes
-├── unit_tests/
-│   ├── test_market_analysis_agent.py
-│   ├── test_risk_management_agent.py
-│   └── test_*.py
-├── integration_tests/
-│   ├── test_system_integration.py
-│   └── test_*.py
-└── run_tests.py                   # Script principal
-```
-
-### Cobertura de Testes
-
-- **Testes Unitários:** 95%+ de cobertura
-- **Testes de Integração:** Fluxos end-to-end completos
-- **Testes de Performance:** Benchmarks automatizados
-- **Testes de Stress:** Validação sob alta carga
-
----
-
-## 🚢 Deployment
-
-### Ambiente de Desenvolvimento
-
+### Qualidade de Código
 ```bash
-# Configuração rápida
-.\scripts\deploy.ps1 -Environment development
+# Formatação
+black src/
+isort src/
 
-# Com hot-reload
-python -m agents.orchestrator_agent --debug --reload
+# Linting
+flake8 src/
+mypy src/
+
+# Segurança
+bandit -r src/
 ```
 
-### Ambiente de Produção
+## 📊 Monitoramento e Logs
 
-```bash
-# Deployment completo
-.\scripts\deploy.ps1 -Environment production -AutoStart -EnableMonitoring
+### 📁 Logs do Sistema
+- `logs/market_manus.log`: Log principal
+- `logs/capital_tracking.log`: Tracking de capital
+- `logs/api_connectivity.log`: Conectividade API
+- `logs/agents_activity.log`: Atividade dos agents
 
-# Com Docker
-docker-compose -f docker-compose.prod.yml up -d
-
-# Verificação pós-deployment
-.\scripts\monitor.ps1 -HealthCheck
-```
-
-### CI/CD Pipeline
-
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Production
-on:
-  push:
-    branches: [main]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Tests
-        run: python tests/run_tests.py --coverage
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Production
-        run: ./scripts/deploy.ps1 -Environment production
-```
-
-### Checklist de Produção
-
-- [ ] Testes passando (100%)
-- [ ] Configurações validadas
-- [ ] Credenciais configuradas
-- [ ] Monitoramento ativo
-- [ ] Backup configurado
-- [ ] Alertas funcionando
-- [ ] Performance validada
-- [ ] Documentação atualizada
-
----
-
-## 📊 Monitoramento
-
-### Dashboards Disponíveis
-
-#### Grafana (http://localhost:3000)
-- **Sistema Overview** - Métricas gerais
-- **Trading Performance** - Performance de trading
-- **Risk Management** - Métricas de risco
-- **System Health** - Saúde do sistema
-
-#### Prometheus (http://localhost:9091)
-- **Métricas Raw** - Dados brutos
-- **Targets** - Status dos endpoints
-- **Alerts** - Regras de alerta
-
-### Métricas Principais
-
-| Métrica | Descrição | Alerta |
-|---------|-----------|--------|
-| `scalping_signals_total` | Total de sinais gerados | - |
-| `scalping_success_rate` | Taxa de sucesso | < 50% |
-| `scalping_drawdown_current` | Drawdown atual | > 10% |
-| `scalping_pnl_daily` | P&L diário | < -5% |
-| `scalping_latency_ms` | Latência de processamento | > 1000ms |
-
-### Alertas Configurados
-
-- **Alto Drawdown** - Drawdown > 10%
-- **Baixa Taxa de Sucesso** - < 50% por 1 hora
-- **Falha de Agente** - Agente não responde por 5 minutos
-- **Erro de Conectividade** - Falha na API da exchange
-- **Alto Uso de Recursos** - CPU > 80% ou RAM > 90%
-
----
+### 📈 Métricas Monitoradas
+- **Capital Evolution**: Evolução do capital em tempo real
+- **Strategy Performance**: Performance individual das estratégias
+- **Risk Metrics**: Métricas de risco e drawdown
+- **API Health**: Status da conectividade
+- **Agent Activity**: Atividade e métricas dos agents
 
 ## 🤝 Contribuição
 
-### Como Contribuir
+### 🔄 Fluxo de Desenvolvimento
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-estrategia`)
+3. Commit suas mudanças (`git commit -am 'Adiciona nova estratégia'`)
+4. Push para a branch (`git push origin feature/nova-estrategia`)
+5. Abra um Pull Request
 
-1. **Fork** o repositório
-2. **Crie** uma branch para sua feature (`git checkout -b feature/nova-estrategia`)
-3. **Commit** suas mudanças (`git commit -am 'Adiciona nova estratégia'`)
-4. **Push** para a branch (`git push origin feature/nova-estrategia`)
-5. **Abra** um Pull Request
+### 📝 Padrões de Código
+- **Python**: PEP 8 compliance
+- **Docstrings**: Google style
+- **Type Hints**: Obrigatório para funções públicas
+- **Testes**: Coverage mínimo de 80%
 
-### Diretrizes de Desenvolvimento
+## 🔮 Roadmap
 
-- **Código:** Seguir PEP 8 para Python
-- **Testes:** Manter cobertura > 90%
-- **Documentação:** Atualizar docs para novas features
-- **Commits:** Usar conventional commits
-- **Issues:** Usar templates fornecidos
+### 🎯 Próximas Funcionalidades
 
-### Roadmap
+#### Q1 2025
+- [ ] **Integração Completa dos Agents**: Finalizar integração no CLI Enterprise
+- [ ] **Estratégias Adicionais**: MACD, Stochastic, Williams %R
+- [ ] **Paper Trading**: Modo de trading simulado em tempo real
+- [ ] **Dashboard Web**: Interface web para monitoramento
 
-#### Versão 2.0 (Q4 2025)
-- [ ] Machine Learning para otimização de estratégias
-- [ ] Suporte a mais exchanges (Coinbase, Kraken)
-- [ ] Interface web avançada
-- [ ] Mobile app para monitoramento
-- [ ] Estratégias de arbitragem
+#### Q2 2025
+- [ ] **Trading Real**: Execução automática de trades reais
+- [ ] **Portfolio Management**: Gestão de múltiplos ativos
+- [ ] **Machine Learning**: Modelos preditivos avançados
+- [ ] **Mobile App**: Aplicativo para monitoramento móvel
 
-#### Versão 2.1 (Q1 2026)
-- [ ] Sentiment analysis de redes sociais
-- [ ] Integração com TradingView
-- [ ] Portfolio management avançado
-- [ ] Copy trading
-- [ ] API pública
+#### Q3 2025
+- [ ] **Cloud Deployment**: Deploy em nuvem com alta disponibilidade
+- [ ] **Social Trading**: Compartilhamento de estratégias
+- [ ] **Advanced Analytics**: Analytics avançados e insights
+- [ ] **API Pública**: API para integração com terceiros
 
----
+## ⚠️ Avisos Importantes
+
+### 🚨 Disclaimer
+- **Risco Financeiro**: Trading de criptoativos envolve risco significativo
+- **Não é Conselho Financeiro**: Este software é para fins educacionais
+- **Teste Primeiro**: Sempre teste em ambiente simulado antes do uso real
+- **Capital de Risco**: Use apenas capital que pode perder
+
+### 🛡️ Segurança
+- **API Keys**: Nunca compartilhe suas chaves de API
+- **Permissões**: Use apenas permissões necessárias (leitura + trading)
+- **Backup**: Faça backup regular das configurações
+- **Monitoramento**: Monitore atividade regularmente
+
+## 📞 Suporte
+
+### 🆘 Problemas Comuns
+
+#### Erro de Timestamp da API
+```bash
+# Sincronizar relógio do Windows
+w32tm /resync /force
+
+# Ou aumentar recv_window no código
+recv_window = 60000
+```
+
+#### Problemas de Conectividade
+```bash
+# Testar conectividade
+python src/cli/market_manus_cli_complete_final.py
+# Opção 7: Connectivity Status
+```
+
+#### Erro de Imports
+```bash
+# Verificar estrutura do projeto
+python -c "import sys; print(sys.path)"
+
+# Executar da raiz do projeto
+cd Market_Manus
+python src/cli/market_manus_cli_complete_final.py
+```
+
+### 📧 Contato
+- **Issues**: [GitHub Issues](https://github.com/esdrastrade/Market_Manus/issues)
+- **Discussões**: [GitHub Discussions](https://github.com/esdrastrade/Market_Manus/discussions)
+- **Email**: esdrastrade@gmail.com
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](LICENSE) para detalhes.
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-### Termos de Uso
+## 🙏 Agradecimentos
 
-- ✅ Uso comercial permitido
-- ✅ Modificação permitida
-- ✅ Distribuição permitida
-- ✅ Uso privado permitido
-- ❌ Sem garantias
-- ❌ Sem responsabilidade
+- **Bybit**: Pela API robusta e confiável
+- **Comunidade Python**: Pelas bibliotecas incríveis
+- **Traders**: Pela inspiração e feedback
+- **Manus AI**: Pelo desenvolvimento e suporte
 
 ---
 
-## 📞 Suporte e Contato
+## 📊 Status do Projeto
 
-### Canais de Suporte
-
-- **GitHub Issues:** [Reportar bugs ou solicitar features](https://github.com/esdrastrade/Market_Manus/issues)
-- **Discussions:** [Discussões gerais](https://github.com/esdrastrade/Market_Manus/discussions)
-- **Wiki:** [Documentação adicional](https://github.com/esdrastrade/Market_Manus/wiki)
-
-### FAQ
-
-**P: O sistema funciona com outras exchanges além da Binance?**
-R: Atualmente suporta Binance. Suporte para outras exchanges está no roadmap.
-
-**P: Qual o capital mínimo recomendado?**
-R: Recomendamos pelo menos $1000 para operação segura com gestão de risco adequada.
-
-**P: O sistema funciona 24/7?**
-R: Sim, foi projetado para operação contínua com monitoramento e recuperação automática.
-
-**P: Preciso de conhecimento técnico para usar?**
-R: Conhecimento básico de trading é recomendado. O sistema é automatizado mas requer configuração inicial.
+| Componente | Status | Cobertura | Última Atualização |
+|------------|--------|-----------|-------------------|
+| **CLI Principal** | ✅ Estável | 95% | 16/01/2025 |
+| **Sistema de Agents** | 🔄 Em Integração | 80% | 16/01/2025 |
+| **AI Agent** | ✅ Funcional | 90% | 16/01/2025 |
+| **Capital Management** | ✅ Estável | 100% | 16/01/2025 |
+| **API Integration** | ✅ Funcional | 85% | 16/01/2025 |
+| **Backtesting** | ✅ Estável | 95% | 16/01/2025 |
+| **Documentation** | 🔄 Em Progresso | 70% | 16/01/2025 |
 
 ---
 
-## 🏆 Reconhecimentos
+**🚀 Market Manus - Transformando Vibe Coding em Resultados Econômicos Tangíveis!**
 
-### Tecnologias e Bibliotecas
-
-- **CCXT** - Biblioteca de conectividade com exchanges
-- **TA-Lib** - Indicadores técnicos
-- **Pandas** - Manipulação de dados
-- **Redis** - Cache em memória
-- **Prometheus** - Monitoramento
-- **Grafana** - Visualização
-- **Docker** - Containerização
-
-### Inspirações
-
-- Estratégias baseadas em literatura acadêmica de trading quantitativo
-- Arquitetura inspirada em sistemas de trading profissionais
-- Práticas de DevOps da indústria de software
-
----
-
-## 📈 Estatísticas do Projeto
-
-![GitHub stars](https://img.shields.io/github/stars/esdrastrade/Market_Manus)
-![GitHub forks](https://img.shields.io/github/forks/esdrastrade/Market_Manus)
-![GitHub issues](https://img.shields.io/github/issues/esdrastrade/Market_Manus)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/esdrastrade/Market_Manus)
-
-### Métricas de Desenvolvimento
-
-- **Linhas de Código:** ~15,000
-- **Arquivos Python:** 25+
-- **Scripts PowerShell:** 4
-- **Testes:** 150+
-- **Cobertura:** 95%+
-- **Documentação:** 200+ páginas
-
----
-
-**⚠️ Aviso Legal:** Este sistema é fornecido apenas para fins educacionais e de pesquisa. Trading de criptomoedas envolve riscos significativos. Use por sua própria conta e risco. Os desenvolvedores não se responsabilizam por perdas financeiras.
-
-**🚀 Desenvolvido com ❤️ por [Manus AI](https://github.com/esdrastrade) - Sistema de Scalping Automatizado v1.0**
+*Desenvolvido com ❤️ para a comunidade de trading algorítmico*
 

@@ -1,0 +1,84 @@
+{
+  "timestamp": "20250719_152156",
+  "config": {
+    "symbols": [
+      "BTCUSDT",
+      "ETHUSDT"
+    ],
+    "strategies": [
+      "ema_crossover",
+      "rsi_mean_reversion"
+    ],
+    "timeframe": "5",
+    "start_date": "2025-01-01",
+    "end_date": "2025-03-01",
+    "initial_capital": 10000
+  },
+  "results": {
+    "BTCUSDT": {
+      "ema_crossover": {
+        "initial_capital": 10000,
+        "final_capital": 5122.773388812873,
+        "total_return": -0.48772266111871265,
+        "total_trades": 319,
+        "winning_trades": 61,
+        "losing_trades": 258,
+        "win_rate": 0.19122257053291536,
+        "max_drawdown": 0.5066390378818587,
+        "sharpe_ratio": -0.5846431909466375,
+        "profit_factor": 0.1128475099596736,
+        "gross_profit": 300.45893810182,
+        "gross_loss": 2662.5216472139255
+      },
+      "rsi_mean_reversion": {
+        "initial_capital": 10000,
+        "final_capital": 6344.078741197498,
+        "total_return": -0.3655921258802502,
+        "total_trades": 171,
+        "winning_trades": 146,
+        "losing_trades": 25,
+        "win_rate": 0.8538011695906432,
+        "max_drawdown": 0.4018072144258796,
+        "sharpe_ratio": -0.32861607638771845,
+        "profit_factor": 10.635802009490368,
+        "gross_profit": 1729.6821477371525,
+        "gross_loss": 162.62827628736886
+      }
+    },
+    "ETHUSDT": {
+      "ema_crossover": {
+        "initial_capital": 10000,
+        "final_capital": 5870.57386518671,
+        "total_return": -0.41294261348132905,
+        "total_trades": 305,
+        "winning_trades": 59,
+        "losing_trades": 246,
+        "win_rate": 0.19344262295081968,
+        "max_drawdown": 0.4297012627213566,
+        "sharpe_ratio": -0.323835659673451,
+        "profit_factor": 0.10301291884357387,
+        "gross_profit": 416.7893876387827,
+        "gross_loss": 4045.9914379446086
+      },
+      "rsi_mean_reversion": {
+        "initial_capital": 10000,
+        "final_capital": 4513.377765671687,
+        "total_return": -0.5486622234328313,
+        "total_trades": 180,
+        "winning_trades": 144,
+        "losing_trades": 36,
+        "win_rate": 0.8,
+        "max_drawdown": 0.5819550727356605,
+        "sharpe_ratio": -0.37321762713497714,
+        "profit_factor": 11.990340396904484,
+        "gross_profit": 2135.1964114910465,
+        "gross_loss": 178.0763798867866
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 4,
+    "period": "2025-01-01 to 2025-03-01",
+    "capital": 10000
+  }
+}

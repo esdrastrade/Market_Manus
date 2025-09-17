@@ -1,0 +1,76 @@
+# Configuração do Prometheus para Sistema de Scalping
+# Autor: Manus AI
+# Data: 17 de Julho de 2025
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'scalping-system'
+    environment: 'production'
+
+# Regras de alertas
+rule_files:
+  - "rules/*.yml"
+
+# Configuração de scraping
+scrape_configs:
+  # Métricas da aplicação principal
+  - job_name: 'scalping-system'
+    static_configs:
+      - targets: ['scalping-system:9090']
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metrics_path: /metrics
+    honor_labels: true
+    params:
+      format: ['prometheus']
+
+  # Métricas do sistema (CPU, memória, disco)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Métricas do Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 10s
+    metrics_path: /metrics
+
+  # Métricas do Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+    scrape_interval: 10s
+    metrics_path: /metrics
+
+  # Auto-descoberta de serviços Docker
+  - job_name: 'docker-services'
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 30s
+    relabel_configs:
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        target_label: service
+      - source_labels: [__meta_docker_container_name]
+        target_label: container
+
+# Configuração de alertas
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+      timeout: 10s
+      api_version: v2
+
+# Configuração de armazenamento
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 10GB
+    wal-compression: true
+

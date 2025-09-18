@@ -17,9 +17,11 @@ def main():
     """Funcao principal"""
     try:
         # Tentar importar CLI principal
-        from market_manus.cli.main import main as cli_main
+        from market_manus.cli.market_manus_cli_complete_final import main as cli_main
+        
         cli_main()
-    except ImportError:
+        
+        except ImportError:
         # Fallback para CLI existente
         try:
             from src.cli.market_manus_cli_complete_final import main as fallback_main

@@ -1,7 +1,0 @@
-{
-  "initial_capital": 100.0,
-  "position_size_pct": 2.0,
-  "compound_interest": true,
-  "max_drawdown_pct": 10.0,
-  "updated_at": "2025-09-17T13:05:52.740547"
-}

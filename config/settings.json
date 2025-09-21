@@ -1,0 +1,6 @@
+{
+  "initial_capital": 100.0,
+  "position_size_pct": 10.0,
+  "max_drawdown_pct": 10.0,
+  "compound_interest": true
+}

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-09-21T01:49:15.885838",
+  "selected_symbols": [
+    "BTCUSDT"
+  ],
+  "asset_data": {
+    "BTCUSDT": {
+      "symbol": "BTCUSDT",
+      "name": "Bitcoin",
+      "emoji": "🪙",
+      "min_notional": 5.0,
+      "price": 115541.3,
+      "change_24h": 0.0,
+      "volume_24h": 2005.037183,
+      "high_24h": 116125.0,
+      "low_24h": 115448.1
+    }
+  }
+}

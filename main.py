@@ -1,21 +1,4 @@
 #!/usr/bin/env python3
-"""
-Market Manus - Main Entry Point
-Data: 21/09/2025 16:30
-
-VERSÃO INTEGRADA COM CAPITAL MANAGEMENT:
-✅ Historical Data Test 100% funcional com dados reais da API
-✅ Seleção de período personalizado (dd/mm/aa hh:mm:ss)
-✅ Capital integrado - Position size baseado na banca configurada
-✅ Strategy Lab Professional completo
-✅ Menu completo preservado (8 opções)
-✅ Todas as funcionalidades originais mantidas
-
-Para usar esta versão:
-1. Copie o conteúdo de market_manus_cli_21_09_25_1630.py
-2. Cole em market_manus/cli/market_manus_cli_complete_final.py
-3. Use este main.py
-"""
 
 import os
 import sys

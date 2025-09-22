@@ -296,5 +296,6 @@ Os desenvolvedores não se responsabilizam por perdas financeiras decorrentes do
 [![GitHub forks](https://img.shields.io/github/forks/esdrastrade/Market_Manus?style=social)](https://github.com/esdrastrade/Market_Manus/network)
 
 </div>
-#   M a r k e t   M a n u s   v 2 . 1   -   U p d a t e d   0 9 / 2 1 / 2 0 2 5   1 9 : 2 0 : 2 7  
+#   M a r k e t   M a n u s   v 2 . 1   -   U p d a t e d   0 9 / 2 1 / 2 0 2 5   1 9 : 2 0 : 2 7 
+ 
  

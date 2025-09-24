@@ -90,7 +90,7 @@ def main():
         print(f"   Diretório atual: {project_dir}")
         print()
         print("3. Atualizar CLI para versão mais recente:")
-        print("   Copie market_manus_cli_21_09_25_1630.py para market_manus/cli/market_manus_cli_complete_final.py")
+        print("   Copie market_manus_cli_21_09_25_1630.py para market_manus/cli/market_manus_final_implemented.py")
         print()
         print("4. Verificar permissões de arquivo")
         

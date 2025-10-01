@@ -519,10 +519,12 @@ class ConfluenceModeModule:
         for strategy_key, data in strategy_signals.items():
             print(f"   {data['name']}: {data['signals']} sinais (peso: {data['weight']})")
         
-        # Atualizar capital se disponível
+        # Mostrar capital simulado (sem alterar o capital real)
         if self.capital_manager:
-            self.capital_manager.update_capital(pnl)
-            print(f"\n💰 Capital atualizado para: ${self.capital_manager.current_capital:.2f}")
+            simulated_final_capital = final_capital
+            print(f"\n💰 Capital real permanece: ${self.capital_manager.current_capital:.2f}")
+            print(f"   📊 Capital simulado (backtest): ${simulated_final_capital:.2f}")
+            print(f"   ℹ️  (Backtest não altera capital real)")
         
         # Salvar no histórico
         test_result = {

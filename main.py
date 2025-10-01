@@ -471,6 +471,8 @@ class MarketManusMain:
             while iteration < max_iterations:
                 # Obter dados históricos + atualização
                 try:
+                    print(f"\n⏳ [{iteration+1}/{max_iterations}] Buscando dados da Binance.US...")
+                    
                     # Converter timeframe para formato Binance
                     interval_map = {
                         '1m': '1',
@@ -492,6 +494,8 @@ class MarketManusMain:
                         print("⚠️  Sem dados disponíveis")
                         break
                     
+                    print(f"✅ Recebidos {len(klines)} candles históricos")
+                    
                     # Converter para DataFrame
                     import pandas as pd
                     df = pd.DataFrame(klines, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
@@ -502,7 +506,12 @@ class MarketManusMain:
                     df['close'] = pd.to_numeric(df['close'])
                     df['volume'] = pd.to_numeric(df['volume'])
                     
+                    # Mostrar preço atual
+                    current_price = df['close'].iloc[-1]
+                    print(f"💰 Preço atual {symbol}: ${current_price:,.2f}")
+                    
                     # Processar candle
+                    print(f"🔍 Analisando confluência (5 SMC + 7 Clássicos)...")
                     signal = engine.process_candle(
                         candles=df,
                         symbol=symbol,
@@ -510,13 +519,22 @@ class MarketManusMain:
                         callback=None  # Paper trading, sem callback
                     )
                     
-                    # Mostrar mudança de estado
+                    # Mostrar análise atual (sempre, não só em mudança)
                     if signal is not None:
-                        print(f"\n[{iteration}] 🔔 MUDANÇA DE ESTADO: {signal.action}")
+                        print(f"\n🔔 MUDANÇA DE ESTADO DETECTADA!")
+                        print(f"   🎯 Ação: {signal.action}")
                         print(f"   💪 Confidence: {signal.confidence:.2f}")
                         print(f"   📊 Score: {signal.meta.get('score', 0):.3f}")
-                        print(f"   🎯 Razões: {signal.reasons[:2]}")  # Primeiras 2
-                        print(f"   🏷️ Tags: {signal.tags[:3]}")  # Primeiras 3
+                        print(f"   📝 Razões: {', '.join(signal.reasons[:2])}")
+                        print(f"   🏷️ Tags: {', '.join(signal.tags[:3])}")
+                    else:
+                        # Mostrar estado atual mesmo sem mudança
+                        last_sig = engine.last_signal
+                        if last_sig:
+                            print(f"📊 Estado atual: {last_sig.action} (sem mudança)")
+                            print(f"   Score: {last_sig.meta.get('score', 0):.3f}")
+                        else:
+                            print(f"📊 Aguardando primeiro sinal...")
                     
                     # Delay baseado no timeframe (evita bombardear API)
                     import time

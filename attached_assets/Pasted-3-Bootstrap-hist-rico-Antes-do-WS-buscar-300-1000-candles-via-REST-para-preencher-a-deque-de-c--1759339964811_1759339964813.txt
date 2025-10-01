@@ -1,0 +1,146 @@
+3. Bootstrap histórico
+
+Antes do WS, buscar 300–1000 candles via REST para preencher a deque de cálculo dos indicadores.
+
+Depois, o WS passa a atualizar a última barra (enquanto is_closed=False) e fechar a barra ao final.
+
+4. Pipeline assíncrono
+
+asyncio.Queue para mensagens do WS → “coalescer” por 1s:
+
+Dentro do tick de 1s, manter apenas o último close/último estado do candle corrente.
+
+Processar micro-batch:
+
+Atualizar janela de candles.
+
+Rodar Classic + SMC.
+
+Combinar em confluência com hysteresis.
+
+Se estado mudou → enviar “evento de mudança” para UI.
+
+5. UI com rich.Live
+
+Construir funções que retornem rich.Panel/Table a partir do estado atual.
+
+No loop da UI, a cada 1s, reconstruir os painéis a partir do estado (não imprimir!).
+
+Destaques:
+
+BUY: seta ↑ verde; SELL: seta ↓ vermelha; HOLD: • cinza.
+
+Mostrar “latência” (agora − event_time), spread desde última mudança, e top-3 razões.
+
+(esqueleto)
+
+from rich.live import Live
+from rich.table import Table
+from rich.panel import Panel
+
+def render_ui(state):
+    hdr = Table.grid()
+    hdr.add_row(f"[bold]Provider:[/bold] {state.provider}",
+                f"[bold]Symbol:[/bold] {state.symbol}",
+                f"[bold]TF:[/bold] {state.interval}",
+                f"[bold]Latency:[/bold] {state.latency_ms} ms")
+
+    price_panel = Panel.fit(f"💰 {state.price:,.2f}  Δ since state: {state.delta_since:.2f}",
+                            title="Preço Atual", border_style="cyan")
+
+    conf_table = Table(title="Confluência (SMC + Clássicos)")
+    conf_table.add_column("Estado")
+    conf_table.add_column("Conf.")
+    conf_table.add_column("Score")
+    conf_table.add_column("Razões")
+    conf_table.add_row(state.label_emoji, f"{state.confidence:.2f}",
+                       f"{state.score:.3f}", ", ".join(state.top_reasons))
+
+    events = Table(title="Últimas Mudanças")
+    events.add_column("Quando")
+    events.add_column("Ação")
+    events.add_column("Preço")
+    for e in state.last_events:
+        events.add_row(e.when, e.action, f"{e.price:,.2f}")
+
+    layout = Panel.fit(
+        Group(hdr, price_panel, conf_table, events),
+        title="MARKET MANUS — LIVE",
+        border_style="magenta"
+    )
+    return layout
+
+async def ui_loop(state):
+    with Live(render_ui(state), refresh_per_second=4) as live:
+        while True:
+            await asyncio.sleep(1.0)
+            live.update(render_ui(state))
+6. Integração SMC + Classic (explicabilidade)
+
+Em cada detector, retornar: signal ∈ {BUY, SELL, HOLD}, score ∈ [0,1], reasons: list[str], tags: set[str].
+
+No agregador, manter:
+
+ranking das razões (por ganho de confiança) → top-k no painel.
+
+tags agrupadas [SMC] e [CLASSIC] para rótulos compactos.
+
+7. Thresholds, Hysteresis e Cooldown
+
+Thresholds configuráveis em config/settings.json.
+
+Hysteresis: enter_buy >= 0.60, exit_buy <= 0.45 (similar para SELL).
+
+Cooldown: bloquear nova troca de rótulo por N segundos após mudança (evita “churn”).
+
+8. Telemetria leve
+
+Contar ticks processados, mensagens coalescidas, reconexões.
+
+Exibir no header, útil para tuning de performance.
+
+9. Teste local e Resiliência
+
+Simular perda de socket (fechar WS) e garantir reconexão com backoff+jitter.
+
+Testar símbolos e timeframes diferentes; medir latência exibida.
+
+Se o provider for Bybit, plugar tópico de kline.<interval>.<symbol> com a mesma interface.
+
+AJUSTES ESPECÍFICOS DE PERFORMANCE
+
+refresh_per_second=4 na Live já é fluido e não “spamma”.
+
+Micro-batch = 1s: suficiente para 1m-klines; se usar trades/aggTrades, aumentar para 250–500ms.
+
+Limitar histórico em memória (ex.: deque de 2000 candles).
+
+NumPy/Pandas vetorizado para indicadores; evitar recomputar séries inteiras, atualizar incrementalmente.
+
+ENTREGAS ESPERADAS (CHECKLIST)
+
+ Novo módulo WS (BinanceUSWS e BybitWS) com reconexão + backoff+jitter.
+
+ Bootstrap REST e fallback quando WS cair.
+
+ Loop assíncrono com asyncio.Queue, debounce/coalescing de 1s.
+
+ UI Rich com Live: 4 painéis (status, preço, confluência, últimas mudanças).
+
+ Integração dos detectores SMC + Classic com explicabilidade (razões + tags).
+
+ Thresholds/hysteresis/cooldown configuráveis.
+
+ Métricas leves no header (latência, msgs/s, reconexões).
+
+ Testado em Binance.US e Bybit alternando via .env.
+
+ARQUIVOS A EDITAR/CRIAR
+
+market_manus/data_providers/market_data_ws.py (novos WS providers)
+
+market_manus/engines/stream_runtime.py (pipeline asyncio + filas)
+
+market_manus/cli/live_view.py (UI Rich Live)
+
+Integrar no main.py um modo --live que inicia o stream runtime

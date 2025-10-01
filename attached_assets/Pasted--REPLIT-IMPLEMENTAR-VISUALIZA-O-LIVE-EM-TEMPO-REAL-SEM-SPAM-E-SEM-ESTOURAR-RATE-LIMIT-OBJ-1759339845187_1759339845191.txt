@@ -1,0 +1,79 @@
+# REPLIT: IMPLEMENTAR VISUALIZAÇÃO "LIVE" EM TEMPO REAL SEM SPAM E SEM ESTOURAR RATE LIMIT
+
+## OBJETIVO
+- Substituir prints repetitivos por uma UI de terminal "ao vivo", com atualização em lugar (sem rolagem).
+- Consumir dados de preço/candles via WebSocket nativo (não polling REST).
+- Integrar pipeline de confluência (5 SMC + 7 Classic) com janelas móveis e micro-batches.
+- Desenhar claramente: preço atual, mudanças de estado (BUY/SELL/HOLD), score/confiança, razões e tags.
+- Respeitar rate limits com debounce (≥1s), coalescing de eventos e backoff com jitter.
+- Manter compatibilidade com Bybit e Binance/Binance.US (escolher provider em config/env).
+
+## DECISÕES DE ARQUITETURA
+1) **Entrada de dados**: usar WebSocket de market data:
+   - Binance/Binance.US: stream `<symbol>@kline_<interval>`; updates ~1000ms (ou ~250ms em derivados). 
+   - Bybit: subscrever tópico público de kline; aplicar mesmo pipeline.
+   - REST só para bootstrap (históricos iniciais) e fallback quando o socket cair.
+
+2) **Loop assíncrono**:
+   - `asyncio` com duas tasks principais: (A) coleta via WebSocket → fila assíncrona; (B) processamento/confluência em micro-batches (ex.: a cada 1s ou N mensagens).
+   - Debounce: consolidar múltiplos updates do mesmo candle dentro de um “tick” de 1s.
+   - Backoff: reconectar com exponencial + jitter (p.ex., 1s, 2s, 4s… máx. 30s).
+
+3) **UI de terminal**:
+   - Usar `rich` (`Live`, `Table`, `Panel`) para atualizar SEM imprimir blocos novos.
+   - Um painel superior com status (provider, símbolo, timeframe, latência, estado).
+   - Um painel do preço atual + variação desde a última mudança de estado.
+   - Um painel de “Confluência” com:
+     - Estado atual (BUY/SELL/HOLD), `confidence` e `score`.
+     - Razões principais (top-k explicadores vindos dos detectores SMC e Classic).
+     - Tags por família: `[SMC] orderblock, fvg, mss` / `[CLASSIC] rsi<30, ema50>x`.
+   - “Event ticker” reduzido (últimas 5 mudanças de estado), com timestamp e preço.
+
+4) **Processamento e confluência**:
+   - Calcular os 7 clássicos (RSI, MACD, EMA crossover, Bollinger breakout, Stochastic, ADX, Fibonacci context) sobre janela de candles mantida em memória (deque).
+   - Calcular os 5 SMC (ex.: MSS/BOS, Order Blocks, FVG, Liquidez equal highs/lows, Premium/Discount) com `patterns.py`.
+   - Normalizar scores (0–1) por detector, ponderar por pesos (configuráveis) e combinar:
+     - `ANY`: ação dispara se algum score > threshold.
+     - `MAJORITY`: maioria ponderada > 0.5.
+     - `WEIGHTED`: `sum(w_i * score_i)` vs. limiares de BUY/SELL.
+   - Detecção de “mudança de estado”: somente quando o novo rótulo difere do anterior E o score cruza hysteresis (ex.: BUY > 0.6 para entrar, cair < 0.45 para sair) → reduz flicker.
+
+5) **Controle de carga**:
+   - Janela mínima de atualização de UI: 1.0s (sem “print storm”).
+   - Fila com tamanho máximo; descartar mensagens antigas se estiver atrasado.
+   - Fallback REST apenas quando o socket cair (bootstrap: 100–500 candles).
+
+## IMPLEMENTAÇÃO (PASSOS)
+
+### 1. Dependências
+- Adicionar: `rich`, `websockets` (ou cliente do exchange), `pandas`, `numpy`, `asyncio`.
+- Manter seu provider atual (Binance/Bybit). Expor uma interface comum: 
+  `subscribe_klines(symbol:str, interval:str) -> async iterator de mensagens`.
+
+### 2. Provider WebSocket (exemplo Binance.US)
+- Criar módulo `market_data_ws.py` com classe `BinanceUSWS`:
+  - Conectar ao endpoint de streams, subscrever `<symbol>@kline_<interval>`.
+  - Parsing da mensagem para (event_time, candle: open, high, low, close, volume, is_closed).
+  - Emitir apenas quando `close` mudar OU quando `is_closed=True` (fechamento).
+  - Reconectar com backoff+ jitter em exceções ou `pong` perdido.
+
+(Pseudo-código)
+```python
+class BinanceUSWS:
+    def __init__(self, symbol, interval):
+        self.url = f"wss://stream.binance.us:9443/ws/{symbol.lower()}@kline_{interval}"
+    async def __aiter__(self):
+        while True:
+            try:
+                async with websockets.connect(self.url, ping_interval=20, ping_timeout=20) as ws:
+                    async for raw in ws:
+                        msg = json.loads(raw)
+                        k = msg["k"]
+                        yield {
+                          "t": msg["E"], "symbol": msg["s"], "interval": k["i"],
+                          "o": float(k["o"]), "h": float(k["h"]), "l": float(k["l"]),
+                          "c": float(k["c"]), "v": float(k["v"]),
+                          "is_closed": bool(k["x"])
+                        }
+            except Exception as e:
+                await asyncio.sleep(backoff_with_jitter())

@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 import pandas as pd
-from market_manus.strategies.smc.patterns import ConfluenceEngine
 
 
 @dataclass
@@ -159,6 +158,7 @@ class StreamRuntime:
         
         df = pd.DataFrame(list(self.candles_deque))
         
+        # Usar process_candle do RealTimeConfluenceEngine
         signal = self.engine.process_candle(
             candles=df,
             symbol=self.symbol,

@@ -19,11 +19,21 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
 ### UI/UX Decisions
 The system operates as a console-based CLI/TUI application, providing an interactive menu for users to select assets, timeframes, and execute strategies.
 
+**Live Streaming Visualization (NEW - Oct 2025)**:
+- Rich UI with live-updating panels showing real-time market data without scroll spam
+- WebSocket streaming from Binance.US for sub-second latency
+- Four-panel layout: Status header, Price panel, Confluence analysis, Recent events
+- Visual indicators for BUY (↑ green), SELL (↓ red), HOLD (• yellow) states
+- Real-time display of confidence scores, reasons, and detector tags
+
 ### Technical Implementations
 - **Signal Model**: A standardized `Signal` dataclass is used across all detectors, capturing action, confidence, reasons, tags, metadata, and timestamp.
 - **Regime Filters**: Signals are rejected if market conditions (e.g., ADX < 15, ATR < min, BB Width < min) are unfavorable.
 - **Conflict Penalty**: A 50% score reduction is applied when both BUY and SELL signals exist simultaneously to prevent whipsaw trades.
 - **Backtesting & Real-time Execution**: Dedicated modules for backtesting with per-candle logging and real-time execution with data-driven rate-limiting and state-change notifications.
+- **WebSocket Streaming (NEW)**: Binance.US WebSocket integration with automatic reconnection, exponential backoff + jitter, and debouncing (1s micro-batches).
+- **Async Pipeline**: AsyncIO-based runtime with Queue-based message coalescing, preventing rate limit violations while maintaining real-time responsiveness.
+- **Rich UI Live View**: Terminal UI using `rich` library with Live display, updating panels in-place without scrolling, showing latency, message counts, and processing metrics.
 
 ### Supported Timeframes
 The system supports multiple timeframes ranging from 1 minute (scalping) to 1 day (trend analysis).

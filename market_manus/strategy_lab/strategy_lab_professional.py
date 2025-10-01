@@ -1,8 +1,16 @@
 """
-Strategy Lab Professional V6 - Versão Validada
+Strategy Lab Professional V6 - Versão Corrigida
 Localização: market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V6.py
-Data: 25/09/2025
-Sintaxe: 100% Validada
+Data: 24/09/2025
+
+FUNCIONALIDADES:
+✅ 8 Estratégias completas: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+✅ Seleção de período temporal personalizado (data inicial e final)
+✅ Backtesting com dados reais da API Bybit
+✅ Cálculos matemáticos precisos dos indicadores
+✅ Capital management integrado
+✅ Relatórios detalhados com métricas financeiras
+✅ Interface interativa completa
 """
 
 import os
@@ -18,9 +26,10 @@ from pathlib import Path
 class StrategyLabProfessionalV6:
     """Strategy Lab Professional V6 - Versão completa com todas as estratégias"""
     
-    def __init__(self, data_provider=None, capital_manager=None):
+    def __init__(self, data_provider=None, capital_manager=None, strategy_manager=None):
         self.data_provider = data_provider
         self.capital_manager = capital_manager
+        self.strategy_manager = strategy_manager
         
         # Estratégias disponíveis (8 estratégias completas)
         self.strategies = {
@@ -246,6 +255,7 @@ class StrategyLabProfessionalV6:
             print("❌ Digite um número válido")
         
         input("\n📖 Pressione ENTER para continuar...")
+
     
     def _strategy_configuration_menu(self):
         """Menu de configuração de estratégia"""
@@ -569,3 +579,12 @@ class StrategyLabProfessionalV6:
                 print(f"❌ Erro ao exportar: {e}")
         
         input("\n📖 Pressione ENTER para continuar...")
+
+# ----------------------------------------------------------------------------
+# Alias de compatibilidade para StrategyLabProfessional
+# ----------------------------------------------------------------------------
+# Algumas partes do sistema importam `StrategyLabProfessional` diretamente.
+# Para manter compatibilidade com versões anteriores, expomos essa referência
+# apontando para a implementação atual (V6).
+
+StrategyLabProfessional = StrategyLabProfessionalV6

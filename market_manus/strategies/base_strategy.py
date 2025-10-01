@@ -138,26 +138,39 @@ class BaseStrategy(ABC):
 
     def validate_data(self, data: List[Dict]) -> bool:
         """
-        Valida se os dados são adequados para a estratégia
+        Verifica se a lista de dados OHLCV possui os campos obrigatórios e se há
+        observações suficientes para calcular os indicadores da estratégia.
+
+        A quantidade mínima de pontos é determinada pelo maior valor numérico
+        nos parâmetros da configuração (por exemplo, períodos ou janelas). Caso
+        não exista um parâmetro numérico, é utilizado um valor padrão de 20.
 
         Args:
-            data: Lista de dados OHLCV
+            data: Lista de registros OHLCV (cada item deve conter timestamp,
+                  open, high, low, close, volume)
 
         Returns:
-            True se dados são válidos, False caso contrário
+            True se os dados são válidos, False caso contrário
         """
+        # Lista vazia não é válida
         if not data:
             return False
 
-        # Verificar campos obrigatórios
+        # Verificar campos obrigatórios no primeiro registro
         required_fields = ["timestamp", "open", "high", "low", "close", "volume"]
         for field in required_fields:
             if field not in data[0]:
                 return False
 
-        # Verificar se há dados suficientes
-        min_data_points = max(self.config.params.values()) if self.config.params else 20
-        if isinstance(min_data_points, (int, float)) and len(data) < min_data_points:
+        # Determinar janela mínima com base em parâmetros numéricos
+        min_data_points = 20
+        if self.config.params:
+            numeric_params = [v for v in self.config.params.values() if isinstance(v, (int, float))]
+            if numeric_params:
+                min_data_points = max(int(abs(x)) for x in numeric_params)
+
+        # Checar quantidade de observações
+        if len(data) < min_data_points:
             return False
 
         return True

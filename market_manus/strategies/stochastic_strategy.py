@@ -22,25 +22,33 @@ class StochasticStrategy:
     
     def calculate_stochastic(self, high: pd.Series, low: pd.Series, close: pd.Series) -> Tuple[pd.Series, pd.Series]:
         """
-        Calcula Stochastic %K e %D
-        
+        Calcula os valores de Stochastic %K e %D.
+
+        Usa ``min_periods`` para garantir que o cálculo só inicie após
+        ``k_period`` barras e lida com divisões por zero quando o preço
+        permanece constante (em vez de produzir infinidades, assume-se um
+        valor neutro de 50).
+
         Args:
-            high: Série de preços máximos
-            low: Série de preços mínimos
-            close: Série de preços de fechamento
-            
+            high: Série de preços máximos.
+            low: Série de preços mínimos.
+            close: Série de preços de fechamento.
+
         Returns:
-            Tuple[pd.Series, pd.Series]: (%K, %D)
+            Tuple[pd.Series, pd.Series]: séries para %K e %D.
         """
-        # Calcular %K
-        lowest_low = low.rolling(window=self.k_period).min()
-        highest_high = high.rolling(window=self.k_period).max()
-        
-        k_percent = 100 * ((close - lowest_low) / (highest_high - lowest_low))
-        
-        # Calcular %D (média móvel simples de %K)
-        d_percent = k_percent.rolling(window=self.d_period).mean()
-        
+        # Calcular mínimas e máximas com períodos mínimos adequados
+        lowest_low = low.rolling(window=self.k_period, min_periods=self.k_period).min()
+        highest_high = high.rolling(window=self.k_period, min_periods=self.k_period).max()
+
+        # Denominador e cálculo do %K; se denom = 0 assume valor neutro (50)
+        denom = highest_high - lowest_low
+        k_percent = 100 * ((close - lowest_low) / denom)
+        k_percent = k_percent.where(denom != 0, 50.0)
+
+        # %D é a média de %K com min_periods igual ao período de suavização
+        d_percent = k_percent.rolling(window=self.d_period, min_periods=self.d_period).mean()
+
         return k_percent, d_percent
     
     def generate_signals(self, high: pd.Series, low: pd.Series, close: pd.Series) -> pd.Series:

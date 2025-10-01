@@ -1,6 +1,15 @@
 {
   "initial_capital": 100.0,
+  "current_capital": 100.0,
   "position_size_pct": 10.0,
   "max_drawdown_pct": 10.0,
-  "compound_interest": true
+  "compound_interest": true,
+  "last_symbol": "ETHUSDT",
+  "last_timeframe": "1m",
+  "last_strategies": [
+    "rsi_mean_reversion",
+    "ema_crossover",
+    "bollinger_breakout",
+    "macd_strategy"
+  ]
 }

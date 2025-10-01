@@ -42,30 +42,44 @@ class ADXStrategy:
     
     def calculate_adx(self, high: pd.Series, low: pd.Series, close: pd.Series) -> Tuple[pd.Series, pd.Series, pd.Series]:
         """
-        Calcula ADX, +DI e -DI
-        
+        Calcula ADX, +DI e -DI usando a suavização de Wilder (EWMA).
+
+        A metodologia padrão do ADX utiliza médias exponenciais com
+        ``alpha=1/period`` para suavizar o True Range e o movimento direcional
+        positivo/negativo. Este método é preferível a uma simples média móvel
+        para refletir melhor a dinâmica do mercado.
+
+        Args:
+            high: Série de preços máximos.
+            low: Série de preços mínimos.
+            close: Série de preços de fechamento.
+
         Returns:
-            Tuple[pd.Series, pd.Series, pd.Series]: (adx, plus_di, minus_di)
+            Tupla contendo (adx, plus_di, minus_di).
         """
         # Calcular True Range e Directional Movement
         tr = self.calculate_true_range(high, low, close)
         plus_dm, minus_dm = self.calculate_directional_movement(high, low)
-        
-        # Suavizar com média móvel
-        tr_smooth = tr.rolling(window=self.period).mean()
-        plus_dm_smooth = plus_dm.rolling(window=self.period).mean()
-        minus_dm_smooth = minus_dm.rolling(window=self.period).mean()
-        
-        # Calcular Directional Indicators
+
+        # Suavização exponencial (Wilder) com alpha=1/period
+        alpha = 1 / self.period
+        tr_smooth = tr.ewm(alpha=alpha, min_periods=self.period, adjust=False).mean()
+        plus_dm_smooth = plus_dm.ewm(alpha=alpha, min_periods=self.period, adjust=False).mean()
+        minus_dm_smooth = minus_dm.ewm(alpha=alpha, min_periods=self.period, adjust=False).mean()
+
+        # Calcular Directional Indicators; evitar divisão por zero
         plus_di = 100 * (plus_dm_smooth / tr_smooth)
         minus_di = 100 * (minus_dm_smooth / tr_smooth)
-        
-        # Calcular DX (Directional Index)
-        dx = 100 * abs(plus_di - minus_di) / (plus_di + minus_di)
-        
-        # Calcular ADX (média móvel do DX)
-        adx = dx.rolling(window=self.period).mean()
-        
+        # Substituir NaNs ou inf com zeros
+        plus_di = plus_di.replace([np.inf, -np.inf], np.nan).fillna(0)
+        minus_di = minus_di.replace([np.inf, -np.inf], np.nan).fillna(0)
+
+        # Calcular DX (Directional Index) e ADX (EWMA do DX)
+        dx_denominator = plus_di + minus_di
+        dx = 100 * (plus_di - minus_di).abs() / dx_denominator.where(dx_denominator != 0, np.nan)
+        dx = dx.replace([np.inf, -np.inf], np.nan).fillna(0)
+        adx = dx.ewm(alpha=alpha, min_periods=self.period, adjust=False).mean()
+
         return adx, plus_di, minus_di
     
     def generate_signals(self, high: pd.Series, low: pd.Series, close: pd.Series) -> pd.Series:

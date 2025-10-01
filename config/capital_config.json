@@ -1,7 +1,11 @@
 {
-  "initial_capital": 100.0,
-  "position_size_pct": 2.0,
-  "compound_interest": true,
-  "max_drawdown_pct": 10.0,
-  "updated_at": "2025-09-20T22:31:48.644350"
+  "initial_capital": 10000.0,
+  "current_capital": 10000.0,
+  "risk_per_trade": 0.01,
+  "max_drawdown": 0.2,
+  "position_size_mode": "fixed_notional",
+  "max_per_trade": 10.0,
+  "leverage": 1.0,
+  "stop_loss_pct": 0.02,
+  "take_profit_pct": 0.04
 }

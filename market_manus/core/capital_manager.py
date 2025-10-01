@@ -1,421 +1,510 @@
-#!/usr/bin/env python3
 """
-Capital Manager - Fixed Version
-Includes the missing get_capital_summary method and all required functionality
+Capital Manager - Módulo de Gerenciamento de Capital
+Localização: market_manus/core/capital_manager.py
+Data: 24/09/2025
+
+FUNCIONALIDADES:
+✅ Gerenciamento de capital com tracking completo
+✅ Position sizing automático
+✅ Cálculo de P&L em tempo real
+✅ Controle de drawdown
+✅ Histórico de trades
+✅ Métricas de performance
+✅ Integração com compliance
 """
 
 import json
-import os
+import time
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-import numpy as np
+from typing import Dict, List, Optional, Tuple
+from pathlib import Path
 
 class CapitalManager:
-    """
-    Capital Manager com lógica financeira correta e método get_capital_summary
-    """
+    """Gerenciador de capital com tracking completo"""
     
-    def __init__(self, initial_capital: float = 10000.0):
+    def __init__(self, initial_capital: float = 10000.0, position_size_pct: float = 0.02):
+        """
+        Inicializa o gerenciador de capital
+        
+        Args:
+            initial_capital: Capital inicial em USD
+            position_size_pct: Percentual do capital por trade (0.02 = 2%)
+        """
         self.initial_capital = initial_capital
         self.current_capital = initial_capital
-        self.position_size_percent = 2.0  # 2% do capital por trade
+        self.position_size_pct = position_size_pct
         
         # Histórico de trades
-        self.trades = []
-        self.total_profit = 0.0
-        self.total_loss = 0.0
+        self.trades_history = []
+        
+        # Métricas de performance
+        self.total_trades = 0
         self.winning_trades = 0
         self.losing_trades = 0
-        
-        # Métricas de risco
+        self.total_pnl = 0.0
         self.max_drawdown = 0.0
         self.peak_capital = initial_capital
-        self.daily_returns = []
         
-        # Configurações
-        self.config_file = "config/capital_config.json"
-        self.data_file = "capital_data.json"
+        # Configurações de risco
+        self.max_position_size_pct = 0.10  # Máximo 10% por trade
+        self.max_drawdown_limit = 0.20     # Máximo 20% de drawdown
+        self.max_daily_trades = 50         # Máximo 50 trades por dia
         
-        # Carregar dados salvos
-        self.load_capital_data()
+        # Controle diário
+        self.daily_trades_count = 0
+        self.last_trade_date = None
+        
+        # Arquivo de persistência
+        self.data_file = Path("capital_data.json")
+        self._load_data()
     
-    def get_capital_summary(self) -> Dict[str, Any]:
+    def get_position_size(self) -> float:
+        """Calcula o position size baseado no capital atual"""
+        return self.current_capital * self.position_size_pct
+    
+    def can_trade(self) -> Tuple[bool, str]:
         """
-        Retorna resumo completo do capital - MÉTODO QUE ESTAVA FALTANDO
+        Verifica se pode executar um trade baseado nas regras de compliance
+        
+        Returns:
+            Tuple[bool, str]: (pode_tradear, motivo_se_nao_pode)
         """
-        total_trades = self.winning_trades + self.losing_trades
-        win_rate = (self.winning_trades / total_trades * 100) if total_trades > 0 else 0
+        # Verificar drawdown máximo
+        current_drawdown = (self.peak_capital - self.current_capital) / self.peak_capital
+        if current_drawdown > self.max_drawdown_limit:
+            return False, f"Drawdown máximo excedido ({current_drawdown:.1%} > {self.max_drawdown_limit:.1%})"
         
-        total_pnl = self.current_capital - self.initial_capital
-        roi = (total_pnl / self.initial_capital * 100) if self.initial_capital > 0 else 0
+        # Verificar capital mínimo
+        if self.current_capital < self.initial_capital * 0.1:  # Mínimo 10% do capital inicial
+            return False, "Capital insuficiente (< 10% do inicial)"
         
-        # Calcular Sharpe Ratio
-        sharpe_ratio = self.calculate_sharpe_ratio()
+        # Verificar limite diário de trades
+        today = datetime.now().date()
+        if self.last_trade_date != today:
+            self.daily_trades_count = 0
+            self.last_trade_date = today
         
-        # Calcular Profit Factor
-        profit_factor = (self.total_profit / abs(self.total_loss)) if self.total_loss != 0 else float('inf')
+        if self.daily_trades_count >= self.max_daily_trades:
+            return False, f"Limite diário de trades excedido ({self.daily_trades_count}/{self.max_daily_trades})"
+        
+        # Verificar position size
+        position_size = self.get_position_size()
+        max_position = self.current_capital * self.max_position_size_pct
+        if position_size > max_position:
+            return False, f"Position size muito grande ({position_size:.2f} > {max_position:.2f})"
+        
+        return True, "OK"
+    
+    def execute_trade(self, 
+                     action: str, 
+                     symbol: str, 
+                     entry_price: float, 
+                     exit_price: float = None,
+                     strategy: str = "Unknown",
+                     notes: str = "") -> Dict:
+        """
+        Executa um trade e atualiza o capital
+        
+        Args:
+            action: "BUY" ou "SELL"
+            symbol: Símbolo do ativo (ex: "BTCUSDT")
+            entry_price: Preço de entrada
+            exit_price: Preço de saída (se None, será definido posteriormente)
+            strategy: Nome da estratégia utilizada
+            notes: Notas adicionais
+            
+        Returns:
+            Dict: Informações do trade executado
+        """
+        # Verificar se pode tradear
+        can_trade, reason = self.can_trade()
+        if not can_trade:
+            return {
+                "success": False,
+                "reason": reason,
+                "trade_id": None
+            }
+        
+        # Calcular position size
+        position_size = self.get_position_size()
+        
+        # Simular execução do trade
+        if exit_price is not None:
+            # Trade completo - calcular P&L
+            if action == "BUY":
+                pnl_pct = (exit_price - entry_price) / entry_price
+            else:  # SELL
+                pnl_pct = (entry_price - exit_price) / entry_price
+            
+            pnl_amount = position_size * pnl_pct
+            
+            # Atualizar capital
+            self.current_capital += pnl_amount
+            self.total_pnl += pnl_amount
+            
+            # Atualizar estatísticas
+            self.total_trades += 1
+            self.daily_trades_count += 1
+            
+            if pnl_amount > 0:
+                self.winning_trades += 1
+            else:
+                self.losing_trades += 1
+            
+            # Atualizar peak capital e drawdown
+            if self.current_capital > self.peak_capital:
+                self.peak_capital = self.current_capital
+            
+            current_drawdown = (self.peak_capital - self.current_capital) / self.peak_capital
+            if current_drawdown > self.max_drawdown:
+                self.max_drawdown = current_drawdown
+        else:
+            # Trade aberto - apenas registrar
+            pnl_amount = 0.0
+            pnl_pct = 0.0
+        
+        # Criar registro do trade
+        trade_record = {
+            "trade_id": f"T{int(time.time())}{self.total_trades:03d}",
+            "timestamp": datetime.now().isoformat(),
+            "action": action,
+            "symbol": symbol,
+            "entry_price": entry_price,
+            "exit_price": exit_price,
+            "position_size": position_size,
+            "pnl_amount": pnl_amount,
+            "pnl_pct": pnl_pct * 100,  # Converter para percentual
+            "strategy": strategy,
+            "notes": notes,
+            "capital_before": self.current_capital - pnl_amount,
+            "capital_after": self.current_capital
+        }
+        
+        # Adicionar ao histórico
+        self.trades_history.append(trade_record)
+        
+        # Salvar dados
+        self._save_data()
         
         return {
-            'initial_capital': self.initial_capital,
-            'current_capital': self.current_capital,
-            'total_pnl': total_pnl,
-            'roi': roi,
-            'position_size_percent': self.position_size_percent,
-            'position_size_usd': self.current_capital * (self.position_size_percent / 100),
-            'total_trades': total_trades,
-            'winning_trades': self.winning_trades,
-            'losing_trades': self.losing_trades,
-            'win_rate': win_rate,
-            'total_profit': self.total_profit,
-            'total_loss': self.total_loss,
-            'profit_factor': profit_factor,
-            'max_drawdown': self.max_drawdown,
-            'sharpe_ratio': sharpe_ratio,
-            'peak_capital': self.peak_capital
+            "success": True,
+            "trade_id": trade_record["trade_id"],
+            "pnl_amount": pnl_amount,
+            "pnl_pct": pnl_pct * 100,
+            "new_capital": self.current_capital
         }
     
-    def update_capital(self, trade_pnl: float, trade_details: Optional[Dict] = None):
+    def close_trade(self, trade_id: str, exit_price: float) -> Dict:
         """
-        Atualiza o capital após um trade - MÉTODO CORRIGIDO
+        Fecha um trade aberto
+        
+        Args:
+            trade_id: ID do trade a ser fechado
+            exit_price: Preço de saída
+            
+        Returns:
+            Dict: Resultado do fechamento
         """
+        # Encontrar o trade
+        trade = None
+        for t in self.trades_history:
+            if t["trade_id"] == trade_id and t["exit_price"] is None:
+                trade = t
+                break
+        
+        if not trade:
+            return {
+                "success": False,
+                "reason": "Trade não encontrado ou já fechado"
+            }
+        
+        # Calcular P&L
+        entry_price = trade["entry_price"]
+        position_size = trade["position_size"]
+        action = trade["action"]
+        
+        if action == "BUY":
+            pnl_pct = (exit_price - entry_price) / entry_price
+        else:  # SELL
+            pnl_pct = (entry_price - exit_price) / entry_price
+        
+        pnl_amount = position_size * pnl_pct
+        
         # Atualizar capital
-        self.current_capital += trade_pnl
+        self.current_capital += pnl_amount
+        self.total_pnl += pnl_amount
+        
+        # Atualizar trade
+        trade["exit_price"] = exit_price
+        trade["pnl_amount"] = pnl_amount
+        trade["pnl_pct"] = pnl_pct * 100
+        trade["capital_after"] = self.current_capital
+        trade["closed_at"] = datetime.now().isoformat()
         
         # Atualizar estatísticas
-        if trade_pnl > 0:
+        if pnl_amount > 0:
             self.winning_trades += 1
-            self.total_profit += trade_pnl
         else:
             self.losing_trades += 1
-            self.total_loss += trade_pnl
         
         # Atualizar peak capital e drawdown
         if self.current_capital > self.peak_capital:
             self.peak_capital = self.current_capital
         
-        # Calcular drawdown atual
-        current_drawdown = ((self.peak_capital - self.current_capital) / self.peak_capital) * 100
+        current_drawdown = (self.peak_capital - self.current_capital) / self.peak_capital
         if current_drawdown > self.max_drawdown:
             self.max_drawdown = current_drawdown
         
-        # Registrar trade
-        trade_record = {
-            'timestamp': datetime.now().isoformat(),
-            'pnl': trade_pnl,
-            'capital_before': self.current_capital - trade_pnl,
-            'capital_after': self.current_capital,
-            'drawdown': current_drawdown,
-            'details': trade_details or {}
-        }
-        
-        self.trades.append(trade_record)
-        
         # Salvar dados
-        self.save_capital_data()
+        self._save_data()
         
-        return trade_record
-    
-    def execute_trade(self, signal_action: str, entry_price: float, exit_price: float, 
-                     confidence: float = 1.0, strategy_name: str = "Unknown") -> Dict[str, Any]:
-        """
-        Executa um trade completo com lógica financeira correta
-        """
-        # Calcular position size baseado no capital ATUAL
-        position_size_usd = self.current_capital * (self.position_size_percent / 100)
-        
-        # Calcular quantidade baseada no preço de entrada
-        quantity = position_size_usd / entry_price
-        
-        # Calcular P&L baseado na direção do sinal
-        if signal_action.upper() == 'BUY':
-            # Long position: lucro quando preço sobe
-            pnl_percent = (exit_price - entry_price) / entry_price
-        elif signal_action.upper() == 'SELL':
-            # Short position: lucro quando preço desce
-            pnl_percent = (entry_price - exit_price) / entry_price
-        else:
-            # Sinal inválido
-            return {'error': f'Ação inválida: {signal_action}'}
-        
-        # Calcular P&L em USD
-        trade_pnl = position_size_usd * pnl_percent
-        
-        # Detalhes do trade
-        trade_details = {
-            'strategy': strategy_name,
-            'action': signal_action.upper(),
-            'entry_price': entry_price,
-            'exit_price': exit_price,
-            'quantity': quantity,
-            'position_size_usd': position_size_usd,
-            'pnl_percent': pnl_percent * 100,
-            'confidence': confidence
-        }
-        
-        # Atualizar capital
-        trade_record = self.update_capital(trade_pnl, trade_details)
-        
-        # Retornar resultado completo
         return {
-            'success': True,
-            'trade_pnl': trade_pnl,
-            'pnl_percent': pnl_percent * 100,
-            'new_capital': self.current_capital,
-            'position_size': position_size_usd,
-            'details': trade_details,
-            'record': trade_record
+            "success": True,
+            "trade_id": trade_id,
+            "pnl_amount": pnl_amount,
+            "pnl_pct": pnl_pct * 100,
+            "new_capital": self.current_capital
         }
     
-    def calculate_sharpe_ratio(self) -> float:
+    def get_stats(self) -> Dict:
         """
-        Calcula Sharpe Ratio baseado nos retornos dos trades
+        Obtém estatísticas completas do capital
+        
+        Returns:
+            Dict: Estatísticas detalhadas
         """
-        if len(self.trades) < 2:
-            return 0.0
+        total_return = ((self.current_capital - self.initial_capital) / self.initial_capital) * 100
+        win_rate = (self.winning_trades / max(self.total_trades, 1)) * 100
         
-        # Calcular retornos percentuais
-        returns = []
-        for trade in self.trades:
-            if trade['capital_before'] > 0:
-                trade_return = (trade['pnl'] / trade['capital_before']) * 100
-                returns.append(trade_return)
+        # Calcular métricas adicionais
+        avg_win = 0.0
+        avg_loss = 0.0
         
-        if len(returns) < 2:
-            return 0.0
-        
-        # Calcular Sharpe Ratio
-        mean_return = np.mean(returns)
-        std_return = np.std(returns)
-        
-        if std_return == 0:
-            return 0.0
-        
-        # Assumindo risk-free rate de 0% para simplificar
-        sharpe_ratio = mean_return / std_return
-        return sharpe_ratio
-    
-    def calculate_metrics(self) -> Dict[str, Any]:
-        """
-        Calcula todas as métricas de performance
-        """
-        summary = self.get_capital_summary()
-        
-        # Métricas adicionais
-        if len(self.trades) > 0:
-            # Maior ganho e perda
-            profits = [t['pnl'] for t in self.trades if t['pnl'] > 0]
-            losses = [t['pnl'] for t in self.trades if t['pnl'] < 0]
+        if self.trades_history:
+            winning_trades_pnl = [t["pnl_amount"] for t in self.trades_history if t["pnl_amount"] > 0]
+            losing_trades_pnl = [t["pnl_amount"] for t in self.trades_history if t["pnl_amount"] < 0]
             
-            summary['largest_win'] = max(profits) if profits else 0.0
-            summary['largest_loss'] = min(losses) if losses else 0.0
+            if winning_trades_pnl:
+                avg_win = sum(winning_trades_pnl) / len(winning_trades_pnl)
             
-            # Média de ganhos e perdas
-            summary['avg_win'] = np.mean(profits) if profits else 0.0
-            summary['avg_loss'] = np.mean(losses) if losses else 0.0
+            if losing_trades_pnl:
+                avg_loss = sum(losing_trades_pnl) / len(losing_trades_pnl)
+        
+        profit_factor = abs(avg_win / avg_loss) if avg_loss != 0 else float('inf')
+        
+        return {
+            "initial_capital": self.initial_capital,
+            "current_capital": self.current_capital,
+            "total_pnl": self.total_pnl,
+            "total_return": total_return,
+            "total_trades": self.total_trades,
+            "winning_trades": self.winning_trades,
+            "losing_trades": self.losing_trades,
+            "win_rate": win_rate,
+            "max_drawdown": self.max_drawdown * 100,  # Converter para percentual
+            "peak_capital": self.peak_capital,
+            "position_size": self.get_position_size(),
+            "position_size_pct": self.position_size_pct * 100,
+            "avg_win": avg_win,
+            "avg_loss": avg_loss,
+            "profit_factor": profit_factor,
+            "daily_trades_count": self.daily_trades_count,
+            "max_daily_trades": self.max_daily_trades
+        }
+    
+    def get_recent_trades(self, limit: int = 10) -> List[Dict]:
+        """
+        Obtém os trades mais recentes
+        
+        Args:
+            limit: Número máximo de trades a retornar
             
-            # Sequências
-            summary['max_consecutive_wins'] = self.calculate_max_consecutive_wins()
-            summary['max_consecutive_losses'] = self.calculate_max_consecutive_losses()
-        
-        return summary
-    
-    def calculate_max_consecutive_wins(self) -> int:
-        """Calcula máximo de vitórias consecutivas"""
-        max_wins = 0
-        current_wins = 0
-        
-        for trade in self.trades:
-            if trade['pnl'] > 0:
-                current_wins += 1
-                max_wins = max(max_wins, current_wins)
-            else:
-                current_wins = 0
-        
-        return max_wins
-    
-    def calculate_max_consecutive_losses(self) -> int:
-        """Calcula máximo de perdas consecutivas"""
-        max_losses = 0
-        current_losses = 0
-        
-        for trade in self.trades:
-            if trade['pnl'] < 0:
-                current_losses += 1
-                max_losses = max(max_losses, current_losses)
-            else:
-                current_losses = 0
-        
-        return max_losses
-    
-    def set_initial_capital(self, capital: float):
+        Returns:
+            List[Dict]: Lista dos trades mais recentes
         """
-        Define capital inicial
-        """
-        if capital <= 0:
-            raise ValueError("Capital inicial deve ser maior que zero")
-        
-        self.initial_capital = capital
-        self.current_capital = capital
-        self.peak_capital = capital
-        
-        # Reset das estatísticas
-        self.trades = []
-        self.total_profit = 0.0
-        self.total_loss = 0.0
-        self.winning_trades = 0
-        self.losing_trades = 0
-        self.max_drawdown = 0.0
-        
-        self.save_capital_data()
+        return self.trades_history[-limit:] if self.trades_history else []
     
-    def set_position_size_percent(self, percent: float):
+    def get_trades_by_strategy(self, strategy: str) -> List[Dict]:
         """
-        Define percentual do capital por trade
-        """
-        if not 0.1 <= percent <= 10.0:
-            raise ValueError("Position size deve estar entre 0.1% e 10%")
+        Obtém trades filtrados por estratégia
         
-        self.position_size_percent = percent
-        self.save_capital_data()
+        Args:
+            strategy: Nome da estratégia
+            
+        Returns:
+            List[Dict]: Lista de trades da estratégia
+        """
+        return [t for t in self.trades_history if t["strategy"] == strategy]
+    
+    def get_daily_pnl(self, date: str = None) -> float:
+        """
+        Obtém P&L de um dia específico
+        
+        Args:
+            date: Data no formato YYYY-MM-DD (se None, usa hoje)
+            
+        Returns:
+            float: P&L do dia
+        """
+        if date is None:
+            date = datetime.now().strftime("%Y-%m-%d")
+        
+        daily_pnl = 0.0
+        for trade in self.trades_history:
+            trade_date = trade["timestamp"][:10]  # Extrair YYYY-MM-DD
+            if trade_date == date and trade["pnl_amount"] is not None:
+                daily_pnl += trade["pnl_amount"]
+        
+        return daily_pnl
     
     def reset_capital(self):
-        """
-        Reset completo do capital
-        """
+        """Reseta o capital para o valor inicial"""
         self.current_capital = self.initial_capital
-        self.peak_capital = self.initial_capital
-        self.trades = []
-        self.total_profit = 0.0
-        self.total_loss = 0.0
+        self.total_pnl = 0.0
+        self.total_trades = 0
         self.winning_trades = 0
         self.losing_trades = 0
         self.max_drawdown = 0.0
-        
-        self.save_capital_data()
+        self.peak_capital = self.initial_capital
+        self.trades_history = []
+        self.daily_trades_count = 0
+        self._save_data()
     
-    def save_capital_data(self):
+    def update_position_size(self, new_pct: float):
         """
-        Salva dados do capital em arquivo JSON
+        Atualiza o percentual de position size
+        
+        Args:
+            new_pct: Novo percentual (0.01 = 1%)
         """
+        if 0.001 <= new_pct <= self.max_position_size_pct:
+            self.position_size_pct = new_pct
+            self._save_data()
+            return True
+        return False
+    
+    def update_capital(self, pnl: float, persist: bool = True):
+        """
+        Atualiza o capital com base em um P&L (usado para backtests)
+        
+        Args:
+            pnl: Profit/Loss a ser aplicado ao capital
+            persist: Se True, salva as mudanças em disco (default: True)
+                    Use False para backtests/simulações que não devem afetar capital real
+        """
+        self.current_capital += pnl
+        self.total_pnl += pnl
+        
+        # Atualizar peak capital e drawdown
+        if self.current_capital > self.peak_capital:
+            self.peak_capital = self.current_capital
+        
+        # Proteção contra divisão por zero
+        if self.peak_capital > 0:
+            current_drawdown = (self.peak_capital - self.current_capital) / self.peak_capital
+            if current_drawdown > self.max_drawdown:
+                self.max_drawdown = current_drawdown
+        
+        # Salvar apenas se persist=True
+        if persist:
+            self._save_data()
+    
+    def _save_data(self):
+        """Salva dados no arquivo JSON"""
         try:
             data = {
-                'initial_capital': self.initial_capital,
-                'current_capital': self.current_capital,
-                'position_size_percent': self.position_size_percent,
-                'peak_capital': self.peak_capital,
-                'max_drawdown': self.max_drawdown,
-                'total_profit': self.total_profit,
-                'total_loss': self.total_loss,
-                'winning_trades': self.winning_trades,
-                'losing_trades': self.losing_trades,
-                'trades': self.trades[-100:],  # Manter apenas últimos 100 trades
-                'last_updated': datetime.now().isoformat()
+                "initial_capital": self.initial_capital,
+                "current_capital": self.current_capital,
+                "position_size_pct": self.position_size_pct,
+                "total_trades": self.total_trades,
+                "winning_trades": self.winning_trades,
+                "losing_trades": self.losing_trades,
+                "total_pnl": self.total_pnl,
+                "max_drawdown": self.max_drawdown,
+                "peak_capital": self.peak_capital,
+                "daily_trades_count": self.daily_trades_count,
+                "last_trade_date": self.last_trade_date.isoformat() if self.last_trade_date else None,
+                "trades_history": self.trades_history[-1000:]  # Manter apenas os últimos 1000 trades
             }
             
             with open(self.data_file, 'w') as f:
-                json.dump(data, f, indent=2)
-                
+                json.dump(data, f, indent=2, default=str)
         except Exception as e:
             print(f"⚠️ Erro ao salvar dados do capital: {e}")
     
-    def load_capital_data(self):
-        """
-        Carrega dados do capital do arquivo JSON
-        """
+    def _load_data(self):
+        """Carrega dados do arquivo JSON"""
         try:
-            if os.path.exists(self.data_file):
+            if self.data_file.exists():
                 with open(self.data_file, 'r') as f:
                     data = json.load(f)
                 
-                self.initial_capital = data.get('initial_capital', 10000.0)
-                self.current_capital = data.get('current_capital', self.initial_capital)
-                self.position_size_percent = data.get('position_size_percent', 2.0)
-                self.peak_capital = data.get('peak_capital', self.initial_capital)
-                self.max_drawdown = data.get('max_drawdown', 0.0)
-                self.total_profit = data.get('total_profit', 0.0)
-                self.total_loss = data.get('total_loss', 0.0)
-                self.winning_trades = data.get('winning_trades', 0)
-                self.losing_trades = data.get('losing_trades', 0)
-                self.trades = data.get('trades', [])
+                self.initial_capital = data.get("initial_capital", self.initial_capital)
+                self.current_capital = data.get("current_capital", self.current_capital)
+                self.position_size_pct = data.get("position_size_pct", self.position_size_pct)
+                self.total_trades = data.get("total_trades", 0)
+                self.winning_trades = data.get("winning_trades", 0)
+                self.losing_trades = data.get("losing_trades", 0)
+                self.total_pnl = data.get("total_pnl", 0.0)
+                self.max_drawdown = data.get("max_drawdown", 0.0)
+                self.peak_capital = data.get("peak_capital", self.initial_capital)
+                self.daily_trades_count = data.get("daily_trades_count", 0)
+                self.trades_history = data.get("trades_history", [])
                 
+                # Converter data se existir
+                last_trade_date_str = data.get("last_trade_date")
+                if last_trade_date_str:
+                    self.last_trade_date = datetime.fromisoformat(last_trade_date_str).date()
         except Exception as e:
             print(f"⚠️ Erro ao carregar dados do capital: {e}")
-            # Usar valores padrão se houver erro
-            pass
+            print("💡 Iniciando com configuração padrão")
     
-    def export_report(self, filename: Optional[str] = None) -> str:
+    def export_trades_csv(self, filename: str = None) -> str:
         """
-        Exporta relatório completo do capital
+        Exporta histórico de trades para CSV
+        
+        Args:
+            filename: Nome do arquivo (se None, gera automaticamente)
+            
+        Returns:
+            str: Caminho do arquivo gerado
         """
-        if not filename:
+        if filename is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"capital_report_{timestamp}.json"
+            filename = f"trades_history_{timestamp}.csv"
         
         try:
-            # Criar diretório de relatórios se não existir
-            os.makedirs("reports", exist_ok=True)
-            filepath = os.path.join("reports", filename)
+            with open(filename, 'w') as f:
+                # Cabeçalho
+                f.write("trade_id,timestamp,action,symbol,entry_price,exit_price,position_size,pnl_amount,pnl_pct,strategy,capital_before,capital_after\n")
+                
+                # Dados
+                for trade in self.trades_history:
+                    f.write(f"{trade['trade_id']},{trade['timestamp']},{trade['action']},{trade['symbol']},{trade['entry_price']},{trade.get('exit_price', '')},{trade['position_size']},{trade.get('pnl_amount', 0)},{trade.get('pnl_pct', 0)},{trade['strategy']},{trade['capital_before']},{trade['capital_after']}\n")
             
-            # Preparar dados do relatório
-            report_data = {
-                'timestamp': datetime.now().isoformat(),
-                'summary': self.get_capital_summary(),
-                'metrics': self.calculate_metrics(),
-                'recent_trades': self.trades[-20:],  # Últimos 20 trades
-                'configuration': {
-                    'initial_capital': self.initial_capital,
-                    'position_size_percent': self.position_size_percent
-                }
-            }
-            
-            # Salvar relatório
-            with open(filepath, 'w') as f:
-                json.dump(report_data, f, indent=2, default=str)
-            
-            return filepath
-            
+            return filename
         except Exception as e:
-            raise Exception(f"Erro ao exportar relatório: {e}")
-    
-    def __str__(self) -> str:
-        """
-        Representação string do Capital Manager
-        """
-        summary = self.get_capital_summary()
-        return f"CapitalManager(Capital: ${summary['current_capital']:,.2f}, ROI: {summary['roi']:+.2f}%, Trades: {summary['total_trades']})"
-    
-    def __repr__(self) -> str:
-        return self.__str__()
+            print(f"❌ Erro ao exportar CSV: {e}")
+            return None
 
-# Função de teste
-def test_capital_manager():
-    """
-    Teste básico do Capital Manager
-    """
-    print("🧪 Testando Capital Manager...")
-    
-    # Criar instância
-    cm = CapitalManager(10000.0)
-    
-    # Testar get_capital_summary
-    summary = cm.get_capital_summary()
-    print(f"✅ Capital inicial: ${summary['current_capital']:,.2f}")
-    
-    # Testar trade vencedor
-    trade1 = cm.execute_trade('BUY', 100.0, 103.0, strategy_name='Test Strategy')
-    print(f"✅ Trade 1 (BUY): P&L = ${trade1['trade_pnl']:+.2f}")
-    
-    # Testar trade perdedor
-    trade2 = cm.execute_trade('SELL', 100.0, 102.0, strategy_name='Test Strategy')
-    print(f"✅ Trade 2 (SELL): P&L = ${trade2['trade_pnl']:+.2f}")
-    
-    # Verificar métricas
-    final_summary = cm.get_capital_summary()
-    print(f"✅ Capital final: ${final_summary['current_capital']:,.2f}")
-    print(f"✅ ROI: {final_summary['roi']:+.2f}%")
-    print(f"✅ Win Rate: {final_summary['win_rate']:.1f}%")
-    
-    print("🎉 Teste concluído com sucesso!")
-
+# Exemplo de uso
 if __name__ == "__main__":
-    test_capital_manager()
+    # Teste do Capital Manager
+    cm = CapitalManager(initial_capital=10000.0, position_size_pct=0.02)
+    
+    print("💰 Capital Manager - Teste")
+    print(f"Capital inicial: ${cm.current_capital:.2f}")
+    print(f"Position size: ${cm.get_position_size():.2f}")
+    
+    # Simular alguns trades
+    result1 = cm.execute_trade("BUY", "BTCUSDT", 50000, 51000, "RSI", "Trade de teste")
+    print(f"Trade 1: {result1}")
+    
+    result2 = cm.execute_trade("SELL", "ETHUSDT", 3000, 2950, "EMA", "Trade de teste 2")
+    print(f"Trade 2: {result2}")
+    
+    # Mostrar estatísticas
+    stats = cm.get_stats()
+    print(f"\nEstatísticas:")
+    for key, value in stats.items():
+        print(f"  {key}: {value}")

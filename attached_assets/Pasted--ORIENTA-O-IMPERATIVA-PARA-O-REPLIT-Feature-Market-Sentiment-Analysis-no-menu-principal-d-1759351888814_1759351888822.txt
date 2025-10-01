@@ -1,0 +1,449 @@
+# 🧭 ORIENTAÇÃO IMPERATIVA PARA O REPLIT
+# Feature: "Market Sentiment Analysis" no menu principal do CLI
+# Objetivo: criar um módulo modularizado que consulta APIs/conteúdos confiáveis
+#           (on-chain, derivativos, funding, OI, social/news) e consolida
+#           um "Prognóstico de Hoje" para o ativo selecionado (foco: scalping).
+#           Integrar no CLI em "1. Market Sentiment Analysis" com visual dinâmico.
+
+# ============================================================
+# 1) ESTRUTURA DE PASTAS E ARQUIVOS
+# ============================================================
+# Crie a seguinte estrutura (não apague nada que já exista):
+
+mkdir -p market_manus/sentiment/{collectors,parsers,services,cache,ui}
+touch market_manus/sentiment/__init__.py
+touch market_manus/sentiment/sentiment_service.py
+touch market_manus/sentiment/services/normalizers.py
+touch market_manus/sentiment/services/weights.py
+touch market_manus/sentiment/cache/memo.py
+touch market_manus/sentiment/ui/cli_views.py
+touch market_manus/sentiment/parsers/__init__.py
+touch market_manus/sentiment/collectors/__init__.py
+touch market_manus/sentiment/collectors/{alt_fng.py,bybit_derivs.py,binance_ws.py,coingecko.py,coinglass.py,cryptopanic.py,glassnode.py,santiment.py,google_trends.py}
+
+# ============================================================
+# 2) DEPENDÊNCIAS E VARS DE AMBIENTE
+# ============================================================
+# Adicionar (se faltar) no requirements.txt:
+#   httpx websockets tenacity cachetools pydantic rich pandas
+#   orjson python-dateutil pytz
+# Para fontes opcionais:
+#   pytrends (Google Trends)
+#
+# .env (adicionar chaves se disponíveis):
+#   CRYPTOPANIC_TOKEN=...
+#   COINGLASS_API_KEY=...
+#   GLASSNODE_API_KEY=...
+#   SANTIMENT_API_KEY=...
+#   COINGECKO_KEY=... (opcional)
+#   BYBIT_MODE=real|testnet  (já existente no projeto)
+#
+# Observação de rate limits/documentação (para implementação correta):
+# - Fear & Greed Index (Alternative.me) possui documentação própria e dados históricos. :contentReference[oaicite:0]{index=0}
+# - Bybit API v5 (funding/OI e mercado derivativos). Use docs oficiais para endpoints/semântica. :contentReference[oaicite:1]{index=1}
+# - Binance WebSocket p/ klines/orderbook (stream de dados de mercado) com keepalive e pings. :contentReference[oaicite:2]{index=2}
+# - CryptoPanic API para manchetes/“sentiment” agregado de notícias. :contentReference[oaicite:3]{index=3}
+# - CoinGlass API p/ open interest/funding (precisa key). :contentReference[oaicite:4]{index=4}
+# - Santiment métricas de sentimento social (conceitos e API). :contentReference[oaicite:5]{index=5}
+# - CoinGecko dados de mercado agregados (preço/vol/variação). :contentReference[oaicite:6]{index=6}
+# - Glassnode métricas on-chain (API básica e bulk). :contentReference[oaicite:7]{index=7}
+
+# ============================================================
+# 3) COLETORES (market_manus/sentiment/collectors/*.py)
+# ============================================================
+# Cada coletor deve:
+#  - expor uma função assíncrona fetch(symbol: str, window: str) -> dict
+#  - aplicar retry (tenacity), timeout (httpx), cache em memória (cachetools)
+#  - retornar apenas campos mínimos padronizados (definidos no "normalizers.py")
+
+# 3.1) alt_fng.py (Alternative.me Fear & Greed)
+cat > market_manus/sentiment/collectors/alt_fng.py << 'PY'
+import httpx, asyncio
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+API = "https://api.alternative.me/fng/"
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8))
+async def fetch(symbol: str, window: str) -> dict:
+    # symbol ignorado (índice de mercado agregado)
+    params = {"limit": 2, "format": "json"}
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.get(API, params=params)
+        r.raise_for_status()
+        data = r.json()
+    # saída mínima
+    latest = data["data"][0]
+    return {
+        "source": "alt_fng",
+        "score": float(latest["value"]),      # 0..100
+        "label": latest["value_classification"],  # Fear/Greed
+        "ts": latest["timestamp"],
+        "kind": "macro_sentiment"
+    }
+PY
+
+# 3.2) bybit_derivs.py (funding e OI se disponíveis com tuas credenciais)
+cat > market_manus/sentiment/collectors/bybit_derivs.py << 'PY'
+import httpx, os
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+BASE = "https://api.bybit.com" if os.getenv("BYBIT_MODE","real")=="real" else "https://api-demo.bybit.com"
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8))
+async def fetch(symbol: str, window: str) -> dict:
+    # funding rate v5 (exemplo ilustrativo; verifique endpoint no doc oficial)
+    # Doc geral v5: https://bybit-exchange.github.io/docs/v5/intro
+    # Você pode substituir pelo endpoint correto para funding/OI conforme a tua lib atual.
+    async with httpx.AsyncClient(timeout=10, base_url=BASE) as client:
+        # Placeholder: adapte para o endpoint v5 de funding
+        # Retorne payload fake se não houver credenciais (não lançar exceção)
+        funding = None
+        try:
+            # EXEMPLO: /v5/market/funding/history?category=linear&symbol=BTCUSDT
+            r = await client.get("/v5/market/funding/history", params={"category":"linear","symbol":symbol})
+            if r.status_code == 200:
+                funding = r.json()
+        except Exception:
+            pass
+    return {
+        "source": "bybit",
+        "funding": funding,
+        "kind": "derivatives"
+    }
+PY
+
+# 3.3) binance_ws.py (stream para visual “tick-like” se needed)
+cat > market_manus/sentiment/collectors/binance_ws.py << 'PY'
+import asyncio, json, websockets
+# Doc WS: https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams
+BASE_WS = "wss://data-stream.binance.vision/ws"
+
+async def stream_prices(symbol: str, interval="1m"):
+    stream = f"{symbol.lower()}@kline_{interval}"
+    url = f"{BASE_WS}/{stream}"
+    async with websockets.connect(url, ping_interval=15, close_timeout=5) as ws:
+        async for msg in ws:
+            yield json.loads(msg)
+PY
+
+# 3.4) coingecko.py (preço/vol/variação do dia)
+cat > market_manus/sentiment/collectors/coingecko.py << 'PY'
+import httpx
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8))
+async def fetch(symbol: str, window: str) -> dict:
+    # symbol "ETHUSDT" -> "ethereum"
+    # mapeamento simples: use dicionário no projeto para BTC/ETH/...
+    mapping = {"BTCUSDT":"bitcoin","ETHUSDT":"ethereum","BNBUSDT":"binancecoin"}
+    coin = mapping.get(symbol.upper(), "bitcoin")
+    url = f"https://api.coingecko.com/api/v3/coins/{coin}"
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.get(url, params={"localization":"false","tickers":"false","market_data":"true"})
+        r.raise_for_status()
+        d = r.json()
+    md = d["market_data"]
+    return {
+        "source": "coingecko",
+        "price": md["current_price"]["usd"],
+        "chg_24h": md["price_change_percentage_24h"],
+        "vol_24h": md["total_volume"]["usd"],
+        "kind": "spot_market"
+    }
+PY
+
+# 3.5) coinglass.py (open interest / funding — se houver chave)
+cat > market_manus/sentiment/collectors/coinglass.py << 'PY'
+import httpx, os
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+KEY = os.getenv("COINGLASS_API_KEY")
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8))
+async def fetch(symbol: str, window: str) -> dict:
+    if not KEY:
+        return {"source":"coinglass","error":"no-key","kind":"derivatives"}
+    headers = {"coinglassSecret": KEY}
+    # Exemplo de endpoint: Exchange Open Interest History (ajuste para futures/linear)
+    # Doc: https://docs.coinglass.com/reference/exchange-open-interest-history
+    async with httpx.AsyncClient(timeout=10, headers=headers) as client:
+        # Placeholder (ajuste ao endpoint correto para symbol)
+        r = await client.get("https://open-api-v4.coinglass.com/api/futures/openInterest", params={"symbol":symbol})
+        data = r.json() if r.status_code==200 else {"status":r.status_code}
+    return {"source":"coinglass","oi":data,"kind":"derivatives"}
+PY
+
+# 3.6) cryptopanic.py (notícias + sentimento)
+cat > market_manus/sentiment/collectors/cryptopanic.py << 'PY'
+import httpx, os
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+TOKEN = os.getenv("CRYPTOPANIC_TOKEN")
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8))
+async def fetch(symbol: str, window: str) -> dict:
+    if not TOKEN:
+        return {"source":"cryptopanic","error":"no-token","kind":"news"}
+    url = "https://cryptopanic.com/api/v1/posts/"
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.get(url, params={"auth_token":TOKEN,"currencies":symbol.replace("USDT",""),"public":"true"})
+        r.raise_for_status()
+        d = r.json()
+    # sumarize básico (positivo/negativo/neutral se disponível)
+    items = d.get("results",[])
+    return {"source":"cryptopanic","count":len(items), "items":items[:10], "kind":"news"}
+PY
+
+# 3.7) glassnode.py (on-chain — opcional)
+cat > market_manus/sentiment/collectors/glassnode.py << 'PY'
+import httpx, os
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+KEY = os.getenv("GLASSNODE_API_KEY")
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8))
+async def fetch(symbol: str, window: str) -> dict:
+    if not KEY:
+        return {"source":"glassnode","error":"no-key","kind":"onchain"}
+    # Consulte o catálogo/bulk para métricas adequadas ao ativo (BTC/ETH). 
+    # Docs: https://docs.glassnode.com/data/metric-catalog  /  https://docs.glassnode.com/basic-api/bulk-metrics
+    return {"source":"glassnode","note":"implement specific metric endpoint for "+symbol, "kind":"onchain"}
+PY
+
+# 3.8) santiment.py (social sentiment — opcional)
+cat > market_manus/sentiment/collectors/santiment.py << 'PY'
+import os
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+# Use a API da Santiment se disponível. Conceitos de métricas:
+# https://academy.santiment.net/metrics/sentiment-metrics/
+# Devolva placeholder se sem chave:
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8))
+async def fetch(symbol: str, window: str) -> dict:
+    if not os.getenv("SANTIMENT_API_KEY"):
+        return {"source":"santiment","error":"no-key","kind":"social"}
+    return {"source":"santiment","note":"implement SAN queries", "kind":"social"}
+PY
+
+# 3.9) google_trends.py (interesse de busca — opcional)
+cat > market_manus/sentiment/collectors/google_trends.py << 'PY'
+# Se pytrends estiver habilitado, sumarize a tendência "BTC" ou nome do ativo
+async def fetch(symbol: str, window: str) -> dict:
+    return {"source":"google_trends","note":"implement pytrends if enabled","kind":"interest"}
+PY
+
+# ============================================================
+# 4) NORMALIZAÇÃO, PESAGEM E CACHE
+# ============================================================
+# 4.1) services/normalizers.py — converte outputs em escala 0..1 por tipo
+cat > market_manus/sentiment/services/normalizers.py << 'PY'
+def clamp01(x: float) -> float:
+    return max(0.0, min(1.0, x))
+
+def fng_to_score(value_0_100: float) -> float:
+    # Greed(>50) = sesgo comprador; Fear(<50) = vendedor.
+    return clamp01(value_0_100/100.0)
+
+def pct_to_score(pct: float) -> float:
+    # -10% -> 0.0 ; 0% -> 0.5 ; +10% -> 1.0 (linear simples p/ 24h change)
+    return clamp01((pct + 10.0)/20.0)
+
+def volume_to_score(vol_usd: float) -> float:
+    # normalização tosca (ajuste por ativo): log/escala z em versão futura
+    import math
+    return clamp01(min(1.0, math.log10(max(1.0, vol_usd))/10.0))
+PY
+
+# 4.2) services/weights.py — pesos padrão por classe de sinal
+cat > market_manus/sentiment/services/weights.py << 'PY'
+DEFAULT_WEIGHTS = {
+    "macro_sentiment": 0.15,   # Fear & Greed
+    "spot_market":    0.25,    # preço/variação/volume
+    "derivatives":    0.30,    # funding/OI
+    "news":           0.15,    # headlines/tonalidade
+    "social":         0.10,    # redes
+    "onchain":        0.05     # métricas on-chain (curto prazo costuma ser fraco p/ scalping)
+}
+PY
+
+# 4.3) cache/memo.py — cache simples in-memory por (source,symbol,window)
+cat > market_manus/sentiment/cache/memo.py << 'PY'
+from cachetools import TTLCache
+
+cache = TTLCache(maxsize=512, ttl=60)  # 60s p/ consultas rápidas
+def get(key): return cache.get(key)
+def put(key, value): cache[key] = value
+PY
+
+# ============================================================
+# 5) SERVIÇO DE AGREGAÇÃO (sentiment_service.py)
+# ============================================================
+cat > market_manus/sentiment/sentiment_service.py << 'PY'
+import asyncio, time
+from .collectors import alt_fng, bybit_derivs, coingecko, coinglass, cryptopanic, glassnode, santiment, google_trends
+from .services.normalizers import fng_to_score, pct_to_score, volume_to_score, clamp01
+from .services.weights import DEFAULT_WEIGHTS
+from .cache import memo
+
+SOURCES = [
+    ("alt_fng", alt_fng.fetch),
+    ("coingecko", coingecko.fetch),
+    ("bybit", bybit_derivs.fetch),
+    ("coinglass", coinglass.fetch),
+    ("cryptopanic", cryptopanic.fetch),
+    ("santiment", santiment.fetch),
+    ("glassnode", glassnode.fetch),
+    ("google_trends", google_trends.fetch),
+]
+
+async def gather_sentiment(symbol: str, window: str = "1d") -> dict:
+    tasks = []
+    for name, fn in SOURCES:
+        key = (name, symbol, window)
+        cached = memo.get(key)
+        if cached is None:
+            tasks.append(_wrap_fetch(name, fn, symbol, window, key))
+        else:
+            tasks.append(asyncio.create_task(_return_cached(name, cached)))
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    data = [r for r in results if isinstance(r, dict)]
+    score = _composite_score(data)
+    return {"symbol": symbol, "window": window, "score": score, "sources": data, "ts": time.time()}
+
+async def _return_cached(name, cached):
+    return cached
+
+async def _wrap_fetch(name, fn, symbol, window, key):
+    try:
+        out = await fn(symbol, window)
+        out["__name__"] = name
+        memo.put(key, out)
+        return out
+    except Exception as e:
+        return {"__name__":name, "error":str(e)}
+
+def _composite_score(items):
+    w = DEFAULT_WEIGHTS
+    total_w = 0.0
+    acc = 0.0
+    for it in items:
+        kind = it.get("kind")
+        if kind == "macro_sentiment" and "score" in it:
+            s = fng_to_score(float(it["score"])) ; acc += w["macro_sentiment"]*s ; total_w += w["macro_sentiment"]
+        elif kind == "spot_market":
+            s = 0.6*pct_to_score(it.get("chg_24h",0.0)) + 0.4*volume_to_score(it.get("vol_24h",0.0))
+            acc += w["spot_market"]*s ; total_w += w["spot_market"]
+        elif kind == "derivatives":
+            # Simplificação: se funding positivo alto -> bias compra; negativo -> venda.
+            # Ajuste quando endpoints reais estiverem prontos.
+            f = 0.0
+            if it.get("funding"): f = 0.5  # placeholder até usar valor real
+            acc += w["derivatives"]*clamp01(f) ; total_w += w["derivatives"]
+        elif kind == "news":
+            # placeholder: sem NLP, usa contagem como neutra (0.5)
+            acc += w["news"]*0.5 ; total_w += w["news"]
+        elif kind == "social":
+            acc += w["social"]*0.5 ; total_w += w["social"]
+        elif kind == "onchain":
+            acc += w["onchain"]*0.5 ; total_w += w["onchain"]
+    return round(acc/total_w, 3) if total_w>0 else None
+PY
+
+# ============================================================
+# 6) VIEW/CLI (ui/cli_views.py) — integração no menu
+# ============================================================
+cat > market_manus/sentiment/ui/cli_views.py << 'PY'
+import asyncio
+from rich.console import Console
+from rich.table import Table
+from ..sentiment_service import gather_sentiment
+
+console = Console()
+
+async def render_sentiment(symbol: str):
+    res = await gather_sentiment(symbol)
+    console.print("\n[bold cyan]🧭 MARKET SENTIMENT ANALYSIS[/]")
+    console.print(f"[white]Ativo:[/] [bold]{symbol}[/]   Janela: [bold]{res['window']}[/]")
+    console.print(f"[white]Score composto:[/] [bold]{res['score']}[/] (0=Bearish, 1=Bullish)\n")
+
+    t = Table(title="Fontes")
+    t.add_column("Fonte")
+    t.add_column("Tipo")
+    t.add_column("Resumo")
+    for src in res["sources"]:
+        name = src.get("__name__")
+        kind = src.get("kind","-")
+        if name=="alt_fng": summary = f"F&G={src.get('score')} ({src.get('label')})"
+        elif name=="coingecko": summary = f"Preço=${src.get('price')} Δ24h={src.get('chg_24h')}% Vol=${src.get('vol_24h')}"
+        elif name=="bybit": summary = "Funding/OI recebidos" if src.get("funding") else "Sem dados/sem credenciais"
+        elif name=="coinglass": summary = "OI disponível" if src.get("oi") else "Sem chave"
+        elif name=="cryptopanic": summary = f"{src.get('count',0)} notícias"
+        else: summary = ", ".join([f"{k}={v}" for k,v in src.items() if k not in {"__name__","kind"}])[:80]
+        t.add_row(name, kind, summary)
+    console.print(t)
+
+def run_blocking(symbol: str):
+    asyncio.run(render_sentiment(symbol))
+PY
+
+# ============================================================
+# 7) HOOK NO MENU PRINCIPAL DO TEU CLI
+# ============================================================
+# Em market_manus/cli/market_manus_cli_2025_09_30.py:
+# - Adicione no menu principal a nova opção: "1) Market Sentiment Analysis"
+# - Desloque o restante das opções em +1 (ou ajuste numeração)
+# - Ao selecionar, chamar: from market_manus.sentiment.ui.cli_views import run_blocking
+#                          run_blocking(self.selected_symbol or "ETHUSDT")
+#
+# Exemplo (dentro do loop de menu):
+#   elif choice == "1":
+#       from market_manus.sentiment.ui.cli_views import run_blocking
+#       run_blocking(self.selected_symbol or "ETHUSDT")
+#       input("\n📖 Pressione ENTER para continuar...")
+
+# ============================================================
+# 8) RATE LIMIT, FALLBACKS E CACHING
+# ============================================================
+# - Todos os coletores já usam retry exponencial e timeout.
+# - Cache TTL=60s para evitar “hammering”.
+# - Para “quase tempo real”, re-chame a view manualmente no CLI (o usuário escolhe)
+#   ou crie um sub-menu com "Atualizar (R)" que apenas re-renderiza.
+# - No binance_ws.py está preparado o stream para futuro “ticker ao vivo”.
+#   Não ativar loop WS por padrão nesta entrega (apenas preparar).
+
+# ============================================================
+# 9) PESOS E AJUSTE
+# ============================================================
+# - Ajuste DEFAULT_WEIGHTS em services/weights.py para calibrar sensibilidade
+#   do score composto em scalping (derivatives tende a pesar mais).
+# - Posteriormente, implemente leitura/escrita destes pesos em config/settings.json.
+
+# ============================================================
+# 10) TESTE RÁPIDO LOCAL (fora do CLI)
+# ============================================================
+python - << 'PY'
+import asyncio
+from market_manus.sentiment.sentiment_service import gather_sentiment
+print(asyncio.run(gather_sentiment("ETHUSDT")))
+PY
+
+# ============================================================
+# 11) REFERÊNCIAS TÉCNICAS (para implementação correta)
+# ============================================================
+# - Alternative.me Fear & Greed Index (docs e API): :contentReference[oaicite:8]{index=8}
+# - Bybit API v5 (funding/OI, mercado): :contentReference[oaicite:9]{index=9}
+# - Binance WebSocket (klines/orderbook): :contentReference[oaicite:10]{index=10}
+# - CryptoPanic API (notícias + sentimento): :contentReference[oaicite:11]{index=11}
+# - CoinGlass (OI/funding endpoints): :contentReference[oaicite:12]{index=12}
+# - Santiment (métricas de sentimento social): :contentReference[oaicite:13]{index=13}
+# - CoinGecko (dados agregados de mercado): :contentReference[oaicite:14]{index=14}
+# - Glassnode (on-chain basic/bulk): :contentReference[oaicite:15]{index=15}
+
+# ============================================================
+# 12) PRÓXIMOS PASSOS (EXTRA)
+# ============================================================
+# - Implementar NLP simples sobre títulos CryptoPanic para score (+1/-1/0).
+# - Ligar “funding rate” real (Bybit/Coinglass) e normalizar para 0..1.
+# - Trocar normalização de volume para z-score por ativo/timeframe.
+# - Expor “Exportar PDF/JSON” do painel de Sentiment no menu.
+# - Conectar pesos ao “Confluence Mode” como feature de “Mercado Favorável Hoje”.

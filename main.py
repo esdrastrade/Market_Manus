@@ -260,21 +260,135 @@ class MarketManusMain:
         input("\n📖 Pressione ENTER para continuar...")
     
     def _show_settings(self):
-        """Mostra configurações do sistema"""
-        print("\n⚙️ SETTINGS - CONFIGURAÇÕES")
+        """Mostra menu de configurações do sistema"""
+        while True:
+            print("\n⚙️ SETTINGS - CONFIGURAÇÕES")
+            print("=" * 50)
+            
+            print(f"🔧 CONFIGURAÇÕES ATUAIS:")
+            print(f"   🌐 Binance Testnet: {'Sim' if self.data_provider.testnet else 'Não'}")
+            print(f"   💰 Capital inicial: ${self.capital_manager.initial_capital:.2f}")
+            print(f"   💵 Capital atual: ${self.capital_manager.current_capital:.2f}")
+            print(f"   💼 Position size: {self.capital_manager.position_size_pct*100:.1f}%")
+            print(f"   🤖 OpenAI API: {'Configurada' if self.openai_api_key else 'Não configurada'}")
+            
+            print(f"\n⚙️ OPÇÕES:")
+            print("   1️⃣  Alterar capital inicial")
+            print("   2️⃣  Alterar position size (%)")
+            print("   3️⃣  Resetar capital para inicial")
+            print("   4️⃣  Ver estrutura do projeto")
+            print("   0️⃣  Voltar ao menu principal")
+            
+            choice = input("\n🔢 Escolha uma opção (0-4): ").strip()
+            
+            if choice == '0':
+                break
+            elif choice == '1':
+                self._change_initial_capital()
+            elif choice == '2':
+                self._change_position_size()
+            elif choice == '3':
+                self._reset_capital()
+            elif choice == '4':
+                self._show_project_structure()
+            else:
+                print("❌ Opção inválida")
+                input("\n📖 Pressione ENTER para continuar...")
+    
+    def _change_initial_capital(self):
+        """Altera o capital inicial"""
+        print("\n💰 ALTERAR CAPITAL INICIAL")
         print("=" * 50)
+        print(f"Capital inicial atual: ${self.capital_manager.initial_capital:.2f}")
+        print(f"Capital atual: ${self.capital_manager.current_capital:.2f}")
+        print("\nℹ️  Este valor é usado apenas para avaliar eficiência de estratégias")
+        print("ℹ️  em dados históricos e tempo real (backtesting)")
         
-        print(f"🔧 CONFIGURAÇÕES ATUAIS:")
-        print(f"   🌐 Binance Testnet: {'Sim' if self.data_provider.testnet else 'Não'}")
-        print(f"   💰 Capital inicial: ${self.capital_manager.initial_capital:.2f}")
-        print(f"   💼 Position size: {self.capital_manager.position_size_pct*100:.1f}%")
-        print(f"   🤖 OpenAI API: {'Configurada' if self.openai_api_key else 'Não configurada'}")
+        new_capital = input("\n💵 Digite o novo capital inicial (ex: 10000): ").strip()
         
-        print(f"\n📁 ESTRUTURA:")
-        print(f"   📂 Projeto: {project_root}")
+        try:
+            new_capital_float = float(new_capital)
+            if new_capital_float <= 0:
+                print("❌ Capital deve ser maior que zero")
+                input("\n📖 Pressione ENTER para continuar...")
+                return
+            
+            # Atualizar capital inicial e atual
+            self.capital_manager.initial_capital = new_capital_float
+            self.capital_manager.current_capital = new_capital_float
+            self.capital_manager.peak_capital = new_capital_float
+            self.capital_manager.total_pnl = 0.0
+            self.capital_manager.total_trades = 0
+            self.capital_manager.winning_trades = 0
+            self.capital_manager.losing_trades = 0
+            self.capital_manager.max_drawdown = 0.0
+            self.capital_manager._save_data()
+            
+            print(f"\n✅ Capital inicial alterado para: ${new_capital_float:.2f}")
+            print(f"✅ Capital atual resetado para: ${new_capital_float:.2f}")
+            print(f"✅ Position size atualizado para: ${self.capital_manager.get_position_size():.2f}")
+            
+        except ValueError:
+            print("❌ Valor inválido! Digite apenas números")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _change_position_size(self):
+        """Altera o percentual de position size"""
+        print("\n💼 ALTERAR POSITION SIZE")
+        print("=" * 50)
+        print(f"Position size atual: {self.capital_manager.position_size_pct*100:.1f}%")
+        print(f"Valor por trade: ${self.capital_manager.get_position_size():.2f}")
+        print(f"\nℹ️  Máximo permitido: {self.capital_manager.max_position_size_pct*100:.0f}%")
+        
+        new_pct = input("\n💼 Digite o novo percentual (ex: 2 para 2%): ").strip()
+        
+        try:
+            new_pct_float = float(new_pct) / 100  # Converter para decimal
+            
+            if self.capital_manager.update_position_size(new_pct_float):
+                print(f"\n✅ Position size alterado para: {new_pct_float*100:.1f}%")
+                print(f"✅ Novo valor por trade: ${self.capital_manager.get_position_size():.2f}")
+            else:
+                print(f"❌ Valor inválido! Use entre 0.1% e {self.capital_manager.max_position_size_pct*100:.0f}%")
+        
+        except ValueError:
+            print("❌ Valor inválido! Digite apenas números")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _reset_capital(self):
+        """Reseta o capital para o valor inicial"""
+        print("\n🔄 RESETAR CAPITAL")
+        print("=" * 50)
+        print(f"Capital inicial: ${self.capital_manager.initial_capital:.2f}")
+        print(f"Capital atual: ${self.capital_manager.current_capital:.2f}")
+        print(f"P&L acumulado: ${self.capital_manager.total_pnl:+.2f}")
+        
+        confirm = input("\n⚠️  Deseja resetar o capital para o inicial? (s/n): ").strip().lower()
+        
+        if confirm == 's':
+            self.capital_manager.reset_capital()
+            print(f"\n✅ Capital resetado para: ${self.capital_manager.current_capital:.2f}")
+            print(f"✅ Histórico de trades limpo")
+            print(f"✅ Estatísticas zeradas")
+        else:
+            print("\n❌ Operação cancelada")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _show_project_structure(self):
+        """Mostra estrutura do projeto"""
+        print("\n📁 ESTRUTURA DO PROJETO")
+        print("=" * 50)
+        print(f"   📂 Raiz: {project_root}")
         print(f"   📂 Strategy Lab: market_manus/strategy_lab/")
         print(f"   📂 Confluence Mode: market_manus/confluence_mode/")
         print(f"   📂 Data Providers: market_manus/data_providers/")
+        print(f"   📂 Core: market_manus/core/")
+        print(f"   📂 Agents: market_manus/agents/")
+        print(f"   📂 Reports: reports/")
+        print(f"   📂 Logs: logs/")
         
         input("\n📖 Pressione ENTER para continuar...")
     

@@ -14,10 +14,17 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
   - **Data Sources**: Fear & Greed Index (Alternative.me), CoinGecko (spot market data), Bybit (funding/OI), CoinGlass (open interest), CryptoPanic (news sentiment), Santiment (social metrics), Glassnode (on-chain), Google Trends (search interest)
   - **Normalization**: All signals normalized to 0-1 scale with weighted composite scoring
   - **Caching**: TTL-based in-memory cache (60s) to prevent API hammering
+  - **CryptoPanic Integration (Oct 2025)**: News sentiment analysis via CryptoPanic API v2:
+    - Fetches 20+ recent news headlines per asset with vote counts
+    - Dynamic sentiment scoring: positive/(positive+negative) with neutral fallback
+    - 15% weight in composite score calculation
+    - Captures top 5 headlines for narrative context
+    - Automatic retry with exponential backoff for reliability
   - **Narrative UI (Oct 2025)**: Natural language presentation transforming technical data into storytelling format:
     - Auto-generated market narratives in Portuguese explaining sentiment context
     - Progressive disclosure: header → interpretation panel → technical details
     - Dynamic storytelling adapting to market conditions (panic, fear, neutral, optimism, greed)
+    - Macroeconomic context section with news headlines and sentiment analysis
     - Contextual recommendations based on composite score
     - Color-coded status indicators with Rich panels and tables
 - **Strategy Lab V6**: Contains 8 professional trading strategies, supporting real-time and historical testing, and asset selection.

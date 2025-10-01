@@ -14,6 +14,12 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
   - **Data Sources**: Fear & Greed Index (Alternative.me), CoinGecko (spot market data), Bybit (funding/OI), CoinGlass (open interest), CryptoPanic (news sentiment), Santiment (social metrics), Glassnode (on-chain), Google Trends (search interest)
   - **Normalization**: All signals normalized to 0-1 scale with weighted composite scoring
   - **Caching**: TTL-based in-memory cache (60s) to prevent API hammering
+  - **CoinGecko Dynamic Resolution (Oct 2025)**: Universal crypto asset support via intelligent search:
+    - Automatic resolution of ANY Binance symbol to CoinGecko ID via search API
+    - TTL-based cache (1h, 500 items) prevents rate limit violations
+    - Intelligent symbol extraction (strips USDT/USDC/USD suffixes)
+    - Graceful error handling for rate limits and unsupported assets
+    - No fallback to Bitcoin - accurate "not-found" errors
   - **CryptoPanic Integration (Oct 2025)**: News sentiment analysis via CryptoPanic API v2:
     - Fetches 20+ recent news headlines per asset with vote counts
     - Dynamic sentiment scoring: positive/(positive+negative) with neutral fallback

@@ -87,24 +87,26 @@ class MarketManusMain:
         
         while True:
             self._show_main_menu()
-            choice = input("\n🔢 Escolha uma opção (0-7): ").strip()
+            choice = input("\n🔢 Escolha uma opção (0-8): ").strip()
             
             if choice == '0':
                 self._show_goodbye()
                 break
             elif choice == '1':
-                self._run_strategy_lab()
+                self._run_sentiment_analysis()
             elif choice == '2':
-                self._run_confluence_mode()
+                self._run_strategy_lab()
             elif choice == '3':
-                self._run_ai_assistant()
+                self._run_confluence_mode()
             elif choice == '4':
-                self._show_capital_dashboard()
+                self._run_ai_assistant()
             elif choice == '5':
-                self._show_connectivity_status()
+                self._show_capital_dashboard()
             elif choice == '6':
-                self._show_settings()
+                self._show_connectivity_status()
             elif choice == '7':
+                self._show_settings()
+            elif choice == '8':
                 self._run_realtime_confluence()
             else:
                 print("❌ Opção inválida")
@@ -155,22 +157,33 @@ class MarketManusMain:
         connectivity_text = "Online" if self.connectivity_status else "Offline"
         print(f"   🌐 Status API: {connectivity_emoji} {connectivity_text}")
         
+        print(f"\n🧭 ANÁLISE DE MERCADO:")
+        print("   1️⃣  Market Sentiment Analysis")
+        
         print(f"\n🎯 MÓDULOS PRINCIPAIS:")
-        print("   1️⃣  Strategy Lab Professional V6 (8 estratégias)")
-        print("   2️⃣  Confluence Mode (Sistema de confluência)")
+        print("   2️⃣  Strategy Lab Professional V6 (8 estratégias)")
+        print("   3️⃣  Confluence Mode (Sistema de confluência)")
         
         print(f"\n🤖 RECURSOS AVANÇADOS:")
-        print("   3️⃣  Assistente IA (Semantic Kernel)")
+        print("   4️⃣  Assistente IA (Semantic Kernel)")
         
         print(f"\n🔥 CONFLUÊNCIA SMC + CLÁSSICOS:")
-        print("   7️⃣  Executar Confluência em Tempo Real")
+        print("   8️⃣  Executar Confluência em Tempo Real")
         
         print(f"\n⚙️ CONFIGURAÇÕES:")
-        print("   4️⃣  Capital Dashboard")
-        print("   5️⃣  Connectivity Status")
-        print("   6️⃣  Settings")
+        print("   5️⃣  Capital Dashboard")
+        print("   6️⃣  Connectivity Status")
+        print("   7️⃣  Settings")
         
         print(f"\n   0️⃣  Sair do sistema")
+    
+    def _run_sentiment_analysis(self):
+        """Executa análise de sentimento do mercado"""
+        from market_manus.sentiment.ui.cli_views import run_blocking
+        
+        symbol = input("\n💱 Digite o símbolo (padrão BTCUSDT): ").strip() or "BTCUSDT"
+        run_blocking(symbol)
+        input("\n📖 Pressione ENTER para continuar...")
     
     def _run_strategy_lab(self):
         """Executa o Strategy Lab Professional V6"""

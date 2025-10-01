@@ -93,6 +93,7 @@ def _build_narrative(res: dict) -> str:
                 sentiment_emoji = "📈" if pos_pct > 60 else "📉" if pos_pct < 40 else "⚖️"
                 sentiment_text = "predominantemente positivo" if pos_pct > 60 else "predominantemente negativo" if pos_pct < 40 else "misto"
             else:
+                pos_pct = 50
                 sentiment_emoji = "📰"
                 sentiment_text = "neutro"
             

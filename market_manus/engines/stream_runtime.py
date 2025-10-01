@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 import pandas as pd
-from market_manus.strategies.confluence_engine import ConfluenceEngine
+from market_manus.strategies.smc.patterns import ConfluenceEngine
 
 
 @dataclass
@@ -64,33 +64,37 @@ class StreamRuntime:
         self.running = False
         
     async def bootstrap_historical_data(self):
-        interval_map = {
-            '1m': '1', '5m': '5', '15m': '15',
-            '1h': '60', '4h': '240'
-        }
-        api_interval = interval_map.get(self.interval, '5')
-        
-        klines = self.data_provider.get_kline(
-            category="spot",
-            symbol=self.symbol,
-            interval=api_interval,
-            limit=500
-        )
-        
-        if not klines:
-            return False
+        try:
+            interval_map = {
+                '1m': '1', '5m': '5', '15m': '15',
+                '1h': '60', '4h': '240'
+            }
+            api_interval = interval_map.get(self.interval, '5')
             
-        df = pd.DataFrame(
-            klines,
-            columns=['timestamp', 'open', 'high', 'low', 'close', 'volume']
-        )
-        for col in ['timestamp', 'open', 'high', 'low', 'close', 'volume']:
-            df[col] = pd.to_numeric(df[col])
+            klines = self.data_provider.get_kline(
+                category="spot",
+                symbol=self.symbol,
+                interval=api_interval,
+                limit=500
+            )
             
-        for _, row in df.iterrows():
-            self.candles_deque.append(row.to_dict())
-            
-        return True
+            if not klines:
+                return False
+                
+            df = pd.DataFrame(
+                klines,
+                columns=['timestamp', 'open', 'high', 'low', 'close', 'volume']
+            )
+            for col in ['timestamp', 'open', 'high', 'low', 'close', 'volume']:
+                df[col] = pd.to_numeric(df[col])
+                
+            for _, row in df.iterrows():
+                self.candles_deque.append(row.to_dict())
+                
+            return True
+        except Exception as e:
+            print(f"⚠️  Erro no bootstrap: {e}. Tentando continuar com dados do WebSocket...")
+            return True
     
     async def collect_ws_messages(self):
         try:

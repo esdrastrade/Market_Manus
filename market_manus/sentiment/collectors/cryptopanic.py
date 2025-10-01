@@ -16,9 +16,7 @@ async def fetch(symbol: str, window: str) -> dict:
     params = {
         "auth_token": TOKEN,
         "currencies": currency,
-        "public": "true",
-        "kind": "news",
-        "filter": "rising"
+        "public": "true"
     }
     
     async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:

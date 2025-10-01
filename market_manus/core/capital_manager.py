@@ -383,6 +383,32 @@ class CapitalManager:
             return True
         return False
     
+    def update_capital(self, pnl: float, persist: bool = True):
+        """
+        Atualiza o capital com base em um P&L (usado para backtests)
+        
+        Args:
+            pnl: Profit/Loss a ser aplicado ao capital
+            persist: Se True, salva as mudanças em disco (default: True)
+                    Use False para backtests/simulações que não devem afetar capital real
+        """
+        self.current_capital += pnl
+        self.total_pnl += pnl
+        
+        # Atualizar peak capital e drawdown
+        if self.current_capital > self.peak_capital:
+            self.peak_capital = self.current_capital
+        
+        # Proteção contra divisão por zero
+        if self.peak_capital > 0:
+            current_drawdown = (self.peak_capital - self.current_capital) / self.peak_capital
+            if current_drawdown > self.max_drawdown:
+                self.max_drawdown = current_drawdown
+        
+        # Salvar apenas se persist=True
+        if persist:
+            self._save_data()
+    
     def _save_data(self):
         """Salva dados no arquivo JSON"""
         try:

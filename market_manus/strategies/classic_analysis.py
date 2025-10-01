@@ -13,6 +13,10 @@ def calculate_ema(prices: pd.Series, period: int) -> pd.Series:
     """Calcula EMA (Exponential Moving Average)"""
     return prices.ewm(span=period, adjust=False).mean()
 
+def calculate_sma(prices: pd.Series, period: int) -> pd.Series:
+    """Calcula SMA (Simple Moving Average)"""
+    return prices.rolling(window=period).mean()
+
 def calculate_rsi(prices: pd.Series, period: int = 14) -> pd.Series:
     """Calcula RSI (Relative Strength Index)"""
     delta = prices.diff()
@@ -413,6 +417,264 @@ def fibonacci_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
     return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:FIB"], reasons=["Preço longe de níveis Fib"])
 
 
+def ma_ribbon_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
+    """
+    MA Ribbon (5-8-13 SMAs): Detecta alinhamento de ribbons para scalping.
+    Baseado em estratégia da Investopedia para scalping em timeframes curtos.
+    
+    - BUY: Quando SMA5 > SMA8 > SMA13 (ribbon alinhada para cima)
+    - SELL: Quando SMA5 < SMA8 < SMA13 (ribbon alinhada para baixo)
+    - HOLD: Quando ribbons achatadas (range, sem tendência)
+    """
+    params = params or {}
+    periods = params.get('periods', [5, 8, 13])
+    alignment_threshold = params.get('alignment_threshold', 0.002)  # 0.2% mínimo entre SMAs
+    
+    closes = candles['close']
+    sma5 = calculate_sma(closes, periods[0])
+    sma8 = calculate_sma(closes, periods[1])
+    sma13 = calculate_sma(closes, periods[2])
+    
+    if len(sma5) < 2 or len(sma8) < 2 or len(sma13) < 2:
+        return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:RIBBON"], reasons=["Dados insuficientes"])
+    
+    curr_sma5 = sma5.iloc[-1]
+    curr_sma8 = sma8.iloc[-1]
+    curr_sma13 = sma13.iloc[-1]
+    
+    # Calcular distâncias relativas entre SMAs
+    dist_5_8 = abs(curr_sma5 - curr_sma8) / curr_sma8
+    dist_8_13 = abs(curr_sma8 - curr_sma13) / curr_sma13
+    avg_distance = (dist_5_8 + dist_8_13) / 2
+    
+    # Verificar se ribbons têm spread mínimo (filtro de range)
+    if avg_distance < alignment_threshold:
+        return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:RIBBON"], reasons=[f"Ribbons sem spread suficiente: {avg_distance:.3%} < {alignment_threshold:.3%} (mercado em range)"])
+    
+    # Ribbon alinhada para CIMA (bullish)
+    if curr_sma5 > curr_sma8 > curr_sma13:
+        # Confidence aumenta com distância entre ribbons (quanto mais spread, mais forte a tendência)
+        # Normaliza: 0.2% spread = 0.5 conf, 0.7% spread = 1.0 conf
+        confidence = min(0.5 + (avg_distance - alignment_threshold) * 100, 1.0)
+        
+        return Signal(
+            action="BUY",
+            confidence=confidence,
+            reasons=[f"MA Ribbon alinhada bullish: SMA5 ({curr_sma5:.2f}) > SMA8 ({curr_sma8:.2f}) > SMA13 ({curr_sma13:.2f}), spread {avg_distance:.3%}"],
+            tags=["CLASSIC:RIBBON", "CLASSIC:RIBBON_BULLISH"],
+            meta={"sma5": curr_sma5, "sma8": curr_sma8, "sma13": curr_sma13, "spread": avg_distance}
+        )
+    
+    # Ribbon alinhada para BAIXO (bearish)
+    if curr_sma5 < curr_sma8 < curr_sma13:
+        # Mesmo cálculo de confidence
+        confidence = min(0.5 + (avg_distance - alignment_threshold) * 100, 1.0)
+        
+        return Signal(
+            action="SELL",
+            confidence=confidence,
+            reasons=[f"MA Ribbon alinhada bearish: SMA5 ({curr_sma5:.2f}) < SMA8 ({curr_sma8:.2f}) < SMA13 ({curr_sma13:.2f}), spread {avg_distance:.3%}"],
+            tags=["CLASSIC:RIBBON", "CLASSIC:RIBBON_BEARISH"],
+            meta={"sma5": curr_sma5, "sma8": curr_sma8, "sma13": curr_sma13, "spread": avg_distance}
+        )
+    
+    # Ribbons achatadas ou entrelaçadas (range, sem tendência clara)
+    return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:RIBBON"], reasons=["Ribbons achatadas ou entrelaçadas - mercado em range"])
+
+
+def momentum_combo_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
+    """
+    Momentum Combo (RSI + MACD): Combina RSI e MACD para sinais de alta probabilidade.
+    Baseado em estratégia da Investopedia para scalping com momentum.
+    
+    BUY Signals:
+    - MACD cruza acima da signal line E RSI > 50, OU
+    - RSI sai de oversold E MACD já está acima da signal line
+    
+    SELL Signals:
+    - MACD cruza abaixo da signal line E RSI < 50, OU
+    - RSI entra em overbought E MACD já está abaixo da signal line
+    """
+    params = params or {}
+    
+    # Parâmetros RSI
+    rsi_period = params.get('rsi_period', 14)
+    rsi_oversold = params.get('rsi_oversold', 30)
+    rsi_overbought = params.get('rsi_overbought', 70)
+    
+    # Parâmetros MACD
+    macd_fast = params.get('macd_fast', 12)
+    macd_slow = params.get('macd_slow', 26)
+    macd_signal = params.get('macd_signal', 9)
+    
+    closes = candles['close']
+    rsi = calculate_rsi(closes, rsi_period)
+    macd_line, signal_line, histogram = calculate_macd(closes, macd_fast, macd_slow, macd_signal)
+    
+    if len(rsi) < 2 or len(macd_line) < 2:
+        return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:MOMENTUM"], reasons=["Dados insuficientes"])
+    
+    prev_rsi = rsi.iloc[-2]
+    curr_rsi = rsi.iloc[-1]
+    prev_macd = macd_line.iloc[-2]
+    prev_signal = signal_line.iloc[-2]
+    curr_macd = macd_line.iloc[-1]
+    curr_signal = signal_line.iloc[-1]
+    curr_hist = histogram.iloc[-1]
+    
+    # BUY Signal 1: MACD crossover bullish E RSI > 50
+    if prev_macd <= prev_signal and curr_macd > curr_signal and curr_rsi > 50:
+        rsi_strength = (curr_rsi - 50) / 50  # Normaliza 0-1
+        hist_strength = abs(curr_hist) / closes.iloc[-1] * 100
+        confidence = min(0.6 + rsi_strength * 0.2 + hist_strength * 2, 1.0)
+        
+        return Signal(
+            action="BUY",
+            confidence=confidence,
+            reasons=[f"Momentum Combo BUY: MACD crossover bullish + RSI {curr_rsi:.1f} > 50, histograma {curr_hist:.4f}"],
+            tags=["CLASSIC:MOMENTUM", "CLASSIC:MOMENTUM_BUY_CROSSOVER"],
+            meta={"rsi": curr_rsi, "macd": curr_macd, "signal": curr_signal, "histogram": curr_hist}
+        )
+    
+    # BUY Signal 2: RSI sai de oversold E MACD acima da signal
+    if prev_rsi <= rsi_oversold and curr_rsi > rsi_oversold and curr_macd > curr_signal:
+        rsi_exit_strength = (curr_rsi - rsi_oversold) / (50 - rsi_oversold)
+        confidence = min(0.6 + rsi_exit_strength * 0.3, 1.0)
+        
+        return Signal(
+            action="BUY",
+            confidence=confidence,
+            reasons=[f"Momentum Combo BUY: RSI sai de oversold ({prev_rsi:.1f} → {curr_rsi:.1f}) + MACD positivo"],
+            tags=["CLASSIC:MOMENTUM", "CLASSIC:MOMENTUM_BUY_RSI_EXIT"],
+            meta={"rsi": curr_rsi, "macd": curr_macd, "signal": curr_signal, "histogram": curr_hist}
+        )
+    
+    # SELL Signal 1: MACD crossover bearish E RSI < 50
+    if prev_macd >= prev_signal and curr_macd < curr_signal and curr_rsi < 50:
+        rsi_strength = (50 - curr_rsi) / 50
+        hist_strength = abs(curr_hist) / closes.iloc[-1] * 100
+        confidence = min(0.6 + rsi_strength * 0.2 + hist_strength * 2, 1.0)
+        
+        return Signal(
+            action="SELL",
+            confidence=confidence,
+            reasons=[f"Momentum Combo SELL: MACD crossover bearish + RSI {curr_rsi:.1f} < 50, histograma {curr_hist:.4f}"],
+            tags=["CLASSIC:MOMENTUM", "CLASSIC:MOMENTUM_SELL_CROSSOVER"],
+            meta={"rsi": curr_rsi, "macd": curr_macd, "signal": curr_signal, "histogram": curr_hist}
+        )
+    
+    # SELL Signal 2: RSI entra em overbought E MACD abaixo da signal
+    if prev_rsi < rsi_overbought and curr_rsi >= rsi_overbought and curr_macd < curr_signal:
+        rsi_entry_strength = (curr_rsi - rsi_overbought) / (100 - rsi_overbought)
+        confidence = min(0.6 + rsi_entry_strength * 0.3, 1.0)
+        
+        return Signal(
+            action="SELL",
+            confidence=confidence,
+            reasons=[f"Momentum Combo SELL: RSI entra em overbought ({prev_rsi:.1f} → {curr_rsi:.1f}) + MACD negativo"],
+            tags=["CLASSIC:MOMENTUM", "CLASSIC:MOMENTUM_SELL_RSI_ENTRY"],
+            meta={"rsi": curr_rsi, "macd": curr_macd, "signal": curr_signal, "histogram": curr_hist}
+        )
+    
+    return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:MOMENTUM"], reasons=["Sem confluência RSI + MACD"])
+
+
+def pivot_point_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
+    """
+    Pivot Points: Calcula níveis de suporte/resistência diários e gera sinais.
+    Baseado em estratégia da Investopedia para scalping com pivot points.
+    
+    Calcula:
+    - PP = (High + Low + Close) / 3
+    - R1 = 2*PP - Low, R2 = PP + (High - Low)
+    - S1 = 2*PP - High, S2 = PP - (High - Low)
+    
+    BUY: Preço toca S1/S2 e mostra reversão
+    SELL: Preço toca R1/R2 e mostra reversão
+    """
+    params = params or {}
+    lookback = params.get('lookback', 1)  # Usa última vela para calcular pivots
+    tolerance_pct = params.get('tolerance_pct', 0.003)  # 0.3% de tolerância
+    
+    if len(candles) < lookback + 2:
+        return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:PIVOT"], reasons=["Dados insuficientes"])
+    
+    # Usa dados da vela anterior para calcular pivots
+    prev_candle = candles.iloc[-2]
+    prev_high = prev_candle['high']
+    prev_low = prev_candle['low']
+    prev_close = prev_candle['close']
+    
+    # Calcula Pivot Point e níveis
+    pp = (prev_high + prev_low + prev_close) / 3
+    r1 = 2 * pp - prev_low
+    r2 = pp + (prev_high - prev_low)
+    s1 = 2 * pp - prev_high
+    s2 = pp - (prev_high - prev_low)
+    
+    # Preço atual
+    curr_close = candles['close'].iloc[-1]
+    curr_high = candles['high'].iloc[-1]
+    curr_low = candles['low'].iloc[-1]
+    
+    # Tolerância para "tocar" o nível
+    tolerance = curr_close * tolerance_pct
+    
+    # BUY em S1 (suporte forte)
+    if abs(curr_low - s1) < tolerance and curr_close > curr_low:
+        distance_from_s1 = abs(curr_close - s1) / s1
+        confidence = min(0.7 - distance_from_s1 * 10, 1.0)  # Mais confiança quanto mais perto
+        
+        return Signal(
+            action="BUY",
+            confidence=confidence,
+            reasons=[f"Pivot: Preço {curr_close:.2f} tocou S1 ({s1:.2f}) e reverteu, PP={pp:.2f}"],
+            tags=["CLASSIC:PIVOT", "CLASSIC:PIVOT_S1_BOUNCE"],
+            meta={"pp": pp, "r1": r1, "r2": r2, "s1": s1, "s2": s2, "close": curr_close}
+        )
+    
+    # BUY em S2 (suporte muito forte)
+    if abs(curr_low - s2) < tolerance and curr_close > curr_low:
+        distance_from_s2 = abs(curr_close - s2) / s2
+        confidence = min(0.85 - distance_from_s2 * 10, 1.0)  # S2 é mais forte que S1
+        
+        return Signal(
+            action="BUY",
+            confidence=confidence,
+            reasons=[f"Pivot: Preço {curr_close:.2f} tocou S2 ({s2:.2f}) e reverteu FORTE, PP={pp:.2f}"],
+            tags=["CLASSIC:PIVOT", "CLASSIC:PIVOT_S2_BOUNCE"],
+            meta={"pp": pp, "r1": r1, "r2": r2, "s1": s1, "s2": s2, "close": curr_close}
+        )
+    
+    # SELL em R1 (resistência forte)
+    if abs(curr_high - r1) < tolerance and curr_close < curr_high:
+        distance_from_r1 = abs(curr_close - r1) / r1
+        confidence = min(0.7 - distance_from_r1 * 10, 1.0)
+        
+        return Signal(
+            action="SELL",
+            confidence=confidence,
+            reasons=[f"Pivot: Preço {curr_close:.2f} tocou R1 ({r1:.2f}) e reverteu, PP={pp:.2f}"],
+            tags=["CLASSIC:PIVOT", "CLASSIC:PIVOT_R1_REJECT"],
+            meta={"pp": pp, "r1": r1, "r2": r2, "s1": s1, "s2": s2, "close": curr_close}
+        )
+    
+    # SELL em R2 (resistência muito forte)
+    if abs(curr_high - r2) < tolerance and curr_close < curr_high:
+        distance_from_r2 = abs(curr_close - r2) / r2
+        confidence = min(0.85 - distance_from_r2 * 10, 1.0)
+        
+        return Signal(
+            action="SELL",
+            confidence=confidence,
+            reasons=[f"Pivot: Preço {curr_close:.2f} tocou R2 ({r2:.2f}) e reverteu FORTE, PP={pp:.2f}"],
+            tags=["CLASSIC:PIVOT", "CLASSIC:PIVOT_R2_REJECT"],
+            meta={"pp": pp, "r1": r1, "r2": r2, "s1": s1, "s2": s2, "close": curr_close}
+        )
+    
+    return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:PIVOT"], reasons=[f"Preço {curr_close:.2f} longe de pivots (PP={pp:.2f}, S1={s1:.2f}, R1={r1:.2f})"])
+
+
 # ==================== REGISTRY DE ESTRATÉGIAS ====================
 
 CLASSIC_STRATEGIES = {
@@ -422,7 +684,10 @@ CLASSIC_STRATEGIES = {
     "BB": bollinger_signal,
     "ADX": adx_signal,
     "STOCH": stochastic_signal,
-    "FIB": fibonacci_signal
+    "FIB": fibonacci_signal,
+    "RIBBON": ma_ribbon_signal,
+    "MOMENTUM": momentum_combo_signal,
+    "PIVOT": pivot_point_signal
 }
 
 def get_classic_signal(strategy_name: str, candles: pd.DataFrame, params: dict = None) -> Signal:

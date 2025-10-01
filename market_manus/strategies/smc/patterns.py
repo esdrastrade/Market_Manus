@@ -543,7 +543,8 @@ def confluence_decision(candles: pd.DataFrame, symbol: str, timeframe: str, conf
     if config.get("use_classic", True):
         from market_manus.strategies.classic_analysis import (
             ema_crossover_signal, macd_signal, rsi_signal, bollinger_signal,
-            adx_signal, stochastic_signal, fibonacci_signal
+            adx_signal, stochastic_signal, fibonacci_signal,
+            ma_ribbon_signal, momentum_combo_signal, pivot_point_signal
         )
         
         detectors["CLASSIC:EMA"] = lambda: ema_crossover_signal(candles, config.get("ema", {}))
@@ -553,6 +554,11 @@ def confluence_decision(candles: pd.DataFrame, symbol: str, timeframe: str, conf
         detectors["CLASSIC:ADX"] = lambda: adx_signal(candles, config.get("adx", {}))
         detectors["CLASSIC:STOCH"] = lambda: stochastic_signal(candles, config.get("stoch", {}))
         detectors["CLASSIC:FIB"] = lambda: fibonacci_signal(candles, config.get("fib", {}))
+        
+        # Detectores de Scalping (NEW - Investopedia)
+        detectors["CLASSIC:RIBBON"] = lambda: ma_ribbon_signal(candles, config.get("ribbon", {}))
+        detectors["CLASSIC:MOMENTUM"] = lambda: momentum_combo_signal(candles, config.get("momentum", {}))
+        detectors["CLASSIC:PIVOT"] = lambda: pivot_point_signal(candles, config.get("pivot", {}))
     
     # Monta ConfluenceEngine
     weights = config.get("weights", {})

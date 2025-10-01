@@ -35,6 +35,34 @@ class BybitRealDataProvider:
             hashlib.sha256
         ).hexdigest()
 
+    def _get_public(self, endpoint: str, params: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
+        """
+        Faz requisição GET pública (sem autenticação) para a API Bybit
+        
+        Args:
+            endpoint: Endpoint da API (ex: "/v5/market/tickers")
+            params: Parâmetros da requisição
+            
+        Returns:
+            Dados da resposta ou None em caso de erro
+        """
+        url = self.base_url + endpoint
+        
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            if data.get("retCode") == 0:
+                return data.get("result")
+            else:
+                print(f"❌ Erro na API Bybit: {data.get('retMsg')}")
+                return None
+                
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Erro de conexão: {e}")
+            return None
+
     def _get(self, endpoint: str, params: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
         """
         Faz requisição GET autenticada para a API Bybit
@@ -90,7 +118,7 @@ class BybitRealDataProvider:
         Returns:
             Dados dos tickers ou None em caso de erro
         """
-        return self._get("/v5/market/tickers", {"category": category})
+        return self._get_public("/v5/market/tickers", {"category": category})
 
     def get_kline(
         self, 
@@ -117,7 +145,7 @@ class BybitRealDataProvider:
             "interval": interval,
             "limit": limit
         }
-        result = self._get("/v5/market/kline", params)
+        result = self._get_public("/v5/market/kline", params)
         return result.get("list") if result else None
 
     def get_latest_price(self, category: str, symbol: str) -> Optional[Dict[str, Any]]:
@@ -132,7 +160,7 @@ class BybitRealDataProvider:
             Dados do ticker ou None em caso de erro
         """
         params = {"category": category, "symbol": symbol}
-        result = self._get("/v5/market/tickers", params)
+        result = self._get_public("/v5/market/tickers", params)
         
         if result and result.get("list"):
             return result["list"][0]
@@ -155,7 +183,7 @@ class BybitRealDataProvider:
             "symbol": symbol,
             "limit": limit
         }
-        return self._get("/v5/market/orderbook", params)
+        return self._get_public("/v5/market/orderbook", params)
 
     def get_recent_trades(self, category: str, symbol: str, limit: int = 60) -> Optional[List[Dict[str, Any]]]:
         """
@@ -174,7 +202,7 @@ class BybitRealDataProvider:
             "symbol": symbol,
             "limit": limit
         }
-        result = self._get("/v5/market/recent-trade", params)
+        result = self._get_public("/v5/market/recent-trade", params)
         return result.get("list") if result else None
 
     def test_connection(self) -> bool:

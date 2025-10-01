@@ -1,0 +1,62 @@
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+🚀 MARKET MANUS - SISTEMA INTEGRADO
+Data: 30/09/2025 | Versão: 2.0.0
+============================================================
+
+📦 CARREGANDO MÓDULOS...
+✅ CLI Principal carregado: market_manus_cli_2025_09_30.py
+✅ Strategy Manager carregado: strategy_manager_integrated.py
+⚠️ Erro ao importar Data Provider: cannot import name 'BybitRealDataProvider' from 'market_manus.data_providers.bybit_real_data_provider_fixed' (C:\Users\Esdras\scalping-trading-system\market_manus\data_providers\bybit_real_data_provider_fixed.py)
+❌ Nenhum Data Provider encontrado!
+✅ Confluence Mode carregado: confluence_mode_module.py
+✅ Strategy Lab carregado: strategy_lab_professional.py
+✅ Capital Manager carregado: capital_manager.py
+
+⚙️ INICIALIZANDO COMPONENTES...
+✅ Capital Manager inicializado
+✅ Strategy Manager inicializado
+✅ Confluence Mode inicializado
+✅ Strategy Lab inicializado
+
+🚀 INICIALIZANDO MARKET MANUS...
+==================================================
+⚠️ BybitRealDataProvider não disponível — modo simulado.
+
+🎯 INICIANDO INTERFACE CLI.
+==================================================
+🚀 Inicializando Market Manus CLI Integrado...
+✅ Market Manus CLI Integrado inicializado com sucesso!
+
+
+================================================================================
+🚀 MARKET MANUS - SISTEMA DE TRADING PROFISSIONAL
+================================================================================
+📦 Versão: 3.2.0 - INTEGRAÇÃO COMPLETA (REAL DATA)
+📅 Data/Hora: 2025-09-30 23:36:30
+--------------------------------------------------------------------------------
+⚠️ Modo simulado - configure credenciais para dados reais
+✅ Capital management com persistência
+✅ Sistema de confluência avançado
+================================================================================
+
+💰 DASHBOARD RÁPIDO
+----------------------------------------
+💵 Capital: $10,000.00
+🟢 P&L: +$0.00 (+0.00%)
+📊 Trades: 0 | Win Rate: 0.0%
+
+🎯 MENU PRINCIPAL
+==============================
+   1️⃣  Capital Dashboard (Visão detalhada do capital)
+   2️⃣  Strategy Lab Professional (Análise individual)
+   3️⃣  Confluence Lab (Combinar múltiplas estratégias)
+   4️⃣  Simulate Trades (Simular operações)
+   5️⃣  Export Reports (Exportar relatórios)
+   6️⃣  Connectivity Status (Testar API)
+   7️⃣  Strategy Explorer (Explorar estratégias)
+   8️⃣  Performance Analysis (Análise de performance)
+   9️⃣  Advanced Settings (Configurações avançadas)
+   0️⃣  Sair
+
+🔢 Escolha uma opção:
+👋 Encerrando Market Manus...

@@ -52,7 +52,7 @@ class MarketManusMain:
         self.data_provider = BybitRealDataProvider(
             api_key=self.api_key,
             api_secret=self.api_secret,
-            testnet=False
+            testnet=True
         )
         
         self.capital_manager = CapitalManager(

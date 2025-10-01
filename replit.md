@@ -14,7 +14,13 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
 - **Confluence Mode**: Allows combining multiple strategies using four modes: ALL, MAJORITY, WEIGHTED, and ANY.
 - **Data Provider**: Integrates with Binance.US API for real-time and historical market data.
 - **Capital Manager**: Handles position sizing automation, drawdown protection, and performance tracking.
-- **Confluence System**: A new architecture combining Smart Money Concepts (SMC) detectors (BOS, CHOCH, Order Blocks, FVG, Liquidity Sweeps) with 7 Classic Technical Strategies (EMA Crossover, MACD, RSI Mean Reversion, Bollinger Bands, ADX Trend Strength, Stochastic, Fibonacci). It uses a weighted scoring engine with regime filters (ADX, ATR, BB Width) and conflict penalties to generate high-probability trade signals.
+- **Confluence System**: A new architecture combining Smart Money Concepts (SMC) detectors (BOS, CHOCH, Order Blocks, FVG, Liquidity Sweeps) with **10 Classic Technical Strategies** including 3 new scalping-optimized detectors:
+  - **Original 7**: EMA Crossover, MACD, RSI Mean Reversion, Bollinger Bands, ADX Trend Strength, Stochastic, Fibonacci
+  - **NEW Scalping Detectors (Oct 2025)**: 
+    - **MA Ribbon (5-8-13 SMAs)**: Detects trend alignment for scalping with spread threshold filtering
+    - **Momentum Combo (RSI+MACD)**: High-probability signals combining momentum indicators
+    - **Pivot Points**: Objective support/resistance levels with automatic daily calculations
+  - Uses weighted scoring engine with regime filters (ADX, ATR, BB Width) and conflict penalties to generate high-probability trade signals.
 
 ### UI/UX Decisions
 The system operates as a console-based CLI/TUI application, providing an interactive menu for users to select assets, timeframes, and execute strategies.
@@ -32,6 +38,12 @@ The system operates as a console-based CLI/TUI application, providing an interac
 - **Conflict Penalty**: A 50% score reduction is applied when both BUY and SELL signals exist simultaneously to prevent whipsaw trades.
 - **Backtesting & Real-time Execution**: Dedicated modules for backtesting with per-candle logging and real-time execution with data-driven rate-limiting and state-change notifications.
 - **Unlimited Historical Data Fetch (NEW - Oct 2025)**: Intelligent batching system that fetches ALL candles for any date range, automatically chunking requests in 500-1000 candle batches to respect API limits while ensuring complete historical coverage.
+- **Scalping Mode (NEW - Oct 2025)**: Configurable preset optimizing parameters for short timeframes (1m-5m):
+  - MA Ribbon with alignment threshold filtering (rejects flat markets)
+  - Bollinger Bands: 13-period, 3SD (faster, more volatile)
+  - Stochastic: 5-period (faster response)
+  - Adjusted weights favoring momentum and pivot detectors
+  - All scalping detectors based on Investopedia professional strategies
 - **WebSocket Streaming (NEW)**: Binance.US WebSocket integration with automatic reconnection, exponential backoff + jitter, and debouncing (1s micro-batches).
 - **Async Pipeline**: AsyncIO-based runtime with Queue-based message coalescing, preventing rate limit violations while maintaining real-time responsiveness.
 - **Rich UI Live View**: Terminal UI using `rich` library with Live display, updating panels in-place without scrolling, showing latency, message counts, and processing metrics.

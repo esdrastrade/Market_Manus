@@ -1,0 +1,92 @@
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+
+================================================================================
+     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0
+================================================================================
+🎯 Sistema modular com Strategy Lab V6 e Confluence Mode
+📊 8 estratégias: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+📅 Seleção de período personalizado
+💰 Capital management automático
+🔗 Data Provider: Binance API
+================================================================================
+
+🔄 INICIALIZANDO SISTEMA...
+✅ Data Provider: Conectado
+✅ Capital Manager: Inicializado ($100.00)
+✅ Strategy Lab V6: Carregado (8 estratégias)
+✅ Confluence Mode: Carregado
+✅ OpenAI API: Configurada
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🎯 MÓDULOS PRINCIPAIS:
+   1️⃣  Strategy Lab Professional V6 (8 estratégias)
+   2️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   3️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   7️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   4️⃣  Capital Dashboard
+   5️⃣  Connectivity Status
+   6️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-7): 7
+
+🔥 CONFLUÊNCIA LIVE - SMC + CLÁSSICOS (WebSocket Streaming)
+============================================================
+
+📊 ATIVOS DISPONÍVEIS:
+   1️⃣  BTC/USDT
+   2️⃣  ETH/USDT
+   3️⃣  SOL/USDT
+   4️⃣  Personalizar
+
+🔢 Escolha o ativo (1-4): 1
+
+⏱️ TIMEFRAMES DISPONÍVEIS:
+   1️⃣  1 minuto (scalping)
+   2️⃣  5 minutos (scalping)
+   3️⃣  15 minutos (swing curto)
+   4️⃣  1 hora (intraday)
+   5️⃣  4 horas (swing longo)
+
+🔢 Escolha o timeframe (1-5): 1
+
+🚀 INICIANDO LIVE STREAMING:
+   📊 Ativo: BTCUSDT
+   ⏱️ Timeframe: 1m
+   🔥 Detectores: 5 SMC + 7 Clássicos
+   📡 Streaming: WebSocket (Binance.US)
+   🎨 UI: Rich Live (atualização em tempo real)
+
+⚠️  MODO PAPER TRADING (read-only)
+
+🔄 Pressione CTRL+C para parar...
+
+📖 Pressione ENTER para começar...
+
+❌ Erro no streaming: [Errno 2] No such file or directory: 'config/confluence.yaml'
+Traceback (most recent call last):
+  File "C:\Users\Esdras\scalping-trading-system\main.py", line 479, in _run_realtime_confluence
+    engine = RealTimeConfluenceEngine(config_path="config/confluence.yaml")
+  File "C:\Users\Esdras\scalping-trading-system\market_manus\backtest\confluence_realtime.py", line 31, in __init__
+    with open(config_path, 'r') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'config/confluence.yaml'
+
+📖 Pressione ENTER para voltar ao menu...

@@ -398,8 +398,8 @@ class MarketManusMain:
         input("\n📖 Pressione ENTER para continuar...")
     
     def _run_realtime_confluence(self):
-        """Executa Confluência em Tempo Real com SMC + Clássicos"""
-        print("\n🔥 CONFLUÊNCIA EM TEMPO REAL - SMC + CLÁSSICOS")
+        """Executa Confluência em Tempo Real com WebSocket + Rich UI Live"""
+        print("\n🔥 CONFLUÊNCIA LIVE - SMC + CLÁSSICOS (WebSocket Streaming)")
         print("=" * 60)
         
         # Seleção de ativo
@@ -444,132 +444,57 @@ class MarketManusMain:
         
         timeframe = tf_map.get(tf_choice, '5m')
         
-        print(f"\n🚀 INICIANDO CONFLUÊNCIA:")
+        print(f"\n🚀 INICIANDO LIVE STREAMING:")
         print(f"   📊 Ativo: {symbol}")
         print(f"   ⏱️ Timeframe: {timeframe}")
-        print(f"   🔥 Detectores: SMC (BOS, CHOCH, OB, FVG, Sweep) + Clássicos (7 estratégias)")
-        print(f"   🎯 Filtros de regime: ADX, ATR, Bollinger Width")
-        print(f"\n⚠️  MODO PAPER TRADING (API read-only)")
+        print(f"   🔥 Detectores: 5 SMC + 7 Clássicos")
+        print(f"   📡 Streaming: WebSocket (Binance.US)")
+        print(f"   🎨 UI: Rich Live (atualização em tempo real)")
+        print(f"\n⚠️  MODO PAPER TRADING (read-only)")
         print("\n🔄 Pressione CTRL+C para parar...")
         
         input("\n📖 Pressione ENTER para começar...")
         
         try:
-            from market_manus.backtest.confluence_realtime import RealTimeConfluenceEngine
+            import asyncio
+            from market_manus.data_providers.market_data_ws import BinanceUSWebSocket
+            from market_manus.engines.stream_runtime import StreamRuntime
+            from market_manus.cli.live_view import run_live_view
+            from market_manus.strategies.confluence_engine import ConfluenceEngine
             
-            # Inicializar engine
-            engine = RealTimeConfluenceEngine(config_path="config/confluence.yaml")
+            # Converter timeframe para formato Binance WebSocket
+            interval_map = {
+                '1m': '1m',
+                '5m': '5m',
+                '15m': '15m',
+                '1h': '1h',
+                '4h': '4h'
+            }
+            ws_interval = interval_map.get(timeframe, '5m')
             
-            # Data stream simulator
-            iteration = 0
-            max_iterations = 100  # Limite para não rodar infinito
+            # Inicializar WebSocket provider
+            ws_provider = BinanceUSWebSocket(symbol=symbol, interval=ws_interval)
             
-            print("\n" + "=" * 60)
-            print("🔴 EXECUTANDO CONFLUÊNCIA EM TEMPO REAL...")
-            print("=" * 60)
+            # Inicializar Confluence Engine
+            engine = ConfluenceEngine(config_path="config/confluence.yaml")
             
-            while iteration < max_iterations:
-                # Obter dados históricos + atualização
-                try:
-                    print(f"\n⏳ [{iteration+1}/{max_iterations}] Buscando dados da Binance.US...")
-                    
-                    # Converter timeframe para formato Binance
-                    interval_map = {
-                        '1m': '1',
-                        '5m': '5',
-                        '15m': '15',
-                        '1h': '60',
-                        '4h': '240'
-                    }
-                    interval = interval_map.get(timeframe, '5')
-                    
-                    klines = self.data_provider.get_kline(
-                        category="spot",
-                        symbol=symbol,
-                        interval=interval,
-                        limit=100
-                    )
-                    
-                    if not klines:
-                        print("⚠️  Sem dados disponíveis")
-                        break
-                    
-                    print(f"✅ Recebidos {len(klines)} candles históricos")
-                    
-                    # Converter para DataFrame
-                    import pandas as pd
-                    df = pd.DataFrame(klines, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-                    df['timestamp'] = pd.to_numeric(df['timestamp'])
-                    df['open'] = pd.to_numeric(df['open'])
-                    df['high'] = pd.to_numeric(df['high'])
-                    df['low'] = pd.to_numeric(df['low'])
-                    df['close'] = pd.to_numeric(df['close'])
-                    df['volume'] = pd.to_numeric(df['volume'])
-                    
-                    # Mostrar preço atual
-                    current_price = df['close'].iloc[-1]
-                    print(f"💰 Preço atual {symbol}: ${current_price:,.2f}")
-                    
-                    # Processar candle
-                    print(f"🔍 Analisando confluência (5 SMC + 7 Clássicos)...")
-                    signal = engine.process_candle(
-                        candles=df,
-                        symbol=symbol,
-                        timeframe=timeframe,
-                        callback=None  # Paper trading, sem callback
-                    )
-                    
-                    # Mostrar análise atual (sempre, não só em mudança)
-                    if signal is not None:
-                        print(f"\n🔔 MUDANÇA DE ESTADO DETECTADA!")
-                        print(f"   🎯 Ação: {signal.action}")
-                        print(f"   💪 Confidence: {signal.confidence:.2f}")
-                        print(f"   📊 Score: {signal.meta.get('score', 0):.3f}")
-                        print(f"   📝 Razões: {', '.join(signal.reasons[:2])}")
-                        print(f"   🏷️ Tags: {', '.join(signal.tags[:3])}")
-                    else:
-                        # Mostrar estado atual mesmo sem mudança
-                        last_sig = engine.last_signal
-                        if last_sig:
-                            print(f"📊 Estado atual: {last_sig.action} (sem mudança)")
-                            print(f"   Score: {last_sig.meta.get('score', 0):.3f}")
-                        else:
-                            print(f"📊 Aguardando primeiro sinal...")
-                    
-                    # Delay baseado no timeframe (evita bombardear API)
-                    import time
-                    delay_map = {
-                        '1m': 10,   # 10 segundos para 1 min
-                        '5m': 30,   # 30 segundos para 5 min
-                        '15m': 60,  # 1 minuto para 15 min
-                        '1h': 120,  # 2 minutos para 1 hora
-                        '4h': 300   # 5 minutos para 4 horas
-                    }
-                    delay = delay_map.get(timeframe, 30)
-                    time.sleep(delay)
-                    
-                    iteration += 1
-                    
-                except KeyboardInterrupt:
-                    print("\n\n⏹️  Confluência interrompida pelo usuário")
-                    break
-                except Exception as e:
-                    print(f"❌ Erro: {e}")
-                    break
+            # Criar stream runtime
+            runtime = StreamRuntime(
+                ws_provider=ws_provider,
+                data_provider=self.data_provider,
+                symbol=symbol,
+                interval=timeframe,
+                engine=engine,
+                debounce_sec=1.0
+            )
             
-            # Estatísticas finais
-            stats = engine.get_stats()
-            print("\n" + "=" * 60)
-            print("📊 ESTATÍSTICAS DA SESSÃO:")
-            print("=" * 60)
-            print(f"   🔢 Sinais gerados: {stats['signals_generated']}")
-            print(f"   🟢 BUY signals: {stats['buy_signals']}")
-            print(f"   🔴 SELL signals: {stats['sell_signals']}")
-            print(f"   ⚪ HOLD signals: {stats['hold_signals']}")
-            print(f"   🔄 Mudanças de estado: {stats['state_changes']}")
+            # Executar UI live
+            asyncio.run(run_live_view(runtime))
             
+        except KeyboardInterrupt:
+            print("\n\n⏹️  Streaming interrompido pelo usuário")
         except Exception as e:
-            print(f"\n❌ Erro ao executar confluência: {e}")
+            print(f"\n❌ Erro no streaming: {e}")
             import traceback
             traceback.print_exc()
         

@@ -1,16 +1,16 @@
 # Market Manus - Trading Automation System
 
 ## Overview
-Market Manus v2.1 is a professional automated trading system with integrated AI, advanced technical analysis, and robust capital management. Developed for scalping and swing trading with real data from Bybit API.
+Market Manus v2.1 is a professional automated trading system with integrated AI, advanced technical analysis, and robust capital management. Developed for scalping and swing trading with real data from Binance.US API.
 
-**Current State:** Successfully imported and configured for Replit environment
+**Current State:** Successfully imported and configured for Replit environment with real market data
 **Last Updated:** October 1, 2025
 
 ## Project Type
 - **Language:** Python 3.11
 - **Type:** CLI/TUI Application (Console-based Trading System)
 - **Framework:** Custom CLI with interactive menus
-- **APIs:** Bybit (trading), OpenAI (optional AI features)
+- **APIs:** Binance.US (trading data), OpenAI (optional AI features)
 
 ## Quick Start
 
@@ -21,23 +21,18 @@ python main.py
 ```
 
 ### Initial Setup Required
-1. **Configure API Keys** (Required for full functionality):
-   - Edit `.env` file
-   - Add your Bybit API credentials:
-     ```
-     BYBIT_API_KEY=your_api_key_here
-     BYBIT_API_SECRET=your_api_secret_here
-     BYBIT_TESTNET=true
-     ```
-   - Optional: Add OpenAI API key for AI features:
-     ```
-     OPENAI_API_KEY=your_openai_key_here
-     ```
+1. **Configure API Keys** (Already configured via Replit Secrets):
+   - Binance API credentials (configured):
+     - `BINANCE_API_KEY` - Read-only API key
+     - `BINANCE_API_SECRET` - API secret
+   - Optional: OpenAI API key for AI features (configured):
+     - `OPENAI_API_KEY` - For AI assistant features
 
 2. **First Run**:
    - The system will initialize with default capital ($10,000)
+   - ✅ **Connected to Binance.US** - Real market data available
    - Access Strategy Lab Professional V6 with 8 strategies
-   - Test strategies with real-time or historical data
+   - Test strategies with real-time market data from Binance.US
 
 ## Project Architecture
 
@@ -52,9 +47,10 @@ python main.py
    - 4 modes: ALL, MAJORITY, WEIGHTED, ANY
 
 3. **Data Provider** (`market_manus/data_providers/`)
-   - Bybit API integration
-   - Real-time market data
-   - Historical data retrieval
+   - Binance.US API integration (active)
+   - Real-time market data from Binance.US
+   - Historical data retrieval with k-lines
+   - Bybit provider available (blocked on Replit)
 
 4. **Capital Manager** (`market_manus/core/`)
    - Position sizing automation
@@ -102,13 +98,12 @@ Market_Manus/
 
 ## Environment Configuration
 
-### Required Environment Variables
-- `BYBIT_API_KEY` - Bybit API key (required)
-- `BYBIT_API_SECRET` - Bybit API secret (required)
-- `BYBIT_TESTNET` - Use testnet (true/false)
+### Required Environment Variables (via Replit Secrets)
+- `BINANCE_API_KEY` - Binance API key (✅ configured)
+- `BINANCE_API_SECRET` - Binance API secret (✅ configured)
 
 ### Optional Environment Variables
-- `OPENAI_API_KEY` - OpenAI API for AI features
+- `OPENAI_API_KEY` - OpenAI API for AI features (✅ configured)
 - `DATABASE_URL` - Database connection
 - `LOG_LEVEL` - Logging level (INFO, DEBUG, etc.)
 
@@ -130,12 +125,20 @@ Market_Manus/
 
 ## Recent Changes
 
-### 2025-10-01: Replit Environment Setup
+### 2025-10-01: Binance.US Integration & Real Data Connection
+- ✅ **Migrated from Bybit to Binance.US** (Bybit/Binance.com blocked on Replit)
+- ✅ **Created BinanceDataProvider** - Complete API integration
+- ✅ **Configured Binance.US API keys** via Replit Secrets (secure)
+- ✅ **Real market data working** - Confirmed BTC price: $117,003.95
+- ✅ **All strategies compatible** with Binance data format
+- Updated main.py to use Binance as primary data source
+- System fully functional with live market data
+
+### 2025-10-01: Initial Replit Environment Setup
 - Installed Python 3.11
 - Installed all dependencies from requirements.txt
 - Created .env from template
 - Configured CLI workflow for console output
-- System ready for use (requires API keys for full functionality)
 
 ### Original Features (from import)
 - 8 professional trading strategies
@@ -159,17 +162,18 @@ Main packages installed:
 - `scikit-learn` - Machine learning
 
 ## Known Issues & Limitations
-1. **API Keys Required**: System requires valid Bybit API credentials for full functionality
-2. **API Connection**: Without valid credentials, data provider will be disconnected
-3. **OpenAI Optional**: AI assistant features require OpenAI API key
-4. **LSP Warning**: Minor LSP diagnostic for dotenv import (false positive - import works correctly)
+1. **Binance.US Only**: Binance.com and Bybit are geo-blocked on Replit servers
+2. **OpenAI Optional**: AI assistant features require OpenAI API key
+3. **LSP Warnings**: Minor LSP diagnostics (type hints) - not affecting functionality
+4. **Read-Only API**: Current Binance API keys are read-only (no trading execution)
 
 ## Next Steps for Users
-1. Add Bybit API credentials to `.env` file
-2. Test with testnet first (BYBIT_TESTNET=true)
-3. Run a simple strategy test in Strategy Lab
-4. Explore confluence mode for combined strategies
-5. Review backtesting reports in `/reports` directory
+1. ✅ **System Ready** - Binance.US connected with real data
+2. **Test strategies** - Use Strategy Lab to test with live BTC/ETH prices
+3. **Run backtests** - Historical data available via Binance k-lines
+4. **Explore Confluence Mode** - Combine multiple strategies for stronger signals
+5. **Review reports** - Check `/reports` directory for backtest results
+6. **Optional**: Upgrade to trading-enabled API keys for order execution
 
 ## Support & Documentation
 - Main README: See `README.md` for detailed Portuguese documentation

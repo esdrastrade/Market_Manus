@@ -18,7 +18,7 @@ sys.path.insert(0, str(project_root))
 
 # Importações do Market Manus
 try:
-    from market_manus.data_providers.bybit_real_data_provider import BybitRealDataProvider
+    from market_manus.data_providers.binance_data_provider import BinanceDataProvider
     from market_manus.core.capital_manager import CapitalManager
     from market_manus.strategy_lab.STRATEGY_LAB_PROFESSIONAL_V6 import StrategyLabProfessionalV6
     from market_manus.confluence_mode.confluence_mode_module import ConfluenceModeModule
@@ -27,7 +27,7 @@ except ImportError as e:
     print("📁 Verifique se a estrutura de diretórios está correta:")
     print("   market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V6.py")
     print("   market_manus/confluence_mode/confluence_mode_module.py")
-    print("   market_manus/data_providers/bybit_real_data_provider.py")
+    print("   market_manus/data_providers/binance_data_provider.py")
     print("   market_manus/core/capital_manager.py")
     sys.exit(1)
 
@@ -35,24 +35,24 @@ class MarketManusMain:
     """Classe principal do Market Manus"""
     
     def __init__(self):
-        # Configurar APIs
-        self.api_key = os.getenv("BYBIT_API_KEY", "")
-        self.api_secret = os.getenv("BYBIT_API_SECRET", "")
+        # Configurar APIs - Binance tem prioridade
+        self.api_key = os.getenv("BINANCE_API_KEY", "")
+        self.api_secret = os.getenv("BINANCE_API_SECRET", "")
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
         
         # Validar credenciais
         if not self.api_key or not self.api_secret:
-            print("❌ Credenciais da API Bybit não configuradas!")
+            print("❌ Credenciais da API Binance não configuradas!")
             print("💡 Configure as variáveis de ambiente:")
-            print("   BYBIT_API_KEY=sua_chave_aqui")
-            print("   BYBIT_API_SECRET=seu_segredo_aqui")
+            print("   BINANCE_API_KEY=sua_chave_aqui")
+            print("   BINANCE_API_SECRET=seu_segredo_aqui")
             sys.exit(1)
         
         # Inicializar componentes
-        self.data_provider = BybitRealDataProvider(
+        self.data_provider = BinanceDataProvider(
             api_key=self.api_key,
             api_secret=self.api_secret,
-            testnet=True
+            testnet=False
         )
         
         self.capital_manager = CapitalManager(
@@ -74,10 +74,10 @@ class MarketManusMain:
         self.connectivity_status = self._test_connectivity()
     
     def _test_connectivity(self) -> bool:
-        """Testa conectividade com a API Bybit"""
+        """Testa conectividade com a API Binance"""
         try:
-            result = self.data_provider.get_tickers(category="spot")
-            return result is not None and 'list' in result
+            result = self.data_provider.test_connection()
+            return result is True
         except Exception:
             return False
     
@@ -117,6 +117,7 @@ class MarketManusMain:
         print("📊 8 estratégias: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci")
         print("📅 Seleção de período personalizado")
         print("💰 Capital management automático")
+        print("🔗 Data Provider: Binance API")
         print("=" * 80)
         
         # Status inicial
@@ -230,17 +231,17 @@ class MarketManusMain:
         
         print("🔄 Testando conectividade...")
         
-        # Testar Bybit API
-        bybit_status = self._test_connectivity()
-        bybit_emoji = "🟢" if bybit_status else "🔴"
-        bybit_text = "Conectado" if bybit_status else "Desconectado"
+        # Testar Binance API
+        binance_status = self._test_connectivity()
+        binance_emoji = "🟢" if binance_status else "🔴"
+        binance_text = "Conectado" if binance_status else "Desconectado"
         
-        print(f"\n📊 BYBIT API:")
-        print(f"   Status: {bybit_emoji} {bybit_text}")
+        print(f"\n📊 BINANCE API:")
+        print(f"   Status: {binance_emoji} {binance_text}")
         print(f"   Endpoint: {self.data_provider.base_url}")
         print(f"   API Key: {self.api_key[:10]}...")
         
-        if bybit_status:
+        if binance_status:
             try:
                 tickers = self.data_provider.get_tickers(category="spot")
                 if tickers and 'list' in tickers:
@@ -264,7 +265,7 @@ class MarketManusMain:
         print("=" * 50)
         
         print(f"🔧 CONFIGURAÇÕES ATUAIS:")
-        print(f"   🌐 Bybit Testnet: {'Sim' if self.data_provider.testnet else 'Não'}")
+        print(f"   🌐 Binance Testnet: {'Sim' if self.data_provider.testnet else 'Não'}")
         print(f"   💰 Capital inicial: ${self.capital_manager.initial_capital:.2f}")
         print(f"   💼 Position size: {self.capital_manager.position_size_pct*100:.1f}%")
         print(f"   🤖 OpenAI API: {'Configurada' if self.openai_api_key else 'Não configurada'}")
@@ -284,7 +285,7 @@ class MarketManusMain:
         print("=" * 60)
         print("💰 Sistema de trading automatizado")
         print("📊 8 estratégias profissionais")
-        print("🎯 Dados reais da API Bybit")
+        print("🎯 Dados reais da API Binance")
         print("=" * 60)
         print("🚀 Até a próxima!")
 

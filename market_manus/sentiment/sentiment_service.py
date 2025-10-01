@@ -47,28 +47,29 @@ def _composite_score(items):
     total_w = 0.0
     acc = 0.0
     for it in items:
+        if it.get("error"):
+            continue
+        
         kind = it.get("kind")
         if kind == "macro_sentiment" and "score" in it:
             s = fng_to_score(float(it["score"]))
             acc += w["macro_sentiment"]*s
             total_w += w["macro_sentiment"]
-        elif kind == "spot_market":
+        elif kind == "spot_market" and "chg_24h" in it:
             s = 0.6*pct_to_score(it.get("chg_24h",0.0)) + 0.4*volume_to_score(it.get("vol_24h",0.0))
             acc += w["spot_market"]*s
             total_w += w["spot_market"]
-        elif kind == "derivatives":
-            f = 0.0
-            if it.get("funding"):
-                f = 0.5
+        elif kind == "derivatives" and it.get("funding"):
+            f = 0.5
             acc += w["derivatives"]*clamp01(f)
             total_w += w["derivatives"]
-        elif kind == "news":
+        elif kind == "news" and "count" in it and it.get("count") > 0:
             acc += w["news"]*0.5
             total_w += w["news"]
-        elif kind == "social":
+        elif kind == "social" and "note" not in it:
             acc += w["social"]*0.5
             total_w += w["social"]
-        elif kind == "onchain":
+        elif kind == "onchain" and "note" not in it:
             acc += w["onchain"]*0.5
             total_w += w["onchain"]
     return round(acc/total_w, 3) if total_w>0 else None

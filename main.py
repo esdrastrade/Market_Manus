@@ -460,7 +460,6 @@ class MarketManusMain:
             from market_manus.data_providers.market_data_ws import BinanceUSWebSocket
             from market_manus.engines.stream_runtime import StreamRuntime
             from market_manus.cli.live_view import run_live_view
-            from market_manus.strategies.smc.patterns import ConfluenceEngine
             
             # Converter timeframe para formato Binance WebSocket
             interval_map = {
@@ -475,8 +474,9 @@ class MarketManusMain:
             # Inicializar WebSocket provider
             ws_provider = BinanceUSWebSocket(symbol=symbol, interval=ws_interval)
             
-            # Inicializar Confluence Engine
-            engine = ConfluenceEngine(config_path="config/confluence.yaml")
+            # Criar engine simplificado que funciona com streaming
+            from market_manus.backtest.confluence_realtime import RealTimeConfluenceEngine
+            engine = RealTimeConfluenceEngine(config_path="config/confluence.yaml")
             
             # Criar stream runtime
             runtime = StreamRuntime(

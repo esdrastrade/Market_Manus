@@ -87,7 +87,7 @@ class MarketManusMain:
         
         while True:
             self._show_main_menu()
-            choice = input("\n🔢 Escolha uma opção (0-6): ").strip()
+            choice = input("\n🔢 Escolha uma opção (0-7): ").strip()
             
             if choice == '0':
                 self._show_goodbye()
@@ -104,6 +104,8 @@ class MarketManusMain:
                 self._show_connectivity_status()
             elif choice == '6':
                 self._show_settings()
+            elif choice == '7':
+                self._run_realtime_confluence()
             else:
                 print("❌ Opção inválida")
                 input("\n📖 Pressione ENTER para continuar...")
@@ -159,6 +161,9 @@ class MarketManusMain:
         
         print(f"\n🤖 RECURSOS AVANÇADOS:")
         print("   3️⃣  Assistente IA (Semantic Kernel)")
+        
+        print(f"\n🔥 CONFLUÊNCIA SMC + CLÁSSICOS:")
+        print("   7️⃣  Executar Confluência em Tempo Real")
         
         print(f"\n⚙️ CONFIGURAÇÕES:")
         print("   4️⃣  Capital Dashboard")
@@ -391,6 +396,145 @@ class MarketManusMain:
         print(f"   📂 Logs: logs/")
         
         input("\n📖 Pressione ENTER para continuar...")
+    
+    def _run_realtime_confluence(self):
+        """Executa Confluência em Tempo Real com SMC + Clássicos"""
+        print("\n🔥 CONFLUÊNCIA EM TEMPO REAL - SMC + CLÁSSICOS")
+        print("=" * 60)
+        
+        # Seleção de ativo
+        print("\n📊 ATIVOS DISPONÍVEIS:")
+        print("   1️⃣  BTC/USDT")
+        print("   2️⃣  ETH/USDT")
+        print("   3️⃣  SOL/USDT")
+        print("   4️⃣  Personalizar")
+        
+        asset_choice = input("\n🔢 Escolha o ativo (1-4): ").strip()
+        
+        if asset_choice == '1':
+            symbol = "BTCUSDT"
+        elif asset_choice == '2':
+            symbol = "ETHUSDT"
+        elif asset_choice == '3':
+            symbol = "SOLUSDT"
+        elif asset_choice == '4':
+            symbol = input("\n📝 Digite o símbolo (ex: BTCUSDT): ").strip().upper()
+        else:
+            print("❌ Opção inválida")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Seleção de timeframe
+        print(f"\n⏱️ TIMEFRAMES DISPONÍVEIS:")
+        print("   1️⃣  1 minuto (scalping)")
+        print("   2️⃣  5 minutos (scalping)")
+        print("   3️⃣  15 minutos (swing curto)")
+        print("   4️⃣  1 hora (intraday)")
+        print("   5️⃣  4 horas (swing longo)")
+        
+        tf_choice = input("\n🔢 Escolha o timeframe (1-5): ").strip()
+        
+        tf_map = {
+            '1': '1m',
+            '2': '5m',
+            '3': '15m',
+            '4': '1h',
+            '5': '4h'
+        }
+        
+        timeframe = tf_map.get(tf_choice, '5m')
+        
+        print(f"\n🚀 INICIANDO CONFLUÊNCIA:")
+        print(f"   📊 Ativo: {symbol}")
+        print(f"   ⏱️ Timeframe: {timeframe}")
+        print(f"   🔥 Detectores: SMC (BOS, CHOCH, OB, FVG, Sweep) + Clássicos (7 estratégias)")
+        print(f"   🎯 Filtros de regime: ADX, ATR, Bollinger Width")
+        print(f"\n⚠️  MODO PAPER TRADING (API read-only)")
+        print("\n🔄 Pressione CTRL+C para parar...")
+        
+        input("\n📖 Pressione ENTER para começar...")
+        
+        try:
+            from market_manus.backtest.confluence_realtime import RealTimeConfluenceEngine
+            
+            # Inicializar engine
+            engine = RealTimeConfluenceEngine(config_path="config/confluence.yaml")
+            
+            # Data stream simulator
+            iteration = 0
+            max_iterations = 100  # Limite para não rodar infinito
+            
+            print("\n" + "=" * 60)
+            print("🔴 EXECUTANDO CONFLUÊNCIA EM TEMPO REAL...")
+            print("=" * 60)
+            
+            while iteration < max_iterations:
+                # Obter dados históricos + atualização
+                try:
+                    klines = self.data_provider.get_klines(
+                        symbol=symbol,
+                        interval=timeframe,
+                        limit=100
+                    )
+                    
+                    if not klines:
+                        print("⚠️  Sem dados disponíveis")
+                        break
+                    
+                    # Processar candle
+                    signal = engine.process_candle(
+                        candles=klines,
+                        symbol=symbol,
+                        timeframe=timeframe,
+                        callback=None  # Paper trading, sem callback
+                    )
+                    
+                    # Mostrar mudança de estado
+                    if signal is not None:
+                        print(f"\n[{iteration}] 🔔 MUDANÇA DE ESTADO: {signal.action}")
+                        print(f"   💪 Confidence: {signal.confidence:.2f}")
+                        print(f"   📊 Score: {signal.meta.get('score', 0):.3f}")
+                        print(f"   🎯 Razões: {signal.reasons[:2]}")  # Primeiras 2
+                        print(f"   🏷️ Tags: {signal.tags[:3]}")  # Primeiras 3
+                    
+                    # Delay baseado no timeframe (evita bombardear API)
+                    import time
+                    delay_map = {
+                        '1m': 10,   # 10 segundos para 1 min
+                        '5m': 30,   # 30 segundos para 5 min
+                        '15m': 60,  # 1 minuto para 15 min
+                        '1h': 120,  # 2 minutos para 1 hora
+                        '4h': 300   # 5 minutos para 4 horas
+                    }
+                    delay = delay_map.get(timeframe, 30)
+                    time.sleep(delay)
+                    
+                    iteration += 1
+                    
+                except KeyboardInterrupt:
+                    print("\n\n⏹️  Confluência interrompida pelo usuário")
+                    break
+                except Exception as e:
+                    print(f"❌ Erro: {e}")
+                    break
+            
+            # Estatísticas finais
+            stats = engine.get_stats()
+            print("\n" + "=" * 60)
+            print("📊 ESTATÍSTICAS DA SESSÃO:")
+            print("=" * 60)
+            print(f"   🔢 Sinais gerados: {stats['signals_generated']}")
+            print(f"   🟢 BUY signals: {stats['buy_signals']}")
+            print(f"   🔴 SELL signals: {stats['sell_signals']}")
+            print(f"   ⚪ HOLD signals: {stats['hold_signals']}")
+            print(f"   🔄 Mudanças de estado: {stats['state_changes']}")
+            
+        except Exception as e:
+            print(f"\n❌ Erro ao executar confluência: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        input("\n📖 Pressione ENTER para voltar ao menu...")
     
     def _show_goodbye(self):
         """Mostra mensagem de despedida"""

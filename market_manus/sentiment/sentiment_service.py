@@ -64,7 +64,16 @@ def _composite_score(items):
             acc += w["derivatives"]*clamp01(f)
             total_w += w["derivatives"]
         elif kind == "news" and "count" in it and it.get("count") > 0:
-            acc += w["news"]*0.5
+            positive = it.get("positive", 0)
+            negative = it.get("negative", 0)
+            total_votes = positive + negative
+            
+            if total_votes > 0:
+                news_sentiment = positive / total_votes
+            else:
+                news_sentiment = 0.5
+            
+            acc += w["news"] * news_sentiment
             total_w += w["news"]
         elif kind == "social" and "note" not in it:
             acc += w["social"]*0.5

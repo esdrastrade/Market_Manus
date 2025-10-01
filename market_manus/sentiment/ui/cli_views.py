@@ -83,7 +83,27 @@ def _build_narrative(res: dict) -> str:
         
         elif name == "cryptopanic" and src.get("count", 0) > 0:
             count = src.get("count")
-            narrative_parts.append(f"\n📰 **Notícias**: {count} notícia(s) recente(s) detectada(s), refletindo movimentação na mídia especializada.")
+            positive = src.get("positive", 0)
+            negative = src.get("negative", 0)
+            titles = src.get("titles", [])
+            
+            total_votes = positive + negative
+            if total_votes > 0:
+                pos_pct = (positive / total_votes) * 100
+                sentiment_emoji = "📈" if pos_pct > 60 else "📉" if pos_pct < 40 else "⚖️"
+                sentiment_text = "predominantemente positivo" if pos_pct > 60 else "predominantemente negativo" if pos_pct < 40 else "misto"
+            else:
+                sentiment_emoji = "📰"
+                sentiment_text = "neutro"
+            
+            narrative_parts.append(f"\n{sentiment_emoji} **Contexto Macroeconômico**: Detectadas {count} notícia(s) recente(s) sobre {symbol.replace('USDT', '')}. Sentimento da mídia: {sentiment_text}.")
+            
+            if titles and len(titles) > 0:
+                narrative_parts.append(f"\n   💬 Destaque: \"{titles[0]}\"")
+                if pos_pct > 60:
+                    narrative_parts.append(" — Notícias otimistas podem impulsionar novos investidores.")
+                elif pos_pct < 40:
+                    narrative_parts.append(" — Cobertura negativa pode pressionar preços no curto prazo.")
     
     if score >= 0.65:
         narrative_parts.append(f"\n\n✅ **Recomendação**: O sentimento favorável pode indicar boas oportunidades de entrada em posições long. Monitore níveis de resistência.")

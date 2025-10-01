@@ -31,6 +31,7 @@ The system operates as a console-based CLI/TUI application, providing an interac
 - **Regime Filters**: Signals are rejected if market conditions (e.g., ADX < 15, ATR < min, BB Width < min) are unfavorable.
 - **Conflict Penalty**: A 50% score reduction is applied when both BUY and SELL signals exist simultaneously to prevent whipsaw trades.
 - **Backtesting & Real-time Execution**: Dedicated modules for backtesting with per-candle logging and real-time execution with data-driven rate-limiting and state-change notifications.
+- **Unlimited Historical Data Fetch (NEW - Oct 2025)**: Intelligent batching system that fetches ALL candles for any date range, automatically chunking requests in 500-1000 candle batches to respect API limits while ensuring complete historical coverage.
 - **WebSocket Streaming (NEW)**: Binance.US WebSocket integration with automatic reconnection, exponential backoff + jitter, and debouncing (1s micro-batches).
 - **Async Pipeline**: AsyncIO-based runtime with Queue-based message coalescing, preventing rate limit violations while maintaining real-time responsiveness.
 - **Rich UI Live View**: Terminal UI using `rich` library with Live display, updating panels in-place without scrolling, showing latency, message counts, and processing metrics.

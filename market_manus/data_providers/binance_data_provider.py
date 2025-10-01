@@ -134,7 +134,9 @@ class BinanceDataProvider:
         category: str, 
         symbol: str, 
         interval: str, 
-        limit: int = 200
+        limit: int = 200,
+        start: int = None,
+        end: int = None
     ) -> Optional[List[List[Any]]]:
         """
         Obtém dados de k-line (velas/candlesticks)
@@ -144,6 +146,8 @@ class BinanceDataProvider:
             symbol: Símbolo do par (ex: "BTCUSDT")
             interval: Intervalo das velas (Bybit format: "1", "5", "15", "60", "240", "D")
             limit: Número máximo de velas (máx: 1000)
+            start: Timestamp inicial em milissegundos (opcional)
+            end: Timestamp final em milissegundos (opcional)
             
         Returns:
             Lista de velas em formato compatível com Bybit
@@ -164,8 +168,14 @@ class BinanceDataProvider:
         params = {
             "symbol": symbol,
             "interval": binance_interval,
-            "limit": limit
+            "limit": min(limit, 1000)  # Binance máx é 1000
         }
+        
+        # Adicionar timestamps se fornecidos
+        if start is not None:
+            params["startTime"] = start
+        if end is not None:
+            params["endTime"] = end
         
         data = self._get_public("/v3/klines", params)
         

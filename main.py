@@ -460,7 +460,7 @@ class MarketManusMain:
             from market_manus.data_providers.market_data_ws import BinanceUSWebSocket
             from market_manus.engines.stream_runtime import StreamRuntime
             from market_manus.cli.live_view import run_live_view
-            from market_manus.strategies.confluence_engine import ConfluenceEngine
+            from market_manus.strategies.smc.patterns import ConfluenceEngine
             
             # Converter timeframe para formato Binance WebSocket
             interval_map = {

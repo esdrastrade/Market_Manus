@@ -98,10 +98,18 @@ def render_live_ui(state) -> Layout:
 
 
 async def run_live_view(stream_runtime):
+    import asyncio
+    
+    print("📥 Carregando dados históricos...")
+    success = await stream_runtime.bootstrap_historical_data()
+    if not success:
+        print("⚠️  Aviso: Bootstrap falhou. Continuando apenas com WebSocket...")
+    else:
+        print(f"✅ {len(stream_runtime.candles_deque)} candles carregados")
+    
     with Live(render_live_ui(stream_runtime.state), refresh_per_second=2) as live:
         stream_runtime.running = True
         
-        import asyncio
         collector_task = asyncio.create_task(stream_runtime.collect_ws_messages())
         processor_task = asyncio.create_task(stream_runtime.process_micro_batches())
         

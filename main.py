@@ -471,9 +471,20 @@ class MarketManusMain:
             while iteration < max_iterations:
                 # Obter dados históricos + atualização
                 try:
-                    klines = self.data_provider.get_klines(
+                    # Converter timeframe para formato Binance
+                    interval_map = {
+                        '1m': '1',
+                        '5m': '5',
+                        '15m': '15',
+                        '1h': '60',
+                        '4h': '240'
+                    }
+                    interval = interval_map.get(timeframe, '5')
+                    
+                    klines = self.data_provider.get_kline(
+                        category="spot",
                         symbol=symbol,
-                        interval=timeframe,
+                        interval=interval,
                         limit=100
                     )
                     
@@ -481,9 +492,19 @@ class MarketManusMain:
                         print("⚠️  Sem dados disponíveis")
                         break
                     
+                    # Converter para DataFrame
+                    import pandas as pd
+                    df = pd.DataFrame(klines, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+                    df['timestamp'] = pd.to_numeric(df['timestamp'])
+                    df['open'] = pd.to_numeric(df['open'])
+                    df['high'] = pd.to_numeric(df['high'])
+                    df['low'] = pd.to_numeric(df['low'])
+                    df['close'] = pd.to_numeric(df['close'])
+                    df['volume'] = pd.to_numeric(df['volume'])
+                    
                     # Processar candle
                     signal = engine.process_candle(
-                        candles=klines,
+                        candles=df,
                         symbol=symbol,
                         timeframe=timeframe,
                         callback=None  # Paper trading, sem callback

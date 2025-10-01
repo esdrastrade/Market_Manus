@@ -1,0 +1,152 @@
+# REPLIT — TAREFA: CONFLUIR SMC (patterns.py) + CLASSIC ANALYSIS (classic_analysis)
+# Objetivo: unificar sinais de Smart Money Concepts (BOS/CHoCH/OB/FVG/liquidity sweep) com indicadores clássicos
+# (EMA, MACD, RSI, Bollinger, ADX, Stochastic, Fibonacci) para gerar sinais robustos e executáveis.
+
+# === 1) PADRONIZE O CONTRATO DE SINAIS ===
+# Crie um modelo único de sinal para todo o ecossistema:
+#  - action: "BUY" | "SELL" | "HOLD"
+#  - confidence: float [0..1]
+#  - reasons: list[str] (explicar por que o sinal surgiu)
+#  - tags: list[str] (ex.: ["SMC:BOS", "CLASSIC:MACD_CROSSUP"])
+#  - meta: dict (preço, timeframe, símbolo, valores de indicadores, estrutura de mercado detectada)
+#  - timestamp: int/str
+# Onde aplicar: market_manus/strategies/smc/patterns.py e classic_analysis/*
+# Saída: todas as funções de detecção retornam `Signal` nesse formato.
+
+# Exemplo de dataclass:
+# from dataclasses import dataclass, field
+# @dataclass
+# class Signal:
+#     action: str
+#     confidence: float
+#     reasons: list[str] = field(default_factory=list)
+#     tags: list[str] = field(default_factory=list)
+#     meta: dict = field(default_factory=dict)
+#     timestamp: int | None = None
+
+# === 2) NORMALIZE OS SINAIS SMC EM patterns.py ===
+# Implemente detectores explícitos com limiares configuráveis:
+#  - BOS (Break of Structure): continuação de tendência após rompimento de swing high/low relevante. :contentReference[oaicite:0]{index=0}
+#  - CHoCH (Change of Character): inversão provável quando a sequência de topos/fundos muda e invalida a estrutura anterior. :contentReference[oaicite:1]{index=1}
+#  - Order Block (OB): última vela de acumulação/distribuição antes do rompimento que origina deslocamento; use-a como zona preferencial de entrada/stop. :contentReference[oaicite:2]{index=2}
+#  - Fair Value Gap (FVG): gap entre corpo/mentes de 3 velas (i-1, i, i+1); trate como zona de “reprecificação”. :contentReference[oaicite:3]{index=3}
+#  - Liquidity Sweep: pavio que varre máxima/mínima anterior e fecha de volta; sinaliza armadilha e possível reversão. :contentReference[oaicite:4]{index=4}
+# Cada detector deve retornar `Signal` com tags “SMC:*” e confidence baseado em: distância ao OB/FVG, tamanho do displacement, volume relativo e confirmação por reteste.
+
+# === 3) NORMALIZE OS SINAIS CLÁSSICOS (classic_analysis) ===
+# Para cada estratégia existente, padronize a função `generate_signal(candles, params) -> Signal`:
+#  - EMA crossover: cruzamento rápida>lenta = BUY; lenta>rápida = SELL; distância/ângulo modulam confidence.
+#  - MACD: linha MACD cruza acima/abaixo signal; divergências aumentam confidence. (Definição e uso). :contentReference[oaicite:5]{index=5}
+#  - RSI: sobrecomprado/sobrevendido e saídas dessas zonas; divergências. (Conceito/níveis). :contentReference[oaicite:6]{index=6}
+#  - Bollinger Bands: rompimentos + largura (volatilidade) + “mean reversion” na banda média. :contentReference[oaicite:7]{index=7}
+#  - ADX: filtro de tendência (força > limiar) e sinais com +DI/-DI; ideal p/ regime filter. :contentReference[oaicite:8]{index=8}
+#  - Stochastic: %K cruza %D em extremos; confirme com tendência. :contentReference[oaicite:9]{index=9}
+#  - ATR: use p/ dimensionar stop/TP e filtrar ruído. :contentReference[oaicite:10]{index=10}
+# Saída: `Signal` com tags “CLASSIC:*” e confidence calibrado por quão “forte” é o setup (ex.: MACD cross + histograma expandindo).
+
+# === 4) FUNIL DE CONFLUÊNCIA (patterns.py -> ConfluenceEngine) ===
+# Crie um orquestrador que:
+#  a) Chama detectores SMC e Classic no mesmo candle/janela.
+#  b) Converte cada saída em `Signal`.
+#  c) Aplica filtros de regime:
+#     - Tendência forte requerida? (ADX >= adx_min) para permitir signals pró-tendência; para contrarian, exija ADX <= adx_max. :contentReference[oaicite:11]{index=11}
+#     - Volatilidade mínima? (largura Bollinger, ATR) para evitar chop. :contentReference[oaicite:12]{index=12}
+#  d) Score final:
+#     - Weighted sum: score = Σ(w_i * confidence_i * dir_i), onde dir_i = +1 BUY, -1 SELL, 0 HOLD.
+#     - Penalize conflitos fortes (BUY e SELL simultâneos) reduzindo score via λ * conflict_penalty.
+#  e) Decisão:
+#     - Se |score| >= buy_threshold → BUY (score>0) / SELL (score<0); senão HOLD.
+#  f) Rastreie `supporting_reasons` (top-N razões por contribuição de score) para auditoria.
+
+# Exemplo de interface:
+# class ConfluenceEngine:
+#     def __init__(self, detectors: dict[str, Callable], weights: dict[str, float], regime_cfg: dict):
+#         ...
+#     def evaluate(self, candles, ctx) -> Signal:
+#         # chama detectores e computa score/decisão
+#         return final_signal
+
+# === 5) REGRAS DE CONFLUÊNCIA RECOMENDADAS (SMC + CLASSIC) ===
+# 1. Tendência/continuação (pro-tendência):
+#    - Se BOS confirmado e ADX >= 20–25, privilegiar sinais pró-tendência (EMA align, MACD > 0 no bull / < 0 no bear). :contentReference[oaicite:13]{index=13}
+# 2. Reversão controlada (contrarian):
+#    - CHoCH + sweep de liquidez próximo de OB, com Bollinger “overextension” e RSI saindo de extremo; exigência de divergência MACD/Stochastic para elevar confiança. :contentReference[oaicite:14]{index=14}
+# 3. Entrada por “retail trap”:
+#    - Liquidity sweep + rejeição forte (pavio) + retorno à FVG/OB, desde que ADX não esteja alto demais (evitar continuar varrendo). :contentReference[oaicite:15]{index=15}
+# 4. Filtro de volatilidade:
+#    - Evite entradas quando ATR/Bollinger width < limiar (mercado travado). :contentReference[oaicite:16]{index=16}
+# 5. Confirmação multi-timeframe:
+#    - Regra: SMC no timeframe de execução (1–5m) deve respeitar direção do timeframe superior (15–60m) via EMA slope/ADX.
+
+# === 6) GERENCIAMENTO DE RISCO (EXECUÇÃO) ===
+# - Stop = k1 * ATR; TP1 = k2 * ATR; TP2 na borda oposta do FVG/OB; break-even no reteste do BOS/estrutura. :contentReference[oaicite:17]{index=17}
+# - Position sizing: risco fixo por trade (ex.: 0.5–1.0% do capital).
+# - Evite operar contra regime (ADX) e fora de janela de liquidez (horários).
+
+# === 7) INTERFACES QUE O REPLIT DEVE ENTREGAR ===
+# [A] market_manus/strategies/smc/patterns.py
+#     - Funções:
+#       detect_bos(...)->Signal
+#       detect_choch(...)->Signal
+#       detect_order_block(...)->Signal
+#       detect_fvg(...)->Signal
+#       detect_liquidity_sweep(...)->Signal
+#     - Classe:
+#       class SMCDetector:
+#           def generate_signals(self, candles, ctx)->list[Signal]
+# [B] market_manus/strategies/classic_analysis/*
+#     - Garanta função generate_signal(candles, params)->Signal em:
+#       ema_crossover_strategy.py, macd_strategy.py, rsi_mean_reversion_strategy.py,
+#       bollinger_breakout_strategy.py, adx_strategy.py, stochastic_strategy.py, fibonacci_strategy.py
+# [C] Confluência
+#     - market_manus/strategies/smc/patterns.py:
+#       class ConfluenceEngine (descrita no item 4)
+#     - API pública:
+#       def confluence_decision(candles, symbol, timeframe, config)->Signal
+#         # chama SMCDetector + classic detectors e retorna decisão final
+# [D] Configuração
+#     - YAML/JSON: pesos por detector (w), thresholds (buy_threshold, sell_threshold),
+#       regime_cfg (adx_min, atr_min, bb_width_min), e toggles (usar_smc/use_classic).
+
+# === 8) EXEMPLO DE GLUE CODE (CONCISO) ===
+# def confluence_decision(candles, symbol, timeframe, cfg):
+#     smc = SMCDetector(cfg.get("smc", {}))
+#     detectors = {
+#         "SMC:BOS": lambda: smc.detect_bos(candles),
+#         "SMC:CHoCH": lambda: smc.detect_choch(candles),
+#         "CLASSIC:EMA": lambda: ema.generate_signal(candles, cfg["ema"]),
+#         "CLASSIC:MACD": lambda: macd.generate_signal(candles, cfg["macd"]),
+#         "CLASSIC:RSI": lambda: rsi.generate_signal(candles, cfg["rsi"]),
+#         "CLASSIC:BB": lambda: bb.generate_signal(candles, cfg["bb"]),
+#         "CLASSIC:ADX": lambda: adx.generate_signal(candles, cfg["adx"]),
+#         "CLASSIC:STOCH": lambda: stoch.generate_signal(candles, cfg["stoch"]),
+#     }
+#     engine = ConfluenceEngine(detectors, cfg["weights"], cfg["regime"])
+#     return engine.evaluate(candles, {"symbol": symbol, "timeframe": timeframe})
+
+# === 9) BACKTEST E TEMPO REAL ===
+# - Exponha 2 funções:
+#   backtest_confluence(data, cfg)->report
+#   realtime_confluence(stream, cfg, broker)->execução
+# - No backtest: logue por candle o score, componentes, decisão e PnL por trade.
+# - No tempo real: rate-limit (ex.: 1 decisão por candle fechado), reenviar ordem só em mudança de estado.
+
+# === 10) TESTES & VALIDAÇÃO ===
+# - Unitários: cada detector SMC e cada estratégia clássica retorna `Signal` válido (schema).
+# - Integração: cenários sintéticos (BOS sem ADX alto => penaliza; CHoCH + sweep + divergência MACD => aumenta).
+# - Sensibilidade: teste thresholds (adx_min, atr_min, bb_width_min, buy_threshold) em grid search.
+# - Log/Observabilidade: inclua `reasons` e `meta` detalhados nos sinais finais.
+
+# === 11) DOCUMENTAÇÃO EM CÓDIGO ===
+# - Docstrings citando conceitos:
+#   * MACD, RSI, Bollinger, ADX, Stochastic, ATR — ver definições, uso e limitações. :contentReference[oaicite:18]{index=18}
+#   * SMC: BOS/CHoCH/OB/FVG/sweeps — relações e confirmações. :contentReference[oaicite:19]{index=19}
+
+# === 12) ENTREGÁVEIS QUE O REPLIT DEVE DEVOLVER ===
+#  - patterns.py reescrito com SMCDetector + ConfluenceEngine + confluence_decision()
+#  - Adaptações nas estratégias em classic_analysis para retornar Signal padronizado
+#  - Arquivo de config (ex.: config/confluence.yaml) com pesos/limiares
+#  - Testes unitários e de integração
+#  - Pequeno README explicando os fluxos (SMC → Classic → Regime → Score → Decisão → Execução)
+
+# FIM — Execute e devolva os arquivos ajustados.

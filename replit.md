@@ -10,6 +10,11 @@ Market Manus is a professional automated trading system that integrates AI, adva
 The system is a CLI/TUI application built with Python 3.11. Its core architecture revolves around several key components:
 
 ### Core Components
+- **Market Sentiment Analysis (NEW - Oct 2025)**: Modular sentiment aggregation system consulting multiple reliable APIs/sources to provide a composite "Market Prognosis" for selected assets:
+  - **Data Sources**: Fear & Greed Index (Alternative.me), CoinGecko (spot market data), Bybit (funding/OI), CoinGlass (open interest), CryptoPanic (news sentiment), Santiment (social metrics), Glassnode (on-chain), Google Trends (search interest)
+  - **Normalization**: All signals normalized to 0-1 scale with weighted composite scoring
+  - **Caching**: TTL-based in-memory cache (60s) to prevent API hammering
+  - **UI Integration**: Rich console table display with source breakdown and composite sentiment score
 - **Strategy Lab V6**: Contains 8 professional trading strategies, supporting real-time and historical testing, and asset selection.
 - **Confluence Mode**: Allows combining multiple strategies using four modes: ALL, MAJORITY, WEIGHTED, and ANY.
 - **Data Provider**: Integrates with Binance.US API for real-time and historical market data.
@@ -63,3 +68,9 @@ The project integrates with the following external services and libraries:
     - `semantic-kernel`, `openai` for AI integration.
     - `ccxt` for cryptocurrency exchange interaction.
     - `ta-lib` for technical analysis indicators.
+    - `httpx`, `websockets` for async HTTP and WebSocket communication.
+    - `tenacity` for retry logic with exponential backoff.
+    - `cachetools` for in-memory caching.
+    - `pydantic` for data validation.
+    - `rich` for terminal UI rendering.
+    - `pytrends` (optional) for Google Trends data.

@@ -44,7 +44,7 @@ class StreamRuntime:
         data_provider,
         symbol: str,
         interval: str,
-        engine: ConfluenceEngine,
+        engine: Any,
         debounce_sec: float = 1.0,
         max_queue_size: int = 100
     ):

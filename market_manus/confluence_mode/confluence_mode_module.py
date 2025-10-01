@@ -455,6 +455,88 @@ class ConfluenceModeModule:
         
         return True
     
+    def _fetch_historical_klines(self, symbol: str, interval: str, start_date: Optional[str] = None, end_date: Optional[str] = None) -> List:
+        """
+        Busca TODOS os candles do período especificado, fazendo múltiplas chamadas se necessário.
+        
+        Args:
+            symbol: Par de trading (ex: BTCUSDT)
+            interval: Timeframe (1, 5, 15, 60, 240, D)
+            start_date: Data inicial no formato YYYY-MM-DD (opcional)
+            end_date: Data final no formato YYYY-MM-DD (opcional)
+        
+        Returns:
+            Lista com todos os candles do período
+        """
+        # Calcular timestamps
+        if start_date and end_date:
+            start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+            end_ts = int(datetime.strptime(end_date, "%Y-%m-%d").timestamp() * 1000)
+        else:
+            # Período padrão: últimos 30 dias
+            end_ts = int(datetime.now().timestamp() * 1000)
+            start_ts = end_ts - (30 * 24 * 60 * 60 * 1000)
+        
+        # Calcular duração de um candle em milissegundos
+        timeframe_ms = {
+            "1": 60 * 1000,           # 1 minuto
+            "5": 5 * 60 * 1000,       # 5 minutos
+            "15": 15 * 60 * 1000,     # 15 minutos
+            "60": 60 * 60 * 1000,     # 1 hora
+            "240": 4 * 60 * 60 * 1000,  # 4 horas
+            "D": 24 * 60 * 60 * 1000  # 1 dia
+        }
+        
+        candle_duration = timeframe_ms.get(interval, 60 * 1000)
+        
+        # Calcular quantos candles são necessários
+        total_candles_needed = int((end_ts - start_ts) / candle_duration)
+        
+        print(f"   📊 Período requer ~{total_candles_needed} candles")
+        
+        # Buscar dados em lotes de 500 (limite da API)
+        all_klines = []
+        current_start = start_ts
+        batch_num = 1
+        
+        while current_start < end_ts:
+            # Calcular quantos candles faltam
+            remaining_ms = end_ts - current_start
+            remaining_candles = int(remaining_ms / candle_duration)
+            limit = min(500, remaining_candles)
+            
+            if limit <= 0:
+                break
+            
+            print(f"   📡 Batch {batch_num}: Buscando {limit} candles a partir de {datetime.fromtimestamp(current_start/1000).strftime('%Y-%m-%d %H:%M')}...")
+            
+            # Buscar dados com startTime
+            klines = self.data_provider.get_kline(
+                category='spot',
+                symbol=symbol,
+                interval=interval,
+                limit=limit,
+                start=current_start,
+                end=end_ts
+            )
+            
+            if not klines:
+                print(f"   ⚠️  Nenhum dado retornado para este batch")
+                break
+            
+            all_klines.extend(klines)
+            print(f"   ✅ Recebidos {len(klines)} candles (total acumulado: {len(all_klines)})")
+            
+            # Próximo batch começa após o último candle recebido
+            last_candle_time = int(klines[-1][0])  # timestamp do último candle
+            current_start = last_candle_time + candle_duration
+            batch_num += 1
+            
+            # Evitar rate limit
+            time.sleep(0.1)
+        
+        return all_klines
+    
     def _run_confluence_backtest(self):
         """Executa backtest de confluência com dados reais da Binance"""
         if not self._validate_configuration():
@@ -485,16 +567,20 @@ class ConfluenceModeModule:
         # selected_timeframe já está no formato correto para Binance ("1", "5", "15", "60", "240", "D")
         interval = self.selected_timeframe
         
-        # Buscar 500 candles (dados suficientes para indicadores)
-        print(f"   📡 Obtendo 500 velas de {self.timeframes[self.selected_timeframe]['name']}...")
-        klines = self.data_provider.get_kline('spot', self.selected_asset, interval, 500)
+        # Buscar TODOS os candles do período especificado
+        klines = self._fetch_historical_klines(
+            symbol=self.selected_asset,
+            interval=interval,
+            start_date=self.custom_start_date,
+            end_date=self.custom_end_date
+        )
         
         if not klines or len(klines) < 50:
             print(f"❌ Dados insuficientes! Recebido: {len(klines) if klines else 0} velas")
             input("\n📖 Pressione ENTER para continuar...")
             return
         
-        print(f"   ✅ Recebidas {len(klines)} velas reais!")
+        print(f"   ✅ Total de {len(klines)} velas reais carregadas para análise!")
         
         # Converter dados para análise
         closes = [float(k[4]) for k in klines]  # Preços de fechamento

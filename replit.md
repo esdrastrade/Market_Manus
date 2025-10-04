@@ -33,7 +33,11 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
     - Macroeconomic context section with news headlines and sentiment analysis
     - Contextual recommendations based on composite score
     - Color-coded status indicators with Rich panels and tables
-- **Strategy Lab V6**: Contains 8 professional trading strategies, supporting real-time and historical testing, and asset selection.
+- **Strategy Lab V6 (Updated Oct 2025)**: Contains **13 professional trading strategies** (8 clássicas + 5 SMC), supporting real-time and historical testing, and asset selection:
+  - **8 Classic**: RSI, EMA Crossover, Bollinger Bands, MACD, Stochastic, Williams %R, ADX, Fibonacci
+  - **5 SMC (NEW)**: BOS (Break of Structure), CHoCH (Change of Character), Order Blocks, FVG (Fair Value Gap), Liquidity Sweep
+  - **API Validation (Oct 2025)**: All backtests now validate Binance API keys before execution, ensuring 100% real data usage (no mock/simulated data)
+  - **Metrics Display (Oct 2025)**: Backtests show total candles loaded, exact period (start/end dates), API success rate
 - **Confluence Lab**: Allows combining multiple strategies using four modes: ALL, MAJORITY, WEIGHTED, and ANY.
 - **Data Provider**: Integrates with Binance.US API for real-time and historical market data.
 - **Capital Manager**: Handles position sizing automation, drawdown protection, and performance tracking.

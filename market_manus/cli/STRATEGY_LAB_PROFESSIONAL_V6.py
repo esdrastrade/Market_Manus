@@ -4,7 +4,9 @@ Localização: market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V6.py
 Data: 24/09/2025
 
 FUNCIONALIDADES:
-✅ 8 Estratégias completas: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+✅ 13 Estratégias completas: 8 Clássicas + 5 SMC
+✅ Clássicas: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+✅ SMC: BOS, CHoCH, Order Blocks, FVG, Liquidity Sweep
 ✅ Seleção de período temporal personalizado (data inicial e final)
 ✅ Backtesting com dados reais da API Bybit
 ✅ Cálculos matemáticos precisos dos indicadores
@@ -26,6 +28,15 @@ from pathlib import Path
 # Importar as novas estratégias
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
+# Importar estratégias SMC
+from market_manus.strategies.smc.patterns import (
+    detect_bos,
+    detect_choch,
+    detect_order_blocks,
+    detect_fvg,
+    detect_liquidity_sweep
+)
+
 class StrategyLabProfessionalV6:
     """Strategy Lab Professional V6 - Versão completa com todas as estratégias"""
     
@@ -33,7 +44,7 @@ class StrategyLabProfessionalV6:
         self.data_provider = data_provider
         self.capital_manager = capital_manager
         
-        # Estratégias disponíveis (8 estratégias completas)
+        # Estratégias disponíveis (13 estratégias: 8 clássicas + 5 SMC)
         self.strategies = {
             "rsi_mean_reversion": {
                 "name": "RSI Mean Reversion",
@@ -127,6 +138,52 @@ class StrategyLabProfessionalV6:
                     "tolerance_pct": {"default": 0.5, "min": 0.1, "max": 2.0, "description": "Tolerância (%)"}
                 },
                 "calculate": self._calculate_fibonacci_strategy
+            },
+            "smc_bos": {
+                "name": "SMC: Break of Structure",
+                "description": "Continuação de tendência após rompimento de swing high/low",
+                "emoji": "🔥",
+                "type": "SMC",
+                "params": {
+                    "min_displacement": {"default": 0.001, "min": 0.0001, "max": 0.01, "description": "Deslocamento mínimo (%)"}
+                },
+                "calculate": self._calculate_smc_bos
+            },
+            "smc_choch": {
+                "name": "SMC: Change of Character",
+                "description": "Reversão quando sequência de topos/fundos muda",
+                "emoji": "🔄",
+                "type": "SMC",
+                "params": {},
+                "calculate": self._calculate_smc_choch
+            },
+            "smc_order_blocks": {
+                "name": "SMC: Order Blocks",
+                "description": "Última vela de acumulação antes do rompimento",
+                "emoji": "📦",
+                "type": "SMC",
+                "params": {
+                    "min_range": {"default": 0, "min": 0, "max": 100, "description": "Range mínimo do bloco"}
+                },
+                "calculate": self._calculate_smc_order_blocks
+            },
+            "smc_fvg": {
+                "name": "SMC: Fair Value Gap",
+                "description": "Gap entre corpos/sombras indicando imbalance",
+                "emoji": "⚡",
+                "type": "SMC",
+                "params": {},
+                "calculate": self._calculate_smc_fvg
+            },
+            "smc_liquidity_sweep": {
+                "name": "SMC: Liquidity Sweep",
+                "description": "Pavio que varre liquidez indicando trap",
+                "emoji": "🎣",
+                "type": "SMC",
+                "params": {
+                    "body_ratio": {"default": 0.5, "min": 0.1, "max": 0.9, "description": "Razão corpo/pavio"}
+                },
+                "calculate": self._calculate_smc_liquidity_sweep
             }
         }
         
@@ -708,3 +765,31 @@ class StrategyLabProfessionalV6:
                     return {"action": "SELL", "confidence": 0.6}
         
         return {"action": "HOLD", "confidence": 0.0}
+    
+    def _calculate_smc_bos(self, df: pd.DataFrame, params: dict):
+        """Calcula estratégia SMC: Break of Structure"""
+        min_displacement = params.get('min_displacement', 0.001)
+        signal = detect_bos(df, min_displacement)
+        return {"action": signal.action, "confidence": signal.confidence}
+    
+    def _calculate_smc_choch(self, df: pd.DataFrame, params: dict):
+        """Calcula estratégia SMC: Change of Character"""
+        signal = detect_choch(df)
+        return {"action": signal.action, "confidence": signal.confidence}
+    
+    def _calculate_smc_order_blocks(self, df: pd.DataFrame, params: dict):
+        """Calcula estratégia SMC: Order Blocks"""
+        min_range = params.get('min_range', 0)
+        signal = detect_order_blocks(df, min_range)
+        return {"action": signal.action, "confidence": signal.confidence}
+    
+    def _calculate_smc_fvg(self, df: pd.DataFrame, params: dict):
+        """Calcula estratégia SMC: Fair Value Gap"""
+        signal = detect_fvg(df)
+        return {"action": signal.action, "confidence": signal.confidence}
+    
+    def _calculate_smc_liquidity_sweep(self, df: pd.DataFrame, params: dict):
+        """Calcula estratégia SMC: Liquidity Sweep"""
+        body_ratio = params.get('body_ratio', 0.5)
+        signal = detect_liquidity_sweep(df, body_ratio)
+        return {"action": signal.action, "confidence": signal.confidence}

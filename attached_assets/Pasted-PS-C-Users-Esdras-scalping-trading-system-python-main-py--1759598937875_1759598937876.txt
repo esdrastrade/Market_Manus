@@ -1,0 +1,164 @@
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+
+================================================================================
+     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0
+================================================================================
+🎯 Sistema modular com Strategy Lab V6 e Confluence Mode
+📊 8 estratégias: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+📅 Seleção de período personalizado
+💰 Capital management automático
+🔗 Data Provider: Binance API
+================================================================================
+
+🔄 INICIALIZANDO SISTEMA...
+✅ Data Provider: Conectado
+✅ Capital Manager: Inicializado ($151.76)
+✅ Strategy Lab V6: Carregado (8 estratégias)
+✅ Confluence Mode: Carregado
+✅ OpenAI API: Configurada
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $151.76
+   📊 Position size: $3.04
+   📈 P&L total: $+51.76
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (8 estratégias)
+   3️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 1
+
+💱 Digite o símbolo (padrão BTCUSDT): WLFIUSDT
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ 🧭 ANÁLISE DE SENTIMENTO DE MERCADO                                                                                  │
+│                                                                                                                      │
+│ Ativo: WLFIUSDT  |  Score: 0.65  |  Status: 📈 OTIMISTA                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────── 📖 Interpretação ──────────────────────────────────────────────────╮
+│                                                                                                                      │
+│  📊 **Análise para WLFIUSDT**                                                                                        │
+│  Com base em 3 fonte(s) de dados confiável(is), o sentimento do mercado está 📈 otimista. Sentimento positivo        │
+│  predomina, indicando boa disposição de compra.                                                                      │
+│                                                                                                                      │
+│  🎭 **Sentimento Geral**: O índice Fear & Greed está em 71.0/100 (Greed), mostrando leve otimismo entre              │
+│  investidores.                                                                                                       │
+│  💰 **Ação de Preço**: Negociando a $0.2003, o WLFIUSDT recua -0.52% hoje. Volume de $0.18B mostra certa pressão     │
+│  vendedora.                                                                                                          │
+│                                                                                                                      │
+│  ✅ **Recomendação**: O sentimento favorável pode indicar boas oportunidades de entrada em posições long. Monitore   │
+│  níveis de resistência.                                                                                              │
+│                                                                                                                      │
+│  💡 *Nota: 5 fonte(s) adicional(is) está(ão) disponível(is) mediante configuração de API keys.*                      │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+━━━ Detalhamento Técnico das Fontes ━━━
+
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Fonte         ┃ Categoria       ┃ Status                          ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ alt_fng       │ macro_sentiment │ ✅ F&G: 71.0 (Greed)            │
+│ coingecko     │ spot_market     │ ✅ $0 (-0.52%)                  │
+│ bybit         │ derivatives     │ ⚠️ Sem dados                     │
+│ coinglass     │ derivatives     │ ❌ no-key                       │
+│ cryptopanic   │ news            │ ❌ no-token                     │
+│ santiment     │ social          │ ❌ no-key                       │
+│ glassnode     │ onchain         │ ❌ no-key                       │
+│ google_trends │ interest        │ ℹ️ implement pytrends if enabled │
+└───────────────┴─────────────────┴─────────────────────────────────┘
+
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $151.76
+   📊 Position size: $3.04
+   📈 P&L total: $+51.76
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (8 estratégias)
+   3️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 1
+
+💱 Digite o símbolo (padrão BTCUSDT): BDAGUSDT
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ 🧭 ANÁLISE DE SENTIMENTO DE MERCADO                                                                                  │
+│                                                                                                                      │
+│ Ativo: BDAGUSDT  |  Score: 0.71  |  Status: 📈 OTIMISTA                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────── 📖 Interpretação ──────────────────────────────────────────────────╮
+│                                                                                                                      │
+│  📊 **Análise para BDAGUSDT**                                                                                        │
+│  Com base em 1 fonte(s) de dados confiável(is), o sentimento do mercado está 📈 otimista. Sentimento positivo        │
+│  predomina, indicando boa disposição de compra.                                                                      │
+│                                                                                                                      │
+│  🎭 **Sentimento Geral**: O índice Fear & Greed está em 71.0/100 (Greed), mostrando leve otimismo entre              │
+│  investidores.                                                                                                       │
+│                                                                                                                      │
+│  ✅ **Recomendação**: O sentimento favorável pode indicar boas oportunidades de entrada em posições long. Monitore   │
+│  níveis de resistência.                                                                                              │
+│                                                                                                                      │
+│  💡 *Nota: 7 fonte(s) adicional(is) está(ão) disponível(is) mediante configuração de API keys.*                      │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+━━━ Detalhamento Técnico das Fontes ━━━
+
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Fonte         ┃ Categoria       ┃ Status                          ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ alt_fng       │ macro_sentiment │ ✅ F&G: 71.0 (Greed)            │
+│ coingecko     │ spot_market     │ ❌ not-found                    │
+│ bybit         │ derivatives     │ ❌ no-data                      │
+│ coinglass     │ derivatives     │ ❌ no-key                       │
+│ cryptopanic   │ news            │ ❌ no-token                     │
+│ santiment     │ social          │ ❌ no-key                       │
+│ glassnode     │ onchain         │ ❌ no-key                       │
+│ google_trends │ interest        │ ℹ️ implement pytrends if enabled │
+└───────────────┴─────────────────┴─────────────────────────────────┘
+
+
+📖 Pressione ENTER para continuar...

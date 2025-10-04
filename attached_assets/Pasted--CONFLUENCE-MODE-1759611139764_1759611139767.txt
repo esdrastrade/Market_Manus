@@ -1,0 +1,117 @@
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2025-10-01
+✅ Data inicial: 2025-10-01
+
+📅 Data final (YYYY-MM-DD): 2025-10-03
+✅ Data final: 2025-10-03
+
+✅ Período personalizado configurado:
+   📅 De: 2025-10-01
+   📅 Até: 2025-10-03
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 1 minuto
+   📈 Estratégias: 5 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~2880 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-10-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-10-01 08:20...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-10-01 16:40...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-10-02 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-10-02 09:20...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 380 candles a partir de 2025-10-02 17:40...
+   ✅ Recebidos 380 candles (total acumulado: 2880)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 2,880
+📅 Período: 2025-10-01 00:00:00 → 2025-10-02 23:59:00
+✅ API Success Rate: 100.0% (6/6 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando estratégias sobre dados reais...

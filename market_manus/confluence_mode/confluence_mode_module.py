@@ -15,6 +15,15 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Any
 from pathlib import Path
 
+# Importar estratégias SMC
+from market_manus.strategies.smc.patterns import (
+    detect_bos,
+    detect_choch,
+    detect_order_blocks,
+    detect_fvg,
+    detect_liquidity_sweep
+)
+
 class ConfluenceModeModule:
     """
     Módulo de Confluência - Sistema de múltiplas estratégias
@@ -28,7 +37,7 @@ class ConfluenceModeModule:
         self.data_provider = data_provider
         self.capital_manager = capital_manager
         
-        # Estratégias disponíveis para confluência
+        # Estratégias disponíveis para confluência (13 estratégias: 8 clássicas + 5 SMC)
         self.available_strategies = {
             "rsi_mean_reversion": {
                 "name": "RSI Mean Reversion",
@@ -76,6 +85,36 @@ class ConfluenceModeModule:
                 "name": "Fibonacci Retracement",
                 "description": "Níveis de Fibonacci",
                 "emoji": "🔢",
+                "weight": 1.0
+            },
+            "smc_bos": {
+                "name": "SMC: Break of Structure",
+                "description": "Continuação de tendência após rompimento de swing high/low",
+                "emoji": "🔥",
+                "weight": 1.0
+            },
+            "smc_choch": {
+                "name": "SMC: Change of Character",
+                "description": "Reversão quando sequência de topos/fundos muda",
+                "emoji": "🔄",
+                "weight": 1.0
+            },
+            "smc_order_blocks": {
+                "name": "SMC: Order Blocks",
+                "description": "Última vela de acumulação antes do rompimento",
+                "emoji": "📦",
+                "weight": 1.0
+            },
+            "smc_fvg": {
+                "name": "SMC: Fair Value Gap",
+                "description": "Gap entre corpos/sombras indicando imbalance",
+                "emoji": "⚡",
+                "weight": 1.0
+            },
+            "smc_liquidity_sweep": {
+                "name": "SMC: Liquidity Sweep",
+                "description": "Pavio que varre liquidez indicando trap",
+                "emoji": "🎣",
                 "weight": 1.0
             }
         }
@@ -836,6 +875,77 @@ class ConfluenceModeModule:
         elif strategy_key == "fibonacci":
             # Detectar topos e fundos e contar sinais em níveis de Fibonacci
             signals_count = len(closes) // 20  # Simplificado
+        
+        # SMC: Break of Structure
+        elif strategy_key == "smc_bos":
+            df = pd.DataFrame({
+                'close': closes,
+                'high': highs,
+                'low': lows,
+                'open': closes  # Simplificado: usar close como proxy para open
+            })
+            # Aplicar em janelas deslizantes
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = detect_bos(window_df)
+                if signal.action != "HOLD":
+                    signals_count += 1
+        
+        # SMC: Change of Character
+        elif strategy_key == "smc_choch":
+            df = pd.DataFrame({
+                'close': closes,
+                'high': highs,
+                'low': lows,
+                'open': closes
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = detect_choch(window_df)
+                if signal.action != "HOLD":
+                    signals_count += 1
+        
+        # SMC: Order Blocks
+        elif strategy_key == "smc_order_blocks":
+            df = pd.DataFrame({
+                'close': closes,
+                'high': highs,
+                'low': lows,
+                'open': closes
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = detect_order_blocks(window_df)
+                if signal.action != "HOLD":
+                    signals_count += 1
+        
+        # SMC: Fair Value Gap
+        elif strategy_key == "smc_fvg":
+            df = pd.DataFrame({
+                'close': closes,
+                'high': highs,
+                'low': lows,
+                'open': closes
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = detect_fvg(window_df)
+                if signal.action != "HOLD":
+                    signals_count += 1
+        
+        # SMC: Liquidity Sweep
+        elif strategy_key == "smc_liquidity_sweep":
+            df = pd.DataFrame({
+                'close': closes,
+                'high': highs,
+                'low': lows,
+                'open': closes
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = detect_liquidity_sweep(window_df)
+                if signal.action != "HOLD":
+                    signals_count += 1
         
         return signals_count
     

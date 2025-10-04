@@ -1,0 +1,1116 @@
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+
+================================================================================
+     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0
+================================================================================
+🎯 Sistema modular com Strategy Lab V6 e Confluence Mode
+📊 8 estratégias: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+📅 Seleção de período personalizado
+💰 Capital management automático
+🔗 Data Provider: Binance API
+================================================================================
+
+🔄 INICIALIZANDO SISTEMA...
+✅ Data Provider: Conectado
+✅ Capital Manager: Inicializado ($151.76)
+✅ Strategy Lab V6: Carregado (8 estratégias)
+✅ Confluence Mode: Carregado
+✅ OpenAI API: Configurada
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $151.76
+   📊 Position size: $3.04
+   📈 P&L total: $+51.76
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (8 estratégias)
+   3️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 1
+
+💱 Digite o símbolo (padrão BTCUSDT): WLFIUSDT
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ 🧭 ANÁLISE DE SENTIMENTO DE MERCADO                                                                                  │
+│                                                                                                                      │
+│ Ativo: WLFIUSDT  |  Score: 0.65  |  Status: 📈 OTIMISTA                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────── 📖 Interpretação ──────────────────────────────────────────────────╮
+│                                                                                                                      │
+│  📊 **Análise para WLFIUSDT**                                                                                        │
+│  Com base em 3 fonte(s) de dados confiável(is), o sentimento do mercado está 📈 otimista. Sentimento positivo        │
+│  predomina, indicando boa disposição de compra.                                                                      │
+│                                                                                                                      │
+│  🎭 **Sentimento Geral**: O índice Fear & Greed está em 71.0/100 (Greed), mostrando leve otimismo entre              │
+│  investidores.                                                                                                       │
+│  💰 **Ação de Preço**: Negociando a $0.2003, o WLFIUSDT recua -0.52% hoje. Volume de $0.18B mostra certa pressão     │
+│  vendedora.                                                                                                          │
+│                                                                                                                      │
+│  ✅ **Recomendação**: O sentimento favorável pode indicar boas oportunidades de entrada em posições long. Monitore   │
+│  níveis de resistência.                                                                                              │
+│                                                                                                                      │
+│  💡 *Nota: 5 fonte(s) adicional(is) está(ão) disponível(is) mediante configuração de API keys.*                      │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+━━━ Detalhamento Técnico das Fontes ━━━
+
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Fonte         ┃ Categoria       ┃ Status                          ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ alt_fng       │ macro_sentiment │ ✅ F&G: 71.0 (Greed)            │
+│ coingecko     │ spot_market     │ ✅ $0 (-0.52%)                  │
+│ bybit         │ derivatives     │ ⚠️ Sem dados                     │
+│ coinglass     │ derivatives     │ ❌ no-key                       │
+│ cryptopanic   │ news            │ ❌ no-token                     │
+│ santiment     │ social          │ ❌ no-key                       │
+│ glassnode     │ onchain         │ ❌ no-key                       │
+│ google_trends │ interest        │ ℹ️ implement pytrends if enabled │
+└───────────────┴─────────────────┴─────────────────────────────────┘
+
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $151.76
+   📊 Position size: $3.04
+   📈 P&L total: $+51.76
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (8 estratégias)
+   3️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 1
+
+💱 Digite o símbolo (padrão BTCUSDT): BDAGUSDT
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ 🧭 ANÁLISE DE SENTIMENTO DE MERCADO                                                                                  │
+│                                                                                                                      │
+│ Ativo: BDAGUSDT  |  Score: 0.71  |  Status: 📈 OTIMISTA                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────────── 📖 Interpretação ──────────────────────────────────────────────────╮
+│                                                                                                                      │
+│  📊 **Análise para BDAGUSDT**                                                                                        │
+│  Com base em 1 fonte(s) de dados confiável(is), o sentimento do mercado está 📈 otimista. Sentimento positivo        │
+│  predomina, indicando boa disposição de compra.                                                                      │
+│                                                                                                                      │
+│  🎭 **Sentimento Geral**: O índice Fear & Greed está em 71.0/100 (Greed), mostrando leve otimismo entre              │
+│  investidores.                                                                                                       │
+│                                                                                                                      │
+│  ✅ **Recomendação**: O sentimento favorável pode indicar boas oportunidades de entrada em posições long. Monitore   │
+│  níveis de resistência.                                                                                              │
+│                                                                                                                      │
+│  💡 *Nota: 7 fonte(s) adicional(is) está(ão) disponível(is) mediante configuração de API keys.*                      │
+│                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+━━━ Detalhamento Técnico das Fontes ━━━
+
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Fonte         ┃ Categoria       ┃ Status                          ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ alt_fng       │ macro_sentiment │ ✅ F&G: 71.0 (Greed)            │
+│ coingecko     │ spot_market     │ ❌ not-found                    │
+│ bybit         │ derivatives     │ ❌ no-data                      │
+│ coinglass     │ derivatives     │ ❌ no-key                       │
+│ cryptopanic   │ news            │ ❌ no-token                     │
+│ santiment     │ social          │ ❌ no-key                       │
+│ glassnode     │ onchain         │ ❌ no-key                       │
+│ google_trends │ interest        │ ℹ️ implement pytrends if enabled │
+└───────────────┴─────────────────┴─────────────────────────────────┘
+
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $151.76
+   📊 Position size: $3.04
+   📈 P&L total: $+51.76
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (8 estratégias)
+   3️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 2
+
+🔬 INICIANDO STRATEGY LAB PROFESSIONAL V6...
+📊 8 estratégias disponíveis:
+   • RSI Mean Reversion
+   • EMA Crossover
+   • Bollinger Bands Breakout
+   • MACD
+   • Stochastic Oscillator
+   • Williams %R
+   • ADX
+   • Fibonacci Retracement
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   📈 Estratégia: ❌ Não selecionada
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 1
+
+🪙 SELEÇÃO DE ATIVO
+==================================================
+   1️⃣     🪙 BTCUSDT - Bitcoin
+   2️⃣     💎 ETHUSDT - Ethereum
+   3️⃣     🟡 BNBUSDT - Binance Coin
+   4️⃣     ⚡ SOLUSDT - Solana
+   5️⃣     💧 XRPUSDT - XRP
+   6️⃣     🔵 ADAUSDT - Cardano
+   7️⃣     🐕 DOGEUSDT - Dogecoin
+   8️⃣     🟣 MATICUSDT - Polygon
+
+   0️⃣  Voltar
+
+🔢 Escolha um ativo (0-8): 2
+
+✅ Ativo selecionado: 💎 ETHUSDT - Ethereum
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ❌ Não selecionada
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+📈 CONFIGURAÇÃO DE ESTRATÉGIA
+==================================================
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+       🏷️ Tipo: Oscillator
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+       🏷️ Tipo: Trend Following
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+       🏷️ Tipo: Volatility
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+       🏷️ Tipo: Momentum
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico %K e %D
+       🏷️ Tipo: Oscillator
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range Oscillator
+       🏷️ Tipo: Oscillator
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+       🏷️ Tipo: Trend Strength
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Retração de Fibonacci
+       🏷️ Tipo: Support/Resistance
+
+   0️⃣  Voltar
+
+🔢 Escolha uma estratégia (0-8): 8
+
+✅ Estratégia selecionada: 🔢 Fibonacci Retracement
+
+⚙️ CONFIGURAÇÃO DE PARÂMETROS - Fibonacci Retracement
+============================================================
+
+📊 Período lookback
+   Valor padrão: 50
+   Faixa: 20 - 100
+   Digite o valor (ENTER para padrão):
+   ✅ Período lookback: 50
+
+📊 Tolerância (%)
+   Valor padrão: 0.5
+   Faixa: 0.1 - 2.0
+   Digite o valor (ENTER para padrão):
+   ✅ Tolerância (%): 0.5
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2024-01-01
+✅ Data inicial: 2024-01-01
+
+📅 Data final (YYYY-MM-DD): 2025-10-03
+✅ Data final: 2025-10-03
+
+✅ Período personalizado configurado:
+   📅 De: 2024-01-01
+   📅 Até: 2025-10-03
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+❌ Selecione um timeframe primeiro (opção 3)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣     15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 3
+
+✅ Timeframe selecionado: 15 minutos - Swing trading curto
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+🧪 EXECUTANDO TESTE HISTÓRICO (BACKTEST)
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: Fibonacci Retracement
+   ⏰ Timeframe: 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Simulando backtest...
+
+📊 RESULTADOS DO BACKTEST:
+   💰 Capital inicial: $151.76
+   💵 Capital final: $129.00
+   📈 P&L: $-22.75
+   📊 ROI: -14.99%
+   🎯 Total de trades: 42
+   ✅ Trades vencedores: 21
+   ❌ Trades perdedores: 21
+   📊 Win Rate: 50.0%
+
+💰 Capital atualizado para: $129.00
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $129.00
+   💼 Position Size: $2.58
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+📈 CONFIGURAÇÃO DE ESTRATÉGIA
+==================================================
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+       🏷️ Tipo: Oscillator
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+       🏷️ Tipo: Trend Following
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+       🏷️ Tipo: Volatility
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+       🏷️ Tipo: Momentum
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico %K e %D
+       🏷️ Tipo: Oscillator
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range Oscillator
+       🏷️ Tipo: Oscillator
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+       🏷️ Tipo: Trend Strength
+   8️⃣  ✅ 🔢 Fibonacci Retracement
+       📝 Níveis de Retração de Fibonacci
+       🏷️ Tipo: Support/Resistance
+
+   0️⃣  Voltar
+
+🔢 Escolha uma estratégia (0-8): 1
+
+✅ Estratégia selecionada: 📊 RSI Mean Reversion
+
+⚙️ CONFIGURAÇÃO DE PARÂMETROS - RSI Mean Reversion
+============================================================
+
+📊 Período do RSI
+   Valor padrão: 14
+   Faixa: 7 - 30
+   Digite o valor (ENTER para padrão):
+   ✅ Período do RSI: 14
+
+📊 Nível de sobrevenda
+   Valor padrão: 30
+   Faixa: 20 - 35
+   Digite o valor (ENTER para padrão):
+   ✅ Nível de sobrevenda: 30
+
+📊 Nível de sobrecompra
+   Valor padrão: 70
+   Faixa: 65 - 80
+   Digite o valor (ENTER para padrão):
+   ✅ Nível de sobrecompra: 70
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ RSI Mean Reversion
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $129.00
+   💼 Position Size: $2.58
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+🧪 EXECUTANDO TESTE HISTÓRICO (BACKTEST)
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: RSI Mean Reversion
+   ⏰ Timeframe: 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Simulando backtest...
+
+📊 RESULTADOS DO BACKTEST:
+   💰 Capital inicial: $129.00
+   💵 Capital final: $158.04
+   📈 P&L: $+29.04
+   📊 ROI: +22.51%
+   🎯 Total de trades: 21
+   ✅ Trades vencedores: 10
+   ❌ Trades perdedores: 11
+   📊 Win Rate: 47.6%
+
+💰 Capital atualizado para: $158.04
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ RSI Mean Reversion
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $158.04
+   💼 Position Size: $3.16
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+📈 CONFIGURAÇÃO DE ESTRATÉGIA
+==================================================
+   1️⃣  ✅ 📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+       🏷️ Tipo: Oscillator
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+       🏷️ Tipo: Trend Following
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+       🏷️ Tipo: Volatility
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+       🏷️ Tipo: Momentum
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico %K e %D
+       🏷️ Tipo: Oscillator
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range Oscillator
+       🏷️ Tipo: Oscillator
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+       🏷️ Tipo: Trend Strength
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Retração de Fibonacci
+       🏷️ Tipo: Support/Resistance
+
+   0️⃣  Voltar
+
+🔢 Escolha uma estratégia (0-8): 4
+
+✅ Estratégia selecionada: 📊 MACD
+
+⚙️ CONFIGURAÇÃO DE PARÂMETROS - MACD
+============================================================
+
+📊 Período EMA rápida
+   Valor padrão: 12
+   Faixa: 5 - 20
+   Digite o valor (ENTER para padrão):
+   ✅ Período EMA rápida: 12
+
+📊 Período EMA lenta
+   Valor padrão: 26
+   Faixa: 20 - 50
+   Digite o valor (ENTER para padrão):
+   ✅ Período EMA lenta: 26
+
+📊 Período linha de sinal
+   Valor padrão: 9
+   Faixa: 5 - 15
+   Digite o valor (ENTER para padrão):
+   ✅ Período linha de sinal: 9
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ MACD
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $158.04
+   💼 Position Size: $3.16
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+🧪 EXECUTANDO TESTE HISTÓRICO (BACKTEST)
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: MACD
+   ⏰ Timeframe: 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Simulando backtest...
+
+📊 RESULTADOS DO BACKTEST:
+   💰 Capital inicial: $158.04
+   💵 Capital final: $176.11
+   📈 P&L: $+18.06
+   📊 ROI: +11.43%
+   🎯 Total de trades: 42
+   ✅ Trades vencedores: 19
+   ❌ Trades perdedores: 23
+   📊 Win Rate: 45.2%
+
+💰 Capital atualizado para: $176.11
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ MACD
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $176.11
+   💼 Position Size: $3.52
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+📈 CONFIGURAÇÃO DE ESTRATÉGIA
+==================================================
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+       🏷️ Tipo: Oscillator
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+       🏷️ Tipo: Trend Following
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+       🏷️ Tipo: Volatility
+   4️⃣  ✅ 📊 MACD
+       📝 Moving Average Convergence Divergence
+       🏷️ Tipo: Momentum
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico %K e %D
+       🏷️ Tipo: Oscillator
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range Oscillator
+       🏷️ Tipo: Oscillator
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+       🏷️ Tipo: Trend Strength
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Retração de Fibonacci
+       🏷️ Tipo: Support/Resistance
+
+   0️⃣  Voltar
+
+🔢 Escolha uma estratégia (0-8): 5
+
+✅ Estratégia selecionada: 📈 Stochastic Oscillator
+
+⚙️ CONFIGURAÇÃO DE PARÂMETROS - Stochastic Oscillator
+============================================================
+
+📊 Período %K
+   Valor padrão: 14
+   Faixa: 5 - 25
+   Digite o valor (ENTER para padrão):
+   ✅ Período %K: 14
+
+📊 Período %D
+   Valor padrão: 3
+   Faixa: 3 - 10
+   Digite o valor (ENTER para padrão):
+   ✅ Período %D: 3
+
+📊 Nível oversold
+   Valor padrão: 20
+   Faixa: 10 - 30
+   Digite o valor (ENTER para padrão):
+   ✅ Nível oversold: 20
+
+📊 Nível overbought
+   Valor padrão: 80
+   Faixa: 70 - 90
+   Digite o valor (ENTER para padrão):
+   ✅ Nível overbought: 80
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Stochastic Oscillator
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $176.11
+   💼 Position Size: $3.52
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+🧪 EXECUTANDO TESTE HISTÓRICO (BACKTEST)
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: Stochastic Oscillator
+   ⏰ Timeframe: 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Simulando backtest...
+
+📊 RESULTADOS DO BACKTEST:
+   💰 Capital inicial: $176.11
+   💵 Capital final: $205.70
+   📈 P&L: $+29.60
+   📊 ROI: +16.81%
+   🎯 Total de trades: 18
+   ✅ Trades vencedores: 11
+   ❌ Trades perdedores: 7
+   📊 Win Rate: 61.1%
+
+💰 Capital atualizado para: $205.70
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Stochastic Oscillator
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $205.70
+   💼 Position Size: $4.11
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣  ✅ 15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 1
+
+✅ Timeframe selecionado: 1 minuto - Scalping ultra-rápido
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Stochastic Oscillator
+   ⏰ Timeframe: ✅ 1 minuto
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $205.70
+   💼 Position Size: $4.11
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+🧪 EXECUTANDO TESTE HISTÓRICO (BACKTEST)
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: Stochastic Oscillator
+   ⏰ Timeframe: 1 minuto
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Simulando backtest...
+
+📊 RESULTADOS DO BACKTEST:
+   💰 Capital inicial: $205.70
+   💵 Capital final: $181.84
+   📈 P&L: $-23.86
+   📊 ROI: -11.60%
+   🎯 Total de trades: 18
+   ✅ Trades vencedores: 8
+   ❌ Trades perdedores: 10
+   📊 Win Rate: 44.4%
+
+💰 Capital atualizado para: $181.84
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Stochastic Oscillator
+   ⏰ Timeframe: ✅ 1 minuto
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $181.84
+   💼 Position Size: $3.64
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+⚡ EXECUTANDO TESTE EM TEMPO REAL
+==================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: Stochastic Oscillator
+   ⏰ Timeframe: 1 minuto
+
+⏰ Duração do teste em minutos (padrão: 5): 5
+
+🔄 Simulando teste em tempo real por 5 minutos...
+⚠️ (Simulação para demonstração)
+   📊 Minuto 1: Monitorando ETHUSDT...
+   📊 Minuto 2: Monitorando ETHUSDT...
+   📊 Minuto 3: Monitorando ETHUSDT...
+   📊 Minuto 4: Monitorando ETHUSDT...
+   📊 Minuto 5: Monitorando ETHUSDT...
+
+📊 RESULTADOS DO TESTE EM TEMPO REAL:
+   ⏰ Duração: 5 minutos
+   📡 Sinais gerados: 3
+   📊 Status: Monitoramento concluído
+   🎯 Últimos sinais detectados com sucesso
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Stochastic Oscillator
+   ⏰ Timeframe: ✅ 1 minuto
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $181.84
+   💼 Position Size: $3.64
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8):

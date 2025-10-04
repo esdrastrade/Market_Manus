@@ -1,0 +1,1215 @@
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+
+================================================================================
+     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0
+================================================================================
+🎯 Sistema modular com Strategy Lab V6 e Confluence Mode
+📊 8 estratégias: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+📅 Seleção de período personalizado
+💰 Capital management automático
+🔗 Data Provider: Binance API
+================================================================================
+
+🔄 INICIALIZANDO SISTEMA...
+✅ Data Provider: Conectado
+✅ Capital Manager: Inicializado ($100.00)
+✅ Strategy Lab V6: Carregado (8 estratégias)
+✅ Confluence Mode: Carregado
+✅ OpenAI API: Configurada
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🎯 MÓDULOS PRINCIPAIS:
+   1️⃣  Strategy Lab Professional V6 (8 estratégias)
+   2️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   3️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   7️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   4️⃣  Capital Dashboard
+   5️⃣  Connectivity Status
+   6️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-7): 1
+
+🔬 INICIANDO STRATEGY LAB PROFESSIONAL V6...
+📊 8 estratégias disponíveis:
+   • RSI Mean Reversion
+   • EMA Crossover
+   • Bollinger Bands Breakout
+   • MACD
+   • Stochastic Oscillator
+   • Williams %R
+   • ADX
+   • Fibonacci Retracement
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   📈 Estratégia: ❌ Não selecionada
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 1
+
+🪙 SELEÇÃO DE ATIVO
+==================================================
+   1️⃣     🪙 BTCUSDT - Bitcoin
+   2️⃣     💎 ETHUSDT - Ethereum
+   3️⃣     🟡 BNBUSDT - Binance Coin
+   4️⃣     ⚡ SOLUSDT - Solana
+   5️⃣     💧 XRPUSDT - XRP
+   6️⃣     🔵 ADAUSDT - Cardano
+   7️⃣     🐕 DOGEUSDT - Dogecoin
+   8️⃣     🟣 MATICUSDT - Polygon
+
+   0️⃣  Voltar
+
+🔢 Escolha um ativo (0-8): 2
+
+✅ Ativo selecionado: 💎 ETHUSDT - Ethereum
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ❌ Não selecionada
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+📈 CONFIGURAÇÃO DE ESTRATÉGIA
+==================================================
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+       🏷️ Tipo: Oscillator
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+       🏷️ Tipo: Trend Following
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+       🏷️ Tipo: Volatility
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+       🏷️ Tipo: Momentum
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico %K e %D
+       🏷️ Tipo: Oscillator
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range Oscillator
+       🏷️ Tipo: Oscillator
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+       🏷️ Tipo: Trend Strength
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Retração de Fibonacci
+       🏷️ Tipo: Support/Resistance
+
+   0️⃣  Voltar
+
+🔢 Escolha uma estratégia (0-8): 8
+
+✅ Estratégia selecionada: 🔢 Fibonacci Retracement
+
+⚙️ CONFIGURAÇÃO DE PARÂMETROS - Fibonacci Retracement
+============================================================
+
+📊 Período lookback
+   Valor padrão: 50
+   Faixa: 20 - 100
+   Digite o valor (ENTER para padrão):
+   ✅ Período lookback: 50
+
+📊 Tolerância (%)
+   Valor padrão: 0.5
+   Faixa: 0.1 - 2.0
+   Digite o valor (ENTER para padrão):
+   ✅ Tolerância (%): 0.5
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣     15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 3
+
+✅ Timeframe selecionado: 15 minutos - Swing trading curto
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+🧪 EXECUTANDO TESTE HISTÓRICO (BACKTEST)
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: Fibonacci Retracement
+   ⏰ Timeframe: 15 minutos
+   📅 Período: Últimos 30 dias
+
+🔄 Simulando backtest...
+
+📊 RESULTADOS DO BACKTEST:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $122.28
+   📈 P&L: $+22.28
+   📊 ROI: +22.28%
+   🎯 Total de trades: 16
+   ✅ Trades vencedores: 8
+   ❌ Trades perdedores: 8
+   📊 Win Rate: 50.0%
+
+💰 Capital atualizado para: $122.28
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $122.28
+   💼 Position Size: $2.45
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 7
+
+📊 VISUALIZAR RESULTADOS
+==================================================
+❌ Nenhum teste executado ainda
+💡 Execute um backtest ou teste em tempo real primeiro
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $122.28
+   💼 Position Size: $2.45
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+⚡ EXECUTANDO TESTE EM TEMPO REAL
+==================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: Fibonacci Retracement
+   ⏰ Timeframe: 15 minutos
+
+⏰ Duração do teste em minutos (padrão: 5):
+
+🔄 Simulando teste em tempo real por 5 minutos...
+⚠️ (Simulação para demonstração)
+   📊 Minuto 1: Monitorando ETHUSDT...
+   📊 Minuto 2: Monitorando ETHUSDT...
+   📊 Minuto 3: Monitorando ETHUSDT...
+   📊 Minuto 4: Monitorando ETHUSDT...
+   📊 Minuto 5: Monitorando ETHUSDT...
+
+📊 RESULTADOS DO TESTE EM TEMPO REAL:
+   ⏰ Duração: 5 minutos
+   📡 Sinais gerados: 5
+   📊 Status: Monitoramento concluído
+   🎯 Últimos sinais detectados com sucesso
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $122.28
+   💼 Position Size: $2.45
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2024-01-01
+✅ Data inicial: 2024-01-01
+
+📅 Data final (YYYY-MM-DD): 2025-10-03
+✅ Data final: 2025-10-03
+
+✅ Período personalizado configurado:
+   📅 De: 2024-01-01
+   📅 Até: 2025-10-03
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $122.28
+   💼 Position Size: $2.45
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+🧪 EXECUTANDO TESTE HISTÓRICO (BACKTEST)
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   📈 Estratégia: Fibonacci Retracement
+   ⏰ Timeframe: 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Simulando backtest...
+
+📊 RESULTADOS DO BACKTEST:
+   💰 Capital inicial: $122.28
+   💵 Capital final: $151.76
+   📈 P&L: $+29.47
+   📊 ROI: +24.10%
+   🎯 Total de trades: 48
+   ✅ Trades vencedores: 27
+   ❌ Trades perdedores: 21
+   📊 Win Rate: 56.2%
+
+💰 Capital atualizado para: $151.76
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 8
+
+📤 EXPORTAR RELATÓRIOS
+==================================================
+❌ Nenhum resultado para exportar
+💡 Execute um teste primeiro
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ Fibonacci Retracement
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+📈 CONFIGURAÇÃO DE ESTRATÉGIA
+==================================================
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+       🏷️ Tipo: Oscillator
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+       🏷️ Tipo: Trend Following
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+       🏷️ Tipo: Volatility
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+       🏷️ Tipo: Momentum
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico %K e %D
+       🏷️ Tipo: Oscillator
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range Oscillator
+       🏷️ Tipo: Oscillator
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+       🏷️ Tipo: Trend Strength
+   8️⃣  ✅ 🔢 Fibonacci Retracement
+       📝 Níveis de Retração de Fibonacci
+       🏷️ Tipo: Support/Resistance
+
+   0️⃣  Voltar
+
+🔢 Escolha uma estratégia (0-8): 1
+
+✅ Estratégia selecionada: 📊 RSI Mean Reversion
+
+⚙️ CONFIGURAÇÃO DE PARÂMETROS - RSI Mean Reversion
+============================================================
+
+📊 Período do RSI
+   Valor padrão: 14
+   Faixa: 7 - 30
+   Digite o valor (ENTER para padrão):
+   ✅ Período do RSI: 14
+
+📊 Nível de sobrevenda
+   Valor padrão: 30
+   Faixa: 20 - 35
+   Digite o valor (ENTER para padrão):
+   ✅ Nível de sobrevenda: 30
+
+📊 Nível de sobrecompra
+   Valor padrão: 70
+   Faixa: 65 - 80
+   Digite o valor (ENTER para padrão):
+   ✅ Nível de sobrecompra: 70
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ✅ RSI Mean Reversion
+   ⏰ Timeframe: ✅ 15 minutos
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 0
+
+👋 Saindo do Strategy Lab Professional V6...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $151.76
+   📊 Position size: $3.04
+   📈 P&L total: $+51.76
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🎯 MÓDULOS PRINCIPAIS:
+   1️⃣  Strategy Lab Professional V6 (8 estratégias)
+   2️⃣  Confluence Mode (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   3️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   7️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   4️⃣  Capital Dashboard
+   5️⃣  Connectivity Status
+   6️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-7): 2
+
+🎯 INICIANDO CONFLUENCE MODE...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 1
+
+🪙 SELEÇÃO DE ATIVO
+==================================================
+   1️⃣     🪙 BTCUSDT - Bitcoin
+   2️⃣     💎 ETHUSDT - Ethereum
+   3️⃣     🟡 BNBUSDT - Binance Coin
+   4️⃣     ⚡ SOLUSDT - Solana
+   5️⃣     💧 XRPUSDT - XRP
+   6️⃣     🔵 ADAUSDT - Cardano
+   7️⃣     🐕 DOGEUSDT - Dogecoin
+   8️⃣     🟣 MATICUSDT - Polygon
+
+   0️⃣  Voltar
+
+🔢 Escolha um ativo (0-8): 2
+
+✅ Ativo selecionado: 💎 ETHUSDT - Ethereum
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣     15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 2
+
+✅ Timeframe selecionado: 5 minutos - Scalping rápido
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 1,4,5,8
+
+✅ Estratégias selecionadas:
+   📊 RSI Mean Reversion
+   📊 MACD
+   📈 Stochastic Oscillator
+   🔢 Fibonacci Retracement
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣     ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 4
+
+✅ Modo selecionado: ⚖️ WEIGHTED (Ponderado)
+
+⚖️ CONFIGURAÇÃO DE PESOS
+==================================================
+💡 Configure o peso de cada estratégia (0.1 a 2.0)
+
+📊 RSI Mean Reversion
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 2.0
+   ✅ Peso atualizado: 2.0
+
+📊 MACD
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 1.5
+   ✅ Peso atualizado: 1.5
+
+📊 Stochastic Oscillator
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 1.5
+   ✅ Peso atualizado: 1.5
+
+📊 Fibonacci Retracement
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 2.5
+   ⚠️ Peso fora da faixa, mantendo: 1.0
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 5 minutos
+   📈 Estratégias: 4 selecionadas
+   🎯 Modo: WEIGHTED (Ponderado)
+   📅 Período: Últimos 30 dias
+
+🔄 Buscando dados reais da Binance...
+   📡 Obtendo 500 velas de 5 minutos...
+   ✅ Recebidas 500 velas reais!
+
+📊 Executando estratégias sobre dados reais...
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $151.76
+   💵 Capital final: $151.74
+   📈 P&L: $-0.01
+   📊 ROI: -0.01%
+   🎯 Sinais de confluência: 114
+   ✅ Trades vencedores: 21
+   ❌ Trades perdedores: 29
+   📊 Win Rate: 42.0%
+
+📈 DETALHES POR ESTRATÉGIA:
+   RSI Mean Reversion: 103 sinais (peso: 2.0)
+   MACD: 41 sinais (peso: 1.5)
+   Stochastic Oscillator: 264 sinais (peso: 1.5)
+   Fibonacci Retracement: 25 sinais (peso: 1.0)
+
+💰 Capital real permanece: $151.76
+   📊 Capital simulado (backtest): $151.74
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣     ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣  ✅ ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 4
+
+✅ Modo selecionado: ⚖️ WEIGHTED (Ponderado)
+
+⚖️ CONFIGURAÇÃO DE PESOS
+==================================================
+💡 Configure o peso de cada estratégia (0.1 a 2.0)
+
+📊 RSI Mean Reversion
+   Peso atual: 2.0
+   Novo peso (0.1-2.0, ENTER para manter): 2.0
+   ✅ Peso atualizado: 2.0
+
+📊 MACD
+   Peso atual: 1.5
+   Novo peso (0.1-2.0, ENTER para manter): 1.5
+   ✅ Peso atualizado: 1.5
+
+📊 Stochastic Oscillator
+   Peso atual: 1.5
+   Novo peso (0.1-2.0, ENTER para manter): 2.0
+   ✅ Peso atualizado: 2.0
+
+📊 Fibonacci Retracement
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 2.0
+   ✅ Peso atualizado: 2.0
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 5 minutos
+   📈 Estratégias: 4 selecionadas
+   🎯 Modo: WEIGHTED (Ponderado)
+   📅 Período: Últimos 30 dias
+
+🔄 Buscando dados reais da Binance...
+   📡 Obtendo 500 velas de 5 minutos...
+   ✅ Recebidas 500 velas reais!
+
+📊 Executando estratégias sobre dados reais...
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $151.76
+   💵 Capital final: $151.74
+   📈 P&L: $-0.01
+   📊 ROI: -0.01%
+   🎯 Sinais de confluência: 113
+   ✅ Trades vencedores: 21
+   ❌ Trades perdedores: 29
+   📊 Win Rate: 42.0%
+
+📈 DETALHES POR ESTRATÉGIA:
+   RSI Mean Reversion: 103 sinais (peso: 2.0)
+   MACD: 41 sinais (peso: 1.5)
+   Stochastic Oscillator: 265 sinais (peso: 2.0)
+   Fibonacci Retracement: 25 sinais (peso: 2.0)
+
+💰 Capital real permanece: $151.76
+   📊 Capital simulado (backtest): $151.74
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2024-01-01
+✅ Data inicial: 2024-01-01
+
+📅 Data final (YYYY-MM-DD): 2025-10-03
+✅ Data final: 2025-10-03
+
+✅ Período personalizado configurado:
+   📅 De: 2024-01-01
+   📅 Até: 2025-10-03
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $151.76
+   💼 Position Size: $3.04
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 5 minutos
+   📈 Estratégias: 4 selecionadas
+   🎯 Modo: WEIGHTED (Ponderado)
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📡 Obtendo 500 velas de 5 minutos...
+   ✅ Recebidas 500 velas reais!
+
+📊 Executando estratégias sobre dados reais...
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $151.76
+   💵 Capital final: $151.74
+   📈 P&L: $-0.01
+   📊 ROI: -0.01%
+   🎯 Sinais de confluência: 113
+   ✅ Trades vencedores: 21
+   ❌ Trades perdedores: 29
+   📊 Win Rate: 42.0%
+
+📈 DETALHES POR ESTRATÉGIA:
+   RSI Mean Reversion: 103 sinais (peso: 2.0)
+   MACD: 41 sinais (peso: 1.5)
+   Stochastic Oscillator: 265 sinais (peso: 2.0)
+   Fibonacci Retracement: 25 sinais (peso: 2.0)
+
+💰 Capital real permanece: $151.76
+   📊 Capital simulado (backtest): $151.74
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...

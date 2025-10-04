@@ -25,6 +25,9 @@ from market_manus.strategies.smc.patterns import (
     detect_liquidity_sweep
 )
 
+# Importar filtro de volume
+from market_manus.analysis.volume_filter import VolumeFilterPipeline
+
 class ConfluenceModeModule:
     """
     Módulo de Confluência - Sistema de múltiplas estratégias
@@ -37,6 +40,9 @@ class ConfluenceModeModule:
     def __init__(self, data_provider=None, capital_manager=None):
         self.data_provider = data_provider
         self.capital_manager = capital_manager
+        
+        # Volume Filter Pipeline
+        self.volume_pipeline = VolumeFilterPipeline()
         
         # Estratégias disponíveis para confluência (13 estratégias: 8 clássicas + 5 SMC)
         self.available_strategies = {
@@ -792,8 +798,27 @@ class ConfluenceModeModule:
                     description=f"[{idx}/{total_strategies}] {strategy['emoji']} {strategy['name']} • [cyan]{speed:.0f} units/s[/cyan]"
                 )
         
+        # Aplicar filtro de volume
+        print("\n🔍 Aplicando filtro de volume...")
+        volumes = pd.Series([float(k[5]) for k in klines])
+        
+        # Exibir estatísticas do filtro antes de aplicar (opcional)
+        self.volume_pipeline.volume_filter.display_filter_stats(volumes)
+        
+        # Resetar estatísticas antes de aplicar
+        self.volume_pipeline.reset_stats()
+        
+        # Aplicar filtro aos sinais de todas as estratégias
+        filtered_strategy_signals = self.volume_pipeline.apply_to_strategy_signals(
+            strategy_signals,
+            volumes
+        )
+        
+        # Exibir resumo do filtro
+        print(f"\n{self.volume_pipeline.get_stats_summary()}")
+        
         # Calcular confluência baseado no modo (NOVO: retorna lista de índices)
-        confluence_signal_indices = self._calculate_confluence_signals(strategy_signals)
+        confluence_signal_indices = self._calculate_confluence_signals(filtered_strategy_signals)
         
         # Calcular resultados financeiros baseados nos sinais reais
         initial_capital = self.capital_manager.current_capital if self.capital_manager else 10000
@@ -815,9 +840,11 @@ class ConfluenceModeModule:
         print(f"   ❌ Trades perdedores: {losing_trades}")
         print(f"   📊 Win Rate: {win_rate:.1f}%")
         
-        print(f"\n📈 DETALHES POR ESTRATÉGIA:")
-        for strategy_key, data in strategy_signals.items():
-            print(f"   {data['name']}: {len(data['signal_indices'])} sinais (peso: {data['weight']})")
+        print(f"\n📈 DETALHES POR ESTRATÉGIA (APÓS FILTRO DE VOLUME):")
+        for strategy_key, data in filtered_strategy_signals.items():
+            original_count = data.get('original_count', len(data['signal_indices']))
+            filtered_count = data.get('filtered_count', len(data['signal_indices']))
+            print(f"   {data['name']}: {filtered_count} sinais (original: {original_count}, peso: {data['weight']})")
         
         # Mostrar capital simulado (sem alterar o capital real)
         if self.capital_manager:
@@ -844,7 +871,8 @@ class ConfluenceModeModule:
                 "losing_trades": losing_trades,
                 "win_rate": win_rate,
                 "confluence_signals": len(confluence_signal_indices),
-                "strategy_signals": {k: {"name": v["name"], "signals": len(v["signal_indices"]), "weight": v["weight"]} for k, v in strategy_signals.items()}
+                "strategy_signals": {k: {"name": v["name"], "signals": len(v["signal_indices"]), "weight": v["weight"], "original_signals": v.get("original_count", len(v["signal_indices"]))} for k, v in filtered_strategy_signals.items()},
+                "volume_filter_stats": self.volume_pipeline.stats
             }
         }
         self.test_history.append(test_result)

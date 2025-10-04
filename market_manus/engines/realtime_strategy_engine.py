@@ -31,6 +31,7 @@ from market_manus.strategies.smc.patterns import (
     detect_liquidity_sweep
 )
 from market_manus.core.signal import Signal
+from market_manus.analysis.market_context_analyzer import MarketContextAnalyzer
 
 
 class RealtimeStrategyEngine:
@@ -54,6 +55,8 @@ class RealtimeStrategyEngine:
         self.candles_deque = deque(maxlen=1000)
         self.running = False
         
+        self.context_analyzer = MarketContextAnalyzer(lookback_days=60)
+        
         self.state = {
             'price': 0.0,
             'delta_since': 0.0,
@@ -67,7 +70,8 @@ class RealtimeStrategyEngine:
             'msgs_processed': 0,
             'reconnections': 0,
             'last_update': datetime.now(),
-            'strategy_results': []
+            'strategy_results': [],
+            'market_context': None
         }
         
         self.strategy_functions = {
@@ -261,6 +265,31 @@ class RealtimeStrategyEngine:
         
         return Signal(action="HOLD", confidence=0.0, reasons=["ADX sem tendência forte"], tags=["ADX"])
     
+    async def _analyze_context(self):
+        """Analisa contexto de mercado antes de iniciar streaming"""
+        try:
+            print("\n🔍 Analisando contexto de mercado dos últimos 60 dias...")
+            
+            context = await asyncio.get_event_loop().run_in_executor(
+                None,
+                self.context_analyzer.analyze,
+                self.data_provider,
+                self.symbol,
+                self.interval
+            )
+            
+            if context:
+                self.context_analyzer.display_context(context)
+                self.state['market_context'] = context
+            else:
+                print("⚠️  Análise de contexto indisponível - continuando sem ajustes")
+            
+            return context
+            
+        except Exception as e:
+            print(f"⚠️  Erro na análise de contexto: {e} - continuando sem ajustes")
+            return None
+    
     async def bootstrap_historical_data(self) -> bool:
         """Load historical data to initialize indicators"""
         try:
@@ -309,6 +338,13 @@ class RealtimeStrategyEngine:
                 
                 strategy_func = self.strategy_functions[strategy_name]
                 signal = await asyncio.to_thread(strategy_func, df)
+                
+                if signal and self.state.get('market_context'):
+                    context = self.state['market_context']
+                    weight_adjustment = context.recommendations.get(strategy_name, 1.0)
+                    signal.confidence *= weight_adjustment
+                    signal.confidence = max(0.0, min(signal.confidence, 1.0))
+                
                 return strategy_name, signal
                 
             except Exception as e:
@@ -557,6 +593,8 @@ class RealtimeStrategyEngine:
     async def start(self):
         """Start real-time execution"""
         self.running = True
+        
+        await self._analyze_context()
         
         success = await self.bootstrap_historical_data()
         if not success:

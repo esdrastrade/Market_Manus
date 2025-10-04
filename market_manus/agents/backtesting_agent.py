@@ -351,6 +351,14 @@ class BacktestingAgent(BaseAgent):
             Dict: Resultados da simulação
         """
         try:
+            if not self._validate_api_credentials():
+                self.logger.error("❌ Simulação cancelada: credenciais da API não configuradas")
+                return {
+                    "error": "API credentials não configuradas. Configure BINANCE_API_KEY/BYBIT_API_KEY e seus secrets.",
+                    "strategy_name": strategy_name,
+                    "parameters": parameters
+                }
+            
             signals = []
             positions = []
             current_position = None

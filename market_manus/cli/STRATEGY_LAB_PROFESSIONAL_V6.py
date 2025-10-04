@@ -19,6 +19,7 @@ import os
 import sys
 import json
 import time
+import asyncio
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
@@ -667,7 +668,6 @@ class StrategyLabProfessionalV6:
         
         print("\n🔄 Iniciando execução em tempo real...")
         
-        import asyncio
         from market_manus.engines.realtime_strategy_engine import RealtimeStrategyEngine
         
         try:
@@ -677,10 +677,20 @@ class StrategyLabProfessionalV6:
             }
             interval = tf_map.get(self.selected_timeframe, "5m")
             
+            # Mapear estratégias SMC para formato do engine
+            strategy_map = {
+                "smc_bos": "bos",
+                "smc_choch": "choch",
+                "smc_order_blocks": "order_blocks",
+                "smc_fvg": "fvg",
+                "smc_liquidity_sweep": "liquidity_sweep"
+            }
+            engine_strategy = strategy_map.get(self.selected_strategy, self.selected_strategy)
+            
             engine = RealtimeStrategyEngine(
                 symbol=self.selected_asset,
                 interval=interval,
-                strategies=[self.selected_strategy],
+                strategies=[engine_strategy],
                 data_provider=self.data_provider,
                 confluence_mode="MAJORITY"
             )

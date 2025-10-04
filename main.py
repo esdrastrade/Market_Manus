@@ -117,7 +117,7 @@ class MarketManusMain:
         print("\n" + "=" * 80)
         print("     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0")
         print("=" * 80)
-        print("🎯 Sistema modular com Strategy Lab V6 e Confluence Mode")
+        print("🎯 Sistema modular com Strategy Lab V6 e Confluence Lab")
         print("📊 8 estratégias: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci")
         print("📅 Seleção de período personalizado")
         print("💰 Capital management automático")
@@ -129,7 +129,7 @@ class MarketManusMain:
         print(f"✅ Data Provider: {'Conectado' if self.connectivity_status else 'Desconectado'}")
         print(f"✅ Capital Manager: Inicializado (${self.capital_manager.current_capital:.2f})")
         print(f"✅ Strategy Lab V6: Carregado (8 estratégias)")
-        print(f"✅ Confluence Mode: Carregado")
+        print(f"✅ Confluence Lab: Carregado")
         
         if self.openai_api_key:
             print(f"✅ OpenAI API: Configurada")
@@ -162,7 +162,7 @@ class MarketManusMain:
         
         print(f"\n🎯 MÓDULOS PRINCIPAIS:")
         print("   2️⃣  Strategy Lab Professional V6 (8 estratégias)")
-        print("   3️⃣  Confluence Mode (Sistema de confluência)")
+        print("   3️⃣  Confluence Lab (Sistema de confluência)")
         
         print(f"\n🤖 RECURSOS AVANÇADOS:")
         print("   4️⃣  Assistente IA (Semantic Kernel)")
@@ -205,13 +205,13 @@ class MarketManusMain:
             input("\n📖 Pressione ENTER para continuar...")
     
     def _run_confluence_mode(self):
-        """Executa o Confluence Mode"""
+        """Executa o Confluence Lab"""
         print("\n🎯 INICIANDO CONFLUENCE MODE...")
         
         try:
             self.confluence_mode.run_interactive_mode()
         except Exception as e:
-            print(f"❌ Erro no Confluence Mode: {e}")
+            print(f"❌ Erro no Confluence Lab: {e}")
             input("\n📖 Pressione ENTER para continuar...")
     
     def _run_ai_assistant(self):
@@ -401,7 +401,7 @@ class MarketManusMain:
         print("=" * 50)
         print(f"   📂 Raiz: {project_root}")
         print(f"   📂 Strategy Lab: market_manus/strategy_lab/")
-        print(f"   📂 Confluence Mode: market_manus/confluence_mode/")
+        print(f"   📂 Confluence Lab: market_manus/confluence_mode/")
         print(f"   📂 Data Providers: market_manus/data_providers/")
         print(f"   📂 Core: market_manus/core/")
         print(f"   📂 Agents: market_manus/agents/")

@@ -1,5 +1,5 @@
 """
-Confluence Mode Module - Versão Validada
+Confluence Lab Module - Versão Validada
 Localização: market_manus/confluence_mode/confluence_mode_module.py
 Data: 25/09/2025
 Sintaxe: 100% Validada
@@ -16,7 +16,13 @@ from typing import Dict, List, Optional, Tuple, Any
 from pathlib import Path
 
 class ConfluenceModeModule:
-    """Módulo de Confluência - Sistema de múltiplas estratégias"""
+    """
+    Módulo de Confluência - Sistema de múltiplas estratégias
+    
+    IMPORTANTE: Este módulo usa APENAS dados reais das APIs Binance/Bybit.
+    Nenhum dado mockado ou simulado é utilizado.
+    API keys são validadas antes de executar qualquer backtest.
+    """
     
     def __init__(self, data_provider=None, capital_manager=None):
         self.data_provider = data_provider
@@ -132,14 +138,41 @@ class ConfluenceModeModule:
         # Histórico de testes
         self.test_history = []
     
+    def _validate_api_credentials(self) -> bool:
+        """
+        Valida se as credenciais da API estão configuradas
+        
+        Returns:
+            bool: True se credenciais válidas, False caso contrário
+        """
+        if not self.data_provider:
+            print("❌ Data provider não configurado")
+            print("❌ Impossível executar backtest sem dados reais da API")
+            return False
+        
+        # Verificar se o provider tem API key configurada
+        if not hasattr(self.data_provider, 'api_key') or not self.data_provider.api_key:
+            print("❌ API Key não configurada")
+            print("❌ Configure BINANCE_API_KEY ou BYBIT_API_KEY no ambiente")
+            return False
+        
+        if not hasattr(self.data_provider, 'api_secret') or not self.data_provider.api_secret:
+            print("❌ API Secret não configurado")
+            print("❌ Configure BINANCE_API_SECRET ou BYBIT_API_SECRET no ambiente")
+            return False
+        
+        print("✅ Credenciais da API validadas com sucesso")
+        print(f"📊 Fonte de dados: {self.data_provider.__class__.__name__} (API REAL)")
+        return True
+    
     def run_interactive_mode(self):
-        """Executa o modo interativo do Confluence Mode"""
+        """Executa o modo interativo do Confluence Lab"""
         while True:
             self._show_main_menu()
             choice = input("\n🔢 Escolha uma opção (0-8): ").strip()
             
             if choice == '0':
-                print("\n👋 Saindo do Confluence Mode...")
+                print("\n👋 Saindo do Confluence Lab...")
                 break
             elif choice == '1':
                 self._asset_selection_menu()
@@ -162,7 +195,7 @@ class ConfluenceModeModule:
                 input("\n📖 Pressione ENTER para continuar...")
     
     def _show_main_menu(self):
-        """Mostra o menu principal do Confluence Mode"""
+        """Mostra o menu principal do Confluence Lab"""
         print("\n" + "="*80)
         print("🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA")
         print("="*80)
@@ -455,7 +488,42 @@ class ConfluenceModeModule:
         
         return True
     
-    def _fetch_historical_klines(self, symbol: str, interval: str, start_date: Optional[str] = None, end_date: Optional[str] = None) -> List:
+    def _display_data_metrics(self, metrics: Dict):
+        """
+        Exibe métricas de dados históricos carregados em formato visual consistente
+        
+        Args:
+            metrics: Dicionário com métricas dos dados (total_candles, period, success_rate, etc.)
+        """
+        print("\n" + "═" * 63)
+        print("📊 DADOS HISTÓRICOS CARREGADOS")
+        print("═" * 63)
+        
+        # Total de Candles
+        total_candles = metrics.get("total_candles", 0)
+        print(f"📈 Total de Candles: {total_candles:,}")
+        
+        # Período Exato
+        first_time = metrics.get("first_candle_time")
+        last_time = metrics.get("last_candle_time")
+        if first_time and last_time:
+            first_str = first_time.strftime("%Y-%m-%d %H:%M:%S")
+            last_str = last_time.strftime("%Y-%m-%d %H:%M:%S")
+            print(f"📅 Período: {first_str} → {last_str}")
+        
+        # Taxa de Sucesso da API
+        success_rate = metrics.get("success_rate", 0)
+        successful = metrics.get("successful_batches", 0)
+        total = metrics.get("total_batches", 0)
+        print(f"✅ API Success Rate: {success_rate:.1f}% ({successful}/{total} batches bem-sucedidos)")
+        
+        # Fonte de Dados
+        data_source = metrics.get("data_source", "Unknown")
+        print(f"🔗 Fonte: {data_source} (dados reais)")
+        
+        print("═" * 63)
+    
+    def _fetch_historical_klines(self, symbol: str, interval: str, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Tuple[List, Dict]:
         """
         Busca TODOS os candles do período especificado, fazendo múltiplas chamadas se necessário.
         
@@ -466,7 +534,7 @@ class ConfluenceModeModule:
             end_date: Data final no formato YYYY-MM-DD (opcional)
         
         Returns:
-            Lista com todos os candles do período
+            Tuple[List, Dict]: (Lista com todos os candles, Dicionário com métricas da API)
         """
         # Calcular timestamps
         if start_date and end_date:
@@ -499,6 +567,10 @@ class ConfluenceModeModule:
         current_start = start_ts
         batch_num = 1
         
+        # Métricas da API
+        successful_batches = 0
+        failed_batches = 0
+        
         while current_start < end_ts:
             # Calcular quantos candles faltam
             remaining_ms = end_ts - current_start
@@ -511,38 +583,79 @@ class ConfluenceModeModule:
             print(f"   📡 Batch {batch_num}: Buscando {limit} candles a partir de {datetime.fromtimestamp(current_start/1000).strftime('%Y-%m-%d %H:%M')}...")
             
             # Buscar dados com startTime
-            klines = self.data_provider.get_kline(
-                category='spot',
-                symbol=symbol,
-                interval=interval,
-                limit=limit,
-                start=current_start,
-                end=end_ts
-            )
-            
-            if not klines:
-                print(f"   ⚠️  Nenhum dado retornado para este batch")
+            try:
+                klines = self.data_provider.get_kline(
+                    category='spot',
+                    symbol=symbol,
+                    interval=interval,
+                    limit=limit,
+                    start=current_start,
+                    end=end_ts
+                )
+                
+                if not klines:
+                    print(f"   ⚠️  Nenhum dado retornado para este batch")
+                    failed_batches += 1
+                    break
+                
+                all_klines.extend(klines)
+                successful_batches += 1
+                print(f"   ✅ Recebidos {len(klines)} candles (total acumulado: {len(all_klines)})")
+                
+                # Próximo batch começa após o último candle recebido
+                last_candle_time = int(klines[-1][0])  # timestamp do último candle
+                current_start = last_candle_time + candle_duration
+                batch_num += 1
+                
+                # Evitar rate limit
+                time.sleep(0.1)
+            except Exception as e:
+                print(f"   ❌ Erro no batch {batch_num}: {str(e)}")
+                failed_batches += 1
                 break
-            
-            all_klines.extend(klines)
-            print(f"   ✅ Recebidos {len(klines)} candles (total acumulado: {len(all_klines)})")
-            
-            # Próximo batch começa após o último candle recebido
-            last_candle_time = int(klines[-1][0])  # timestamp do último candle
-            current_start = last_candle_time + candle_duration
-            batch_num += 1
-            
-            # Evitar rate limit
-            time.sleep(0.1)
         
-        return all_klines
+        # Calcular métricas
+        total_batches = successful_batches + failed_batches
+        success_rate = (successful_batches / total_batches * 100) if total_batches > 0 else 0
+        
+        # Determinar período exato dos dados
+        first_candle_time = None
+        last_candle_time = None
+        if all_klines:
+            first_candle_time = datetime.fromtimestamp(int(all_klines[0][0]) / 1000)
+            last_candle_time = datetime.fromtimestamp(int(all_klines[-1][0]) / 1000)
+        
+        metrics = {
+            "total_candles": len(all_klines),
+            "successful_batches": successful_batches,
+            "failed_batches": failed_batches,
+            "total_batches": total_batches,
+            "success_rate": success_rate,
+            "first_candle_time": first_candle_time,
+            "last_candle_time": last_candle_time,
+            "data_source": self.data_provider.__class__.__name__ if self.data_provider else "Unknown"
+        }
+        
+        return all_klines, metrics
     
     def _run_confluence_backtest(self):
-        """Executa backtest de confluência com dados reais da Binance"""
+        """
+        Executa backtest de confluência com dados reais da Binance/Bybit
+        
+        IMPORTANTE: Valida API credentials e usa APENAS dados reais das APIs.
+        """
         if not self._validate_configuration():
             return
         
-        print("\n🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA")
+        # VALIDAÇÃO OBRIGATÓRIA DE API CREDENTIALS
+        print("\n🔐 Validando credenciais da API...")
+        if not self._validate_api_credentials():
+            print("\n❌ BACKTEST CANCELADO: API credentials não configuradas")
+            print("   Configure BINANCE_API_KEY/BYBIT_API_KEY e seus secrets antes de executar backtests.")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        print("\n🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS")
         print("="*60)
         
         print(f"📊 Configuração do teste:")
@@ -568,7 +681,7 @@ class ConfluenceModeModule:
         interval = self.selected_timeframe
         
         # Buscar TODOS os candles do período especificado
-        klines = self._fetch_historical_klines(
+        klines, metrics = self._fetch_historical_klines(
             symbol=self.selected_asset,
             interval=interval,
             start_date=self.custom_start_date,
@@ -580,7 +693,8 @@ class ConfluenceModeModule:
             input("\n📖 Pressione ENTER para continuar...")
             return
         
-        print(f"   ✅ Total de {len(klines)} velas reais carregadas para análise!")
+        # Exibir métricas de dados carregados
+        self._display_data_metrics(metrics)
         
         # Converter dados para análise
         closes = [float(k[4]) for k in klines]  # Preços de fechamento

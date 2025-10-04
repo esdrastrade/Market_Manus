@@ -34,7 +34,7 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
     - Contextual recommendations based on composite score
     - Color-coded status indicators with Rich panels and tables
 - **Strategy Lab V6**: Contains 8 professional trading strategies, supporting real-time and historical testing, and asset selection.
-- **Confluence Mode**: Allows combining multiple strategies using four modes: ALL, MAJORITY, WEIGHTED, and ANY.
+- **Confluence Lab**: Allows combining multiple strategies using four modes: ALL, MAJORITY, WEIGHTED, and ANY.
 - **Data Provider**: Integrates with Binance.US API for real-time and historical market data.
 - **Capital Manager**: Handles position sizing automation, drawdown protection, and performance tracking.
 - **Confluence System**: A new architecture combining Smart Money Concepts (SMC) detectors (BOS, CHOCH, Order Blocks, FVG, Liquidity Sweeps) with **10 Classic Technical Strategies** including 3 new scalping-optimized detectors:
@@ -70,6 +70,15 @@ The system operates as a console-based CLI/TUI application, providing an interac
 - **WebSocket Streaming (NEW)**: Binance.US WebSocket integration with automatic reconnection, exponential backoff + jitter, and debouncing (1s micro-batches).
 - **Async Pipeline**: AsyncIO-based runtime with Queue-based message coalescing, preventing rate limit violations while maintaining real-time responsiveness.
 - **Rich UI Live View**: Terminal UI using `rich` library with Live display, updating panels in-place without scrolling, showing latency, message counts, and processing metrics.
+- **Real-Time Strategy Execution (NEW - Oct 2025)**: Complete replacement of simulated data with real WebSocket execution:
+  - **RealtimeStrategyEngine**: New engine (`market_manus/engines/realtime_strategy_engine.py`) integrating WebSocket + parallel strategies + live UI
+  - **Parallel Strategy Application**: All selected strategies execute simultaneously using `asyncio.gather()` for < 200ms latency
+  - **Live Rich UI**: Four-panel layout (header, price, confluence signal, individual strategies) updating in real-time without scroll
+  - **Bootstrap + Stream**: Loads 500 historical candles for indicator initialization, then streams live data
+  - **Robust Error Handling**: Automatic WebSocket reconnection, graceful strategy failures, validated configurations
+  - **Supported Strategies**: 6 classic (RSI, EMA, Bollinger, MACD, Stochastic, ADX) + 5 SMC patterns (BOS, CHoCH, OB, FVG, Liquidity Sweep)
+  - **Confluence Labs**: ALL (unanimous), ANY (first signal), MAJORITY (>50% agreement)
+  - **Integration**: Available in Strategy Lab V6 via "Teste em Tempo Real" menu option
 
 ### Supported Timeframes
 The system supports multiple timeframes ranging from 1 minute (scalping) to 1 day (trend analysis).

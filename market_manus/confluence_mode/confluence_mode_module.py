@@ -209,7 +209,7 @@ class ConfluenceModeModule:
         """Executa o modo interativo do Confluence Lab"""
         while True:
             self._show_main_menu()
-            choice = input("\n🔢 Escolha uma opção (0-8): ").strip()
+            choice = input("\n🔢 Escolha uma opção (0-9): ").strip()
             
             if choice == '0':
                 print("\n👋 Saindo do Confluence Lab...")
@@ -227,8 +227,10 @@ class ConfluenceModeModule:
             elif choice == '6':
                 self._run_confluence_backtest()
             elif choice == '7':
-                self._view_test_results()
+                self._run_realtime_confluence_test()
             elif choice == '8':
+                self._view_test_results()
+            elif choice == '9':
                 self._export_results()
             else:
                 print("❌ Opção inválida")
@@ -271,10 +273,11 @@ class ConfluenceModeModule:
         
         print(f"\n🧪 TESTES:")
         print("   6️⃣  Executar Backtest de Confluência")
+        print("   7️⃣  Teste em Tempo Real de Confluência")
         
         print(f"\n📊 RESULTADOS:")
-        print("   7️⃣  Visualizar Resultados")
-        print("   8️⃣  Exportar Relatórios")
+        print("   8️⃣  Visualizar Resultados")
+        print("   9️⃣  Exportar Relatórios")
         
         print(f"\n   0️⃣  Voltar ao Menu Principal")
     
@@ -1294,6 +1297,135 @@ class ConfluenceModeModule:
             return sorted(confluence_indices)
         
         return []
+    
+    def _run_realtime_confluence_test(self):
+        """
+        Executa teste em tempo real de múltiplas estratégias com confluência
+        
+        Integra RealtimeStrategyEngine para streaming de dados e execução em tempo real
+        """
+        print("\n🔴 TESTE EM TEMPO REAL - CONFLUÊNCIA")
+        print("="*80)
+        
+        # Validação 1: Ativo selecionado
+        if not self.selected_asset:
+            print("❌ Nenhum ativo selecionado!")
+            print("💡 Selecione um ativo primeiro (opção 1)")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Validação 2: Timeframe selecionado
+        if not self.selected_timeframe:
+            print("❌ Nenhum timeframe selecionado!")
+            print("💡 Selecione um timeframe primeiro (opção 2)")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Validação 3: Estratégias selecionadas (mínimo 2 para confluência)
+        if not self.selected_strategies or len(self.selected_strategies) < 2:
+            print("❌ Confluência requer pelo menos 2 estratégias!")
+            print(f"💡 Você tem {len(self.selected_strategies) if self.selected_strategies else 0} estratégia(s) selecionada(s)")
+            print("💡 Selecione mais estratégias (opção 3)")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Validação 4: Modo de confluência selecionado
+        if not self.selected_confluence_mode:
+            print("❌ Nenhum modo de confluência selecionado!")
+            print("💡 Selecione um modo de confluência (opção 4)")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Validar credenciais da API
+        if not self._validate_api_credentials():
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Converter timeframe do formato Confluence para formato engine
+        timeframe_map = {
+            "1": "1m",
+            "5": "5m",
+            "15": "15m",
+            "30": "30m",
+            "60": "1h",
+            "240": "4h",
+            "D": "1d"
+        }
+        
+        engine_interval = timeframe_map.get(self.selected_timeframe, "5m")
+        timeframe_name = self.timeframes[self.selected_timeframe]['name']
+        
+        # Exibir configuração
+        print(f"\n📋 CONFIGURAÇÃO DO TESTE:")
+        print(f"   🪙 Ativo: {self.selected_asset}")
+        print(f"   ⏰ Timeframe: {timeframe_name} ({engine_interval})")
+        print(f"   🎯 Modo Confluência: {self.confluence_modes[self.selected_confluence_mode]['name']}")
+        print(f"   📈 Estratégias ({len(self.selected_strategies)}):")
+        for strategy_key in self.selected_strategies:
+            strategy = self.available_strategies[strategy_key]
+            print(f"      {strategy['emoji']} {strategy['name']}")
+        
+        print(f"\n💡 INSTRUÇÕES:")
+        print(f"   • O teste rodará em tempo real com WebSocket")
+        print(f"   • Você verá sinais de confluência ao vivo")
+        print(f"   • Pressione Ctrl+C para parar o teste")
+        
+        confirm = input(f"\n🚀 Iniciar teste em tempo real? (s/N): ").strip().lower()
+        
+        if confirm != 's':
+            print("❌ Teste cancelado pelo usuário")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Importar dependências
+        try:
+            import asyncio
+            from market_manus.engines.realtime_strategy_engine import RealtimeStrategyEngine
+        except ImportError as e:
+            print(f"❌ Erro ao importar dependências: {e}")
+            print("💡 Verifique se RealtimeStrategyEngine está disponível")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        # Preparar lista de estratégias (já é uma lista de strings)
+        strategy_list = self.selected_strategies.copy()
+        
+        # Mapear estratégias SMC para formato do engine
+        strategy_map = {
+            "smc_bos": "bos",
+            "smc_choch": "choch",
+            "smc_order_blocks": "order_blocks",
+            "smc_fvg": "fvg",
+            "smc_liquidity_sweep": "liquidity_sweep"
+        }
+        mapped_strategies = [strategy_map.get(key, key) for key in strategy_list]
+        
+        print(f"\n🔄 Inicializando engine de tempo real...")
+        print(f"📡 Conectando ao WebSocket...")
+        
+        try:
+            # Criar engine
+            engine = RealtimeStrategyEngine(
+                symbol=self.selected_asset,
+                interval=engine_interval,
+                strategies=mapped_strategies,
+                data_provider=self.data_provider,
+                confluence_mode=self.selected_confluence_mode
+            )
+            
+            # Executar em tempo real
+            print(f"\n🔴 TESTE EM EXECUÇÃO - Pressione Ctrl+C para parar\n")
+            asyncio.run(engine.start())
+            
+        except KeyboardInterrupt:
+            print(f"\n\n⏸️  Teste interrompido pelo usuário")
+            print(f"✅ Engine parado gracefully")
+        except Exception as e:
+            print(f"\n❌ Erro durante execução: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        input("\n📖 Pressione ENTER para continuar...")
     
     def _view_test_results(self):
         """Visualiza resultados dos testes"""

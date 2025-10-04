@@ -118,7 +118,9 @@ class MarketManusMain:
         print("     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0")
         print("=" * 80)
         print("🎯 Sistema modular com Strategy Lab V6 e Confluence Lab")
-        print("📊 8 estratégias: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci")
+        print("📊 13 estratégias (8 clássicas + 5 SMC)")
+        print("   • Clássicas: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci")
+        print("   • SMC: BOS, CHoCH, Order Blocks, FVG, Liquidity Sweep")
         print("📅 Seleção de período personalizado")
         print("💰 Capital management automático")
         print("🔗 Data Provider: Binance API")
@@ -128,7 +130,7 @@ class MarketManusMain:
         print(f"\n🔄 INICIALIZANDO SISTEMA...")
         print(f"✅ Data Provider: {'Conectado' if self.connectivity_status else 'Desconectado'}")
         print(f"✅ Capital Manager: Inicializado (${self.capital_manager.current_capital:.2f})")
-        print(f"✅ Strategy Lab V6: Carregado (8 estratégias)")
+        print(f"✅ Strategy Lab V6: Carregado (13 estratégias: 8 clássicas + 5 SMC)")
         print(f"✅ Confluence Lab: Carregado")
         
         if self.openai_api_key:
@@ -161,7 +163,7 @@ class MarketManusMain:
         print("   1️⃣  Market Sentiment Analysis")
         
         print(f"\n🎯 MÓDULOS PRINCIPAIS:")
-        print("   2️⃣  Strategy Lab Professional V6 (8 estratégias)")
+        print("   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)")
         print("   3️⃣  Confluence Lab (Sistema de confluência)")
         
         print(f"\n🤖 RECURSOS AVANÇADOS:")
@@ -188,7 +190,8 @@ class MarketManusMain:
     def _run_strategy_lab(self):
         """Executa o Strategy Lab Professional V6"""
         print("\n🔬 INICIANDO STRATEGY LAB PROFESSIONAL V6...")
-        print("📊 8 estratégias disponíveis:")
+        print("📊 13 estratégias disponíveis (8 clássicas + 5 SMC):")
+        print("\n   🎯 CLÁSSICAS:")
         print("   • RSI Mean Reversion")
         print("   • EMA Crossover") 
         print("   • Bollinger Bands Breakout")
@@ -197,6 +200,12 @@ class MarketManusMain:
         print("   • Williams %R")
         print("   • ADX")
         print("   • Fibonacci Retracement")
+        print("\n   🔥 SMC (Smart Money Concepts):")
+        print("   • BOS (Break of Structure)")
+        print("   • CHoCH (Change of Character)")
+        print("   • Order Blocks")
+        print("   • FVG (Fair Value Gap)")
+        print("   • Liquidity Sweep")
         
         try:
             self.strategy_lab.run_interactive_mode()
@@ -519,7 +528,7 @@ class MarketManusMain:
         print("👋 OBRIGADO POR USAR O MARKET MANUS!")
         print("=" * 60)
         print("💰 Sistema de trading automatizado")
-        print("📊 8 estratégias profissionais")
+        print("📊 13 estratégias profissionais (8 clássicas + 5 SMC)")
         print("🎯 Dados reais da API Binance")
         print("=" * 60)
         print("🚀 Até a próxima!")

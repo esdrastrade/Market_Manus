@@ -38,8 +38,11 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
   - **5 SMC (NEW)**: BOS (Break of Structure), CHoCH (Change of Character), Order Blocks, FVG (Fair Value Gap), Liquidity Sweep
   - **API Validation (Oct 2025)**: All backtests now validate Binance API keys before execution, ensuring 100% real data usage (no mock/simulated data)
   - **Metrics Display (Oct 2025)**: Backtests show total candles loaded, exact period (start/end dates), API success rate
+  - **Real-Time Testing (NEW - Oct 2025)**: Option 6 "Teste em Tempo Real" integrates RealtimeStrategyEngine with Rich Live UI showing candles processed, signals, latency, SMC strategy mapping
 - **Confluence Lab**: Allows combining multiple strategies using four modes: ALL, MAJORITY, WEIGHTED, and ANY.
+  - **Real-Time Confluence (NEW - Oct 2025)**: Option 7 "Teste em Tempo Real de Confluência" executes multiple strategies simultaneously with WebSocket streaming, displaying live confluence signals and individual strategy results
 - **Data Provider**: Integrates with Binance.US API for real-time and historical market data.
+  - **Historical Data Cache (NEW - Oct 2025)**: Parquet-based caching system saves fetched data in `data/` directory with format `{symbol}_{interval}_{ddmmaa}_until_{ddmmaa}.parquet`, metadata tracking, and automatic reuse via `use_cache=True` parameter in BacktestingAgent
 - **Capital Manager**: Handles position sizing automation, drawdown protection, and performance tracking.
 - **Confluence System**: A new architecture combining Smart Money Concepts (SMC) detectors (BOS, CHOCH, Order Blocks, FVG, Liquidity Sweeps) with **10 Classic Technical Strategies** including 3 new scalping-optimized detectors:
   - **Original 7**: EMA Crossover, MACD, RSI Mean Reversion, Bollinger Bands, ADX Trend Strength, Stochastic, Fibonacci

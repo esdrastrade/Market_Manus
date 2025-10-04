@@ -1,0 +1,966 @@
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+
+================================================================================
+     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0
+================================================================================
+🎯 Sistema modular com Strategy Lab V6 e Confluence Lab
+📊 13 estratégias (8 clássicas + 5 SMC)
+   • Clássicas: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+   • SMC: BOS, CHoCH, Order Blocks, FVG, Liquidity Sweep
+📅 Seleção de período personalizado
+💰 Capital management automático
+🔗 Data Provider: Binance API
+================================================================================
+
+🔄 INICIALIZANDO SISTEMA...
+✅ Data Provider: Conectado
+✅ Capital Manager: Inicializado ($100.00)
+✅ Strategy Lab V6: Carregado (13 estratégias: 8 clássicas + 5 SMC)
+✅ Confluence Lab: Carregado
+✅ OpenAI API: Configurada
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 1
+
+💱 Digite o símbolo (padrão BTCUSDT): WLFIUSDT
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ 🧭 ANÁLISE DE SENTIMENTO DE MERCADO                                                                                                              │
+│                                                                                                                                                  │
+│ Ativo: WLFIUSDT  |  Score: 0.607  |  Status: 🟢 LEVEMENTE OTIMISTA                                                                               │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────── 📖 Interpretação ────────────────────────────────────────────────────────────────╮
+│                                                                                                                                                  │
+│  📊 **Análise para WLFIUSDT**                                                                                                                    │
+│  Com base em 5 fonte(s) de dados confiável(is), o sentimento do mercado está 🟢 levemente otimista. Leve tendência positiva, mas com cautela     │
+│  moderada no ar.                                                                                                                                 │
+│                                                                                                                                                  │
+│  🎭 **Sentimento Geral**: O índice Fear & Greed está em 71.0/100 (Greed), mostrando leve otimismo entre investidores.                            │
+│  💰 **Ação de Preço**: Negociando a $0.2006, o WLFIUSDT recua -0.66% hoje. Volume de $0.17B mostra certa pressão vendedora.                      │
+│  📊 **Open Interest**: Rastreamento de posições abertas mostra derivatives em movimento.                                                         │
+│  📰 **Contexto Macroeconômico**: Detectadas 20 notícia(s) recente(s) sobre WLFI. Sentimento da mídia: neutro.                                    │
+│     💬 Destaque: "Trump Real Estate Empire Could Go Onchain Under World Liberty Financial"                                                       │
+│                                                                                                                                                  │
+│  ⏸️ **Recomendação**: Momento de cautela. Aguarde sinais mais claros antes de abrir novas posições. Consolidação provável.                        │
+│                                                                                                                                                  │
+│  💡 *Nota: 3 fonte(s) adicional(is) está(ão) disponível(is) mediante configuração de API keys.*                                                  │
+│                                                                                                                                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+━━━ Detalhamento Técnico das Fontes ━━━
+
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Fonte         ┃ Categoria       ┃ Status                                            ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ alt_fng       │ macro_sentiment │ ✅ F&G: 71.0 (Greed)                              │
+│ coingecko     │ spot_market     │ ✅ $0 (-0.66%)                                    │
+│ bybit         │ derivatives     │ ⚠️ Sem dados                                       │
+│ coinglass     │ derivatives     │ ✅ Ativo                                          │
+│ cryptopanic   │ news            │ ✅ 20 notícias                                    │
+│ santiment     │ social          │ ℹ️ implement SAN queries                           │
+│ glassnode     │ onchain         │ ℹ️ implement specific metric endpoint for WLFIUSDT │
+│ google_trends │ interest        │ ℹ️ implement pytrends if enabled                   │
+└───────────────┴─────────────────┴───────────────────────────────────────────────────┘
+
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 2
+
+🔬 INICIANDO STRATEGY LAB PROFESSIONAL V6...
+📊 13 estratégias disponíveis (8 clássicas + 5 SMC):
+
+   🎯 CLÁSSICAS:
+   • RSI Mean Reversion
+   • EMA Crossover
+   • Bollinger Bands Breakout
+   • MACD
+   • Stochastic Oscillator
+   • Williams %R
+   • ADX
+   • Fibonacci Retracement
+
+   🔥 SMC (Smart Money Concepts):
+   • BOS (Break of Structure)
+   • CHoCH (Change of Character)
+   • Order Blocks
+   • FVG (Fair Value Gap)
+   • Liquidity Sweep
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   📈 Estratégia: ❌ Não selecionada
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 1
+
+🪙 SELEÇÃO DE ATIVO
+==================================================
+   1️⃣     🪙 BTCUSDT - Bitcoin
+   2️⃣     💎 ETHUSDT - Ethereum
+   3️⃣     🟡 BNBUSDT - Binance Coin
+   4️⃣     ⚡ SOLUSDT - Solana
+   5️⃣     💧 XRPUSDT - XRP
+   6️⃣     🔵 ADAUSDT - Cardano
+   7️⃣     🐕 DOGEUSDT - Dogecoin
+   8️⃣     🟣 MATICUSDT - Polygon
+
+   0️⃣  Voltar
+
+🔢 Escolha um ativo (0-8): 2
+
+✅ Ativo selecionado: 💎 ETHUSDT - Ethereum
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ❌ Não selecionada
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+📈 CONFIGURAÇÃO DE ESTRATÉGIA
+==================================================
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+       🏷️ Tipo: Oscillator
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+       🏷️ Tipo: Trend Following
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+       🏷️ Tipo: Volatility
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+       🏷️ Tipo: Momentum
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico %K e %D
+       🏷️ Tipo: Oscillator
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range Oscillator
+       🏷️ Tipo: Oscillator
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+       🏷️ Tipo: Trend Strength
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Retração de Fibonacci
+       🏷️ Tipo: Support/Resistance
+
+   0️⃣  Voltar
+
+🔢 Escolha uma estratégia (0-8): 0
+
+================================================================================
+🔬 STRATEGY LAB PROFESSIONAL V6 - MENU PRINCIPAL
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   📈 Estratégia: ❌ Não selecionada
+   ⏰ Timeframe: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Configuração de Estratégia
+   3️⃣  Seleção de Timeframe
+   4️⃣  Período Personalizado (Data Inicial/Final)
+
+🧪 TESTES:
+   5️⃣  Teste Histórico (Backtest)
+   6️⃣  Teste em Tempo Real
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 0
+
+👋 Saindo do Strategy Lab Professional V6...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 3
+
+🎯 INICIANDO CONFLUENCE MODE...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣     🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣     🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣     📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣     ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣     🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 10,11,12,13
+
+✅ Estratégias selecionadas:
+   🔄 SMC: Change of Character
+   📦 SMC: Order Blocks
+   ⚡ SMC: Fair Value Gap
+   🎣 SMC: Liquidity Sweep
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣     🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣  ✅ 🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣  ✅ 📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣  ✅ ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣  ✅ 🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 9,10,11,12,13
+
+✅ Estratégias selecionadas:
+   🔥 SMC: Break of Structure
+   🔄 SMC: Change of Character
+   📦 SMC: Order Blocks
+   ⚡ SMC: Fair Value Gap
+   🎣 SMC: Liquidity Sweep
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 1
+
+🪙 SELEÇÃO DE ATIVO
+==================================================
+   1️⃣     🪙 BTCUSDT - Bitcoin
+   2️⃣     💎 ETHUSDT - Ethereum
+   3️⃣     🟡 BNBUSDT - Binance Coin
+   4️⃣     ⚡ SOLUSDT - Solana
+   5️⃣     💧 XRPUSDT - XRP
+   6️⃣     🔵 ADAUSDT - Cardano
+   7️⃣     🐕 DOGEUSDT - Dogecoin
+   8️⃣     🟣 MATICUSDT - Polygon
+
+   0️⃣  Voltar
+
+🔢 Escolha um ativo (0-8): 2
+
+✅ Ativo selecionado: 💎 ETHUSDT - Ethereum
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣     15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 3
+
+✅ Timeframe selecionado: 15 minutos - Swing trading curto
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣     ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 3
+
+✅ Modo selecionado: 🗳️ MAJORITY (Maioria)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ MAJORITY (Maioria)
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2024-01-01
+✅ Data inicial: 2024-01-01
+
+📅 Data final (YYYY-MM-DD): 2025-10-03
+✅ Data final: 2025-10-03
+
+✅ Período personalizado configurado:
+   📅 De: 2024-01-01
+   📅 Até: 2025-10-03
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ MAJORITY (Maioria)
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 15 minutos
+   📈 Estratégias: 5 selecionadas
+   🎯 Modo: MAJORITY (Maioria)
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~61536 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2024-01-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2024-01-06 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2024-01-11 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2024-01-16 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2024-01-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2024-01-27 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2024-02-01 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2024-02-06 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2024-02-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2024-02-16 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2024-02-22 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2024-02-27 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 500 candles a partir de 2024-03-03 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 6500)
+   📡 Batch 14: Buscando 500 candles a partir de 2024-03-08 17:00...
+   ✅ Recebidos 500 candles (total acumulado: 7000)
+   📡 Batch 15: Buscando 500 candles a partir de 2024-03-13 22:00...
+   ✅ Recebidos 500 candles (total acumulado: 7500)
+   📡 Batch 16: Buscando 500 candles a partir de 2024-03-19 03:00...
+   ✅ Recebidos 500 candles (total acumulado: 8000)
+   📡 Batch 17: Buscando 500 candles a partir de 2024-03-24 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 8500)
+   📡 Batch 18: Buscando 500 candles a partir de 2024-03-29 13:00...
+   ✅ Recebidos 500 candles (total acumulado: 9000)
+   📡 Batch 19: Buscando 500 candles a partir de 2024-04-03 18:00...
+   ✅ Recebidos 500 candles (total acumulado: 9500)
+   📡 Batch 20: Buscando 500 candles a partir de 2024-04-08 23:00...
+   ✅ Recebidos 500 candles (total acumulado: 10000)
+   📡 Batch 21: Buscando 500 candles a partir de 2024-04-14 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 10500)
+   📡 Batch 22: Buscando 500 candles a partir de 2024-04-19 09:00...
+   ✅ Recebidos 500 candles (total acumulado: 11000)
+   📡 Batch 23: Buscando 500 candles a partir de 2024-04-24 14:00...
+   ✅ Recebidos 500 candles (total acumulado: 11500)
+   📡 Batch 24: Buscando 500 candles a partir de 2024-04-29 19:00...
+   ✅ Recebidos 500 candles (total acumulado: 12000)
+   📡 Batch 25: Buscando 500 candles a partir de 2024-05-05 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 12500)
+   📡 Batch 26: Buscando 500 candles a partir de 2024-05-10 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 13000)
+   📡 Batch 27: Buscando 500 candles a partir de 2024-05-15 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 13500)
+   📡 Batch 28: Buscando 500 candles a partir de 2024-05-20 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 14000)
+   📡 Batch 29: Buscando 500 candles a partir de 2024-05-25 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 14500)
+   📡 Batch 30: Buscando 500 candles a partir de 2024-05-31 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 15000)
+   📡 Batch 31: Buscando 500 candles a partir de 2024-06-05 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 15500)
+   📡 Batch 32: Buscando 500 candles a partir de 2024-06-10 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 16000)
+   📡 Batch 33: Buscando 500 candles a partir de 2024-06-15 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 16500)
+   📡 Batch 34: Buscando 500 candles a partir de 2024-06-20 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 17000)
+   📡 Batch 35: Buscando 500 candles a partir de 2024-06-26 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 17500)
+   📡 Batch 36: Buscando 500 candles a partir de 2024-07-01 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 18000)
+   📡 Batch 37: Buscando 500 candles a partir de 2024-07-06 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 18500)
+   📡 Batch 38: Buscando 500 candles a partir de 2024-07-11 17:00...
+   ✅ Recebidos 500 candles (total acumulado: 19000)
+   📡 Batch 39: Buscando 500 candles a partir de 2024-07-16 22:00...
+   ✅ Recebidos 500 candles (total acumulado: 19500)
+   📡 Batch 40: Buscando 500 candles a partir de 2024-07-22 03:00...
+   ✅ Recebidos 500 candles (total acumulado: 20000)
+   📡 Batch 41: Buscando 500 candles a partir de 2024-07-27 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 20500)
+   📡 Batch 42: Buscando 500 candles a partir de 2024-08-01 13:00...
+   ✅ Recebidos 500 candles (total acumulado: 21000)
+   📡 Batch 43: Buscando 500 candles a partir de 2024-08-06 18:00...
+   ✅ Recebidos 500 candles (total acumulado: 21500)
+   📡 Batch 44: Buscando 500 candles a partir de 2024-08-11 23:00...
+   ✅ Recebidos 500 candles (total acumulado: 22000)
+   📡 Batch 45: Buscando 500 candles a partir de 2024-08-17 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 22500)
+   📡 Batch 46: Buscando 500 candles a partir de 2024-08-22 09:00...
+   ✅ Recebidos 500 candles (total acumulado: 23000)
+   📡 Batch 47: Buscando 500 candles a partir de 2024-08-27 14:00...
+   ✅ Recebidos 500 candles (total acumulado: 23500)
+   📡 Batch 48: Buscando 500 candles a partir de 2024-09-01 19:00...
+   ✅ Recebidos 500 candles (total acumulado: 24000)
+   📡 Batch 49: Buscando 500 candles a partir de 2024-09-07 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 24500)
+   📡 Batch 50: Buscando 500 candles a partir de 2024-09-12 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 25000)
+   📡 Batch 51: Buscando 500 candles a partir de 2024-09-17 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 25500)
+   📡 Batch 52: Buscando 500 candles a partir de 2024-09-22 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 26000)
+   📡 Batch 53: Buscando 500 candles a partir de 2024-09-27 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 26500)
+   📡 Batch 54: Buscando 500 candles a partir de 2024-10-03 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 27000)
+   📡 Batch 55: Buscando 500 candles a partir de 2024-10-08 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 27500)
+   📡 Batch 56: Buscando 500 candles a partir de 2024-10-13 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 28000)
+   📡 Batch 57: Buscando 500 candles a partir de 2024-10-18 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 28500)
+   📡 Batch 58: Buscando 500 candles a partir de 2024-10-23 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 29000)
+   📡 Batch 59: Buscando 500 candles a partir de 2024-10-29 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 29500)
+   📡 Batch 60: Buscando 500 candles a partir de 2024-11-03 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 30000)
+   📡 Batch 61: Buscando 500 candles a partir de 2024-11-08 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 30500)
+   📡 Batch 62: Buscando 500 candles a partir de 2024-11-13 17:00...
+   ✅ Recebidos 500 candles (total acumulado: 31000)
+   📡 Batch 63: Buscando 500 candles a partir de 2024-11-18 22:00...
+   ✅ Recebidos 500 candles (total acumulado: 31500)
+   📡 Batch 64: Buscando 500 candles a partir de 2024-11-24 03:00...
+   ✅ Recebidos 500 candles (total acumulado: 32000)
+   📡 Batch 65: Buscando 500 candles a partir de 2024-11-29 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 32500)
+   📡 Batch 66: Buscando 500 candles a partir de 2024-12-04 13:00...
+   ✅ Recebidos 500 candles (total acumulado: 33000)
+   📡 Batch 67: Buscando 500 candles a partir de 2024-12-09 18:00...
+   ✅ Recebidos 500 candles (total acumulado: 33500)
+   📡 Batch 68: Buscando 500 candles a partir de 2024-12-14 23:00...
+   ✅ Recebidos 500 candles (total acumulado: 34000)
+   📡 Batch 69: Buscando 500 candles a partir de 2024-12-20 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 34500)
+   📡 Batch 70: Buscando 500 candles a partir de 2024-12-25 09:00...
+   ✅ Recebidos 500 candles (total acumulado: 35000)
+   📡 Batch 71: Buscando 500 candles a partir de 2024-12-30 14:00...
+   ✅ Recebidos 500 candles (total acumulado: 35500)
+   📡 Batch 72: Buscando 500 candles a partir de 2025-01-04 19:00...
+   ✅ Recebidos 500 candles (total acumulado: 36000)
+   📡 Batch 73: Buscando 500 candles a partir de 2025-01-10 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 36500)
+   📡 Batch 74: Buscando 500 candles a partir de 2025-01-15 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 37000)
+   📡 Batch 75: Buscando 500 candles a partir de 2025-01-20 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 37500)
+   📡 Batch 76: Buscando 500 candles a partir de 2025-01-25 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 38000)
+   📡 Batch 77: Buscando 500 candles a partir de 2025-01-30 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 38500)
+   📡 Batch 78: Buscando 500 candles a partir de 2025-02-05 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 39000)
+   📡 Batch 79: Buscando 500 candles a partir de 2025-02-10 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 39500)
+   📡 Batch 80: Buscando 500 candles a partir de 2025-02-15 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 40000)
+   📡 Batch 81: Buscando 500 candles a partir de 2025-02-20 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 40500)
+   📡 Batch 82: Buscando 500 candles a partir de 2025-02-25 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 41000)
+   📡 Batch 83: Buscando 500 candles a partir de 2025-03-03 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 41500)
+   📡 Batch 84: Buscando 500 candles a partir de 2025-03-08 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 42000)
+   📡 Batch 85: Buscando 500 candles a partir de 2025-03-13 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 42500)
+   📡 Batch 86: Buscando 500 candles a partir de 2025-03-18 17:00...
+   ✅ Recebidos 500 candles (total acumulado: 43000)
+   📡 Batch 87: Buscando 500 candles a partir de 2025-03-23 22:00...
+   ✅ Recebidos 500 candles (total acumulado: 43500)
+   📡 Batch 88: Buscando 500 candles a partir de 2025-03-29 03:00...
+   ✅ Recebidos 500 candles (total acumulado: 44000)
+   📡 Batch 89: Buscando 500 candles a partir de 2025-04-03 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 44500)
+   📡 Batch 90: Buscando 500 candles a partir de 2025-04-08 13:00...
+   ✅ Recebidos 500 candles (total acumulado: 45000)
+   📡 Batch 91: Buscando 500 candles a partir de 2025-04-13 18:00...
+   ✅ Recebidos 500 candles (total acumulado: 45500)
+   📡 Batch 92: Buscando 500 candles a partir de 2025-04-18 23:00...
+   ✅ Recebidos 500 candles (total acumulado: 46000)
+   📡 Batch 93: Buscando 500 candles a partir de 2025-04-24 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 46500)
+   📡 Batch 94: Buscando 500 candles a partir de 2025-04-29 09:00...
+   ✅ Recebidos 500 candles (total acumulado: 47000)
+   📡 Batch 95: Buscando 500 candles a partir de 2025-05-04 14:00...
+   ✅ Recebidos 500 candles (total acumulado: 47500)
+   📡 Batch 96: Buscando 500 candles a partir de 2025-05-09 19:00...
+   ✅ Recebidos 500 candles (total acumulado: 48000)
+   📡 Batch 97: Buscando 500 candles a partir de 2025-05-15 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 48500)
+   📡 Batch 98: Buscando 500 candles a partir de 2025-05-20 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 49000)
+   📡 Batch 99: Buscando 500 candles a partir de 2025-05-25 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 49500)
+   📡 Batch 100: Buscando 500 candles a partir de 2025-05-30 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 50000)
+   📡 Batch 101: Buscando 500 candles a partir de 2025-06-04 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 50500)
+   📡 Batch 102: Buscando 500 candles a partir de 2025-06-10 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 51000)
+   📡 Batch 103: Buscando 500 candles a partir de 2025-06-15 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 51500)
+   📡 Batch 104: Buscando 500 candles a partir de 2025-06-20 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 52000)
+   📡 Batch 105: Buscando 500 candles a partir de 2025-06-25 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 52500)
+   📡 Batch 106: Buscando 500 candles a partir de 2025-06-30 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 53000)
+   📡 Batch 107: Buscando 500 candles a partir de 2025-07-06 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 53500)
+   📡 Batch 108: Buscando 500 candles a partir de 2025-07-11 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 54000)
+   📡 Batch 109: Buscando 500 candles a partir de 2025-07-16 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 54500)
+   📡 Batch 110: Buscando 500 candles a partir de 2025-07-21 17:00...
+   ✅ Recebidos 500 candles (total acumulado: 55000)
+   📡 Batch 111: Buscando 500 candles a partir de 2025-07-26 22:00...
+   ✅ Recebidos 500 candles (total acumulado: 55500)
+   📡 Batch 112: Buscando 500 candles a partir de 2025-08-01 03:00...
+   ✅ Recebidos 500 candles (total acumulado: 56000)
+   📡 Batch 113: Buscando 500 candles a partir de 2025-08-06 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 56500)
+   📡 Batch 114: Buscando 500 candles a partir de 2025-08-11 13:00...
+   ✅ Recebidos 500 candles (total acumulado: 57000)
+   📡 Batch 115: Buscando 500 candles a partir de 2025-08-16 18:00...
+   ✅ Recebidos 500 candles (total acumulado: 57500)
+   📡 Batch 116: Buscando 500 candles a partir de 2025-08-21 23:00...
+   ✅ Recebidos 500 candles (total acumulado: 58000)
+   📡 Batch 117: Buscando 500 candles a partir de 2025-08-27 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 58500)
+   📡 Batch 118: Buscando 500 candles a partir de 2025-09-01 09:00...
+   ✅ Recebidos 500 candles (total acumulado: 59000)
+   📡 Batch 119: Buscando 500 candles a partir de 2025-09-06 14:00...
+   ✅ Recebidos 500 candles (total acumulado: 59500)
+   📡 Batch 120: Buscando 500 candles a partir de 2025-09-11 19:00...
+   ✅ Recebidos 500 candles (total acumulado: 60000)
+   📡 Batch 121: Buscando 500 candles a partir de 2025-09-17 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 60500)
+   📡 Batch 122: Buscando 500 candles a partir de 2025-09-22 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 61000)
+   📡 Batch 123: Buscando 500 candles a partir de 2025-09-27 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 61500)
+   📡 Batch 124: Buscando 36 candles a partir de 2025-10-02 15:00...
+   ✅ Recebidos 36 candles (total acumulado: 61536)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 61,536
+📅 Período: 2024-01-01 00:00:00 → 2025-10-02 23:45:00
+✅ API Success Rate: 100.0% (124/124 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando estratégias sobre dados reais...
+

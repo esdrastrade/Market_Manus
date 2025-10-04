@@ -1,0 +1,121 @@
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 1 minuto
+   📈 Estratégias: 5 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~2880 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-10-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-10-01 08:20...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-10-01 16:40...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-10-02 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-10-02 09:20...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 380 candles a partir de 2025-10-02 17:40...
+   ✅ Recebidos 380 candles (total acumulado: 2880)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 2,880
+📅 Período: 2025-10-01 00:00:00 → 2025-10-02 23:59:00
+✅ API Success Rate: 100.0% (6/6 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando estratégias sobre dados reais...
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.16
+   📈 P&L: $+0.16
+   📊 ROI: +0.16%
+   🎯 Sinais de confluência: 2830
+   ✅ Trades vencedores: 138
+   ❌ Trades perdedores: 150
+   📊 Win Rate: 47.9%
+
+📈 DETALHES POR ESTRATÉGIA:
+   SMC: Break of Structure: 182 sinais (peso: 1.0)
+   SMC: Change of Character: 1196 sinais (peso: 1.0)
+   SMC: Order Blocks: 0 sinais (peso: 1.0)
+   SMC: Fair Value Gap: 2830 sinais (peso: 1.0)
+   SMC: Liquidity Sweep: 2579 sinais (peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.16
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8):

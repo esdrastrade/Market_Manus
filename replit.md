@@ -51,6 +51,23 @@ The system is a CLI/TUI application built with Python 3.11. Its core architectur
     - **Momentum Combo (RSI+MACD)**: High-probability signals combining momentum indicators
     - **Pivot Points**: Objective support/resistance levels with automatic daily calculations
   - Uses weighted scoring engine with regime filters (ADX, ATR, BB Width) and conflict penalties to generate high-probability trade signals.
+- **Market Context Analyzer (NEW - Oct 2025)**: Intelligent regime detection system for context-aware strategy weighting:
+  - **60-Day Analysis**: Analyzes historical data using MA slope, ADX trend strength, and ATR volatility
+  - **Regime Detection**: Identifies BULLISH, BEARISH, or CORRECTION market conditions with confidence scoring
+  - **Strategy Weighting**: Auto-adjusts strategy weights based on regime (e.g., EMA 1.3x in bullish, RSI 1.4x in correction)
+  - **Integration**: Applied in both historical backtests and real-time execution before signal generation
+  - **Rich Display**: Visual panel showing regime, confidence, key metrics, and top 5 strategy adjustments
+- **Volume Filter Pipeline (NEW - Oct 2025)**: Statistical volume-based signal filtering to improve win rate:
+  - **Z-Score Normalization**: Calculates standardized volume scores for objective filtering
+  - **Signal Rejection**: Automatically rejects signals with low volume (z-score < 0.5)
+  - **Signal Amplification**: Boosts confidence 1.3x for high-volume signals (z-score > 1.5)
+  - **Post-Processing**: Applied after strategy signals but before confluence scoring
+  - **Statistics Display**: Shows rejected/amplified/normal signals with percentages and counts
+- **Strategy Explanations (NEW - Oct 2025)**: Comprehensive documentation system via menu option 9:
+  - **13 Markdown Files**: Complete strategy documentation in `market_manus/explanations/`
+  - **Content**: Logic, trigger conditions, parameters, best practices, example scenarios
+  - **Interactive Menu**: List all strategies, view details, or generate markdown files
+  - **Coverage**: All 8 classic strategies + 5 SMC patterns documented
 
 ### UI/UX Decisions
 The system operates as a console-based CLI/TUI application, providing an interactive menu for users to select assets, timeframes, and execute strategies.

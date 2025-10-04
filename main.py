@@ -22,6 +22,7 @@ try:
     from market_manus.core.capital_manager import CapitalManager
     from market_manus.strategy_lab.STRATEGY_LAB_PROFESSIONAL_V6 import StrategyLabProfessionalV6
     from market_manus.confluence_mode.confluence_mode_module import ConfluenceModeModule
+    from market_manus.explanations import run_explanations_menu
 except ImportError as e:
     print(f"❌ Erro na importação: {e}")
     print("📁 Verifique se a estrutura de diretórios está correta:")
@@ -87,7 +88,7 @@ class MarketManusMain:
         
         while True:
             self._show_main_menu()
-            choice = input("\n🔢 Escolha uma opção (0-8): ").strip()
+            choice = input("\n🔢 Escolha uma opção (0-9): ").strip()
             
             if choice == '0':
                 self._show_goodbye()
@@ -108,6 +109,8 @@ class MarketManusMain:
                 self._show_settings()
             elif choice == '8':
                 self._run_realtime_confluence()
+            elif choice == '9':
+                run_explanations_menu()
             else:
                 print("❌ Opção inválida")
                 input("\n📖 Pressione ENTER para continuar...")
@@ -176,6 +179,9 @@ class MarketManusMain:
         print("   5️⃣  Capital Dashboard")
         print("   6️⃣  Connectivity Status")
         print("   7️⃣  Settings")
+        
+        print(f"\n📚 DOCUMENTAÇÃO:")
+        print("   9️⃣  Explanations (Explicações das Estratégias)")
         
         print(f"\n   0️⃣  Sair do sistema")
     

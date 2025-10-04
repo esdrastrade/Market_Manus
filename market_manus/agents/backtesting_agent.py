@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agents.base_agent import BaseAgent, SuggestionType, AlertSeverity
+from data_providers.historical_cache import HistoricalDataCache
 
 class BacktestingAgent(BaseAgent):
     """
@@ -44,6 +45,9 @@ class BacktestingAgent(BaseAgent):
         
         # Data provider para dados reais
         self.data_provider = data_provider
+        
+        # Sistema de cache para dados históricos
+        self.cache = HistoricalDataCache(cache_dir="data")
         
         # Configurações de backtesting
         self.backtest_config = self.load_backtest_config()
@@ -155,7 +159,7 @@ class BacktestingAgent(BaseAgent):
         print(f"🔗 Fonte: {data_source} (dados reais)")
         print("═" * 63)
     
-    def get_historical_data(self, symbol: str, days: int, timeframe: str = "1m") -> pd.DataFrame:
+    def get_historical_data(self, symbol: str, days: int, timeframe: str = "1m", use_cache: bool = False) -> pd.DataFrame:
         """
         Obtém dados históricos REAIS da API Binance/Bybit
         
@@ -166,6 +170,7 @@ class BacktestingAgent(BaseAgent):
             symbol: Par de trading (ex: "BTCUSDT")
             days: Número de dias de histórico
             timeframe: Timeframe dos dados (1m, 5m, 15m, etc.)
+            use_cache: Se True, usa cache para evitar chamadas repetidas à API
             
         Returns:
             pd.DataFrame: Dados OHLC históricos REAIS da API
@@ -175,6 +180,14 @@ class BacktestingAgent(BaseAgent):
             if not self._validate_api_credentials():
                 self.logger.error("❌ Impossível obter dados: credenciais da API não configuradas")
                 return pd.DataFrame()
+            
+            # BUG FIX: Calcular timestamps UMA VEZ no início para garantir consistência
+            end_time = datetime.now()
+            start_time = end_time - timedelta(days=days)
+            start_date_str = start_time.strftime("%Y-%m-%d")
+            end_date_str = end_time.strftime("%Y-%m-%d")
+            start_timestamp = int(start_time.timestamp() * 1000)
+            end_timestamp = int(end_time.timestamp() * 1000)
             
             # Converter timeframe para formato da API
             timeframe_map = {
@@ -189,12 +202,40 @@ class BacktestingAgent(BaseAgent):
             
             api_timeframe = timeframe_map.get(timeframe, "5")
             
-            # Calcular timestamps
-            end_time = datetime.now()
-            start_time = end_time - timedelta(days=days)
-            
-            start_timestamp = int(start_time.timestamp() * 1000)
-            end_timestamp = int(end_time.timestamp() * 1000)
+            # Tentar carregar do cache se habilitado
+            if use_cache:
+                try:
+                    cached_data = self.cache.get(symbol, timeframe, start_date_str, end_date_str)
+                    if cached_data:
+                        # BUG FIX: Detectar número de colunas dinamicamente
+                        num_cols = len(cached_data[0]) if cached_data else 6
+                        
+                        if num_cols == 6:
+                            col_names = ['timestamp', 'open', 'high', 'low', 'close', 'volume']
+                        else:
+                            col_names = ['timestamp', 'open', 'high', 'low', 'close', 'volume',
+                                       'close_time', 'quote_volume', 'trades', 'taker_buy_base',
+                                       'taker_buy_quote', 'ignore'][:num_cols]
+                        
+                        df = pd.DataFrame(cached_data, columns=col_names)
+                        
+                        # Converter tipos (apenas colunas essenciais)
+                        df['timestamp'] = pd.to_datetime(df['timestamp'].astype(int), unit='ms')
+                        for col in ['open', 'high', 'low', 'close', 'volume']:
+                            if col in df.columns:
+                                df[col] = pd.to_numeric(df[col])
+                        
+                        # Definir timestamp como índice
+                        df.set_index('timestamp', inplace=True)
+                        df.sort_index(inplace=True)
+                        
+                        # Exibir mensagem de cache
+                        print(f"\n📦 Dados carregados do CACHE ({len(df):,} candles)")
+                        self.logger.info(f"📦 Dados carregados do cache: {len(df)} candles para {symbol}")
+                        
+                        return df
+                except Exception as e:
+                    self.logger.warning(f"⚠️ Erro ao carregar cache, continuando com API: {str(e)}")
             
             self.logger.info(f"📡 Buscando dados REAIS da API: {symbol}, {days} dias, timeframe {timeframe}")
             self.logger.info(f"📅 Período: {start_time.strftime('%Y-%m-%d')} até {end_time.strftime('%Y-%m-%d')}")
@@ -209,7 +250,7 @@ class BacktestingAgent(BaseAgent):
             while current_start < end_timestamp:
                 # Calcular limite de candles para este batch
                 remaining_ms = end_timestamp - current_start
-                limit = min(500, int(remaining_ms / (60 * 1000)))  # Aproximação
+                limit = min(500, int(remaining_ms / (60 * 1000)))
                 
                 if limit <= 0:
                     break
@@ -238,7 +279,7 @@ class BacktestingAgent(BaseAgent):
                     
                     # Próximo batch
                     last_candle_time = int(klines[-1][0])
-                    current_start = last_candle_time + (60 * 1000)  # Próximo minuto
+                    current_start = last_candle_time + (60 * 1000)
                     batch_num += 1
                     
                     # Rate limiting
@@ -252,15 +293,23 @@ class BacktestingAgent(BaseAgent):
                 self.logger.error(f"❌ Nenhum dado REAL obtido da API para {symbol}")
                 return pd.DataFrame()
             
-            # Converter para DataFrame
-            df = pd.DataFrame(all_klines, columns=[
-                'timestamp', 'open', 'high', 'low', 'close', 'volume'
-            ])
+            # BUG FIX: Detectar número de colunas dinamicamente baseado nos dados retornados
+            num_cols = len(all_klines[0]) if all_klines else 6
             
-            # Converter tipos
+            if num_cols == 6:
+                col_names = ['timestamp', 'open', 'high', 'low', 'close', 'volume']
+            else:
+                col_names = ['timestamp', 'open', 'high', 'low', 'close', 'volume',
+                           'close_time', 'quote_volume', 'trades', 'taker_buy_base',
+                           'taker_buy_quote', 'ignore'][:num_cols]
+            
+            df = pd.DataFrame(all_klines, columns=col_names)
+            
+            # Converter tipos (apenas colunas essenciais)
             df['timestamp'] = pd.to_datetime(df['timestamp'].astype(int), unit='ms')
             for col in ['open', 'high', 'low', 'close', 'volume']:
-                df[col] = pd.to_numeric(df[col])
+                if col in df.columns:
+                    df[col] = pd.to_numeric(df[col])
             
             # Definir timestamp como índice
             df.set_index('timestamp', inplace=True)
@@ -279,6 +328,13 @@ class BacktestingAgent(BaseAgent):
             )
             
             self.logger.info(f"✅ Dados REAIS obtidos com sucesso: {len(df)} candles")
+            
+            # BUG FIX: Salvar no cache usando os mesmos start_date_str/end_date_str calculados no início
+            if use_cache:
+                try:
+                    self.cache.save(symbol, timeframe, start_date_str, end_date_str, all_klines)
+                except Exception as e:
+                    self.logger.warning(f"⚠️ Erro ao salvar cache: {str(e)}")
             
             return df
             

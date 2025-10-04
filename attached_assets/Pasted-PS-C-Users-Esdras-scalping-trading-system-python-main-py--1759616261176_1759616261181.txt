@@ -1,0 +1,1109 @@
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+
+================================================================================
+     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0
+================================================================================
+🎯 Sistema modular com Strategy Lab V6 e Confluence Lab
+📊 13 estratégias (8 clássicas + 5 SMC)
+   • Clássicas: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+   • SMC: BOS, CHoCH, Order Blocks, FVG, Liquidity Sweep
+📅 Seleção de período personalizado
+💰 Capital management automático
+🔗 Data Provider: Binance API
+================================================================================
+
+🔄 INICIALIZANDO SISTEMA...
+✅ Data Provider: Conectado
+✅ Capital Manager: Inicializado ($100.00)
+✅ Strategy Lab V6: Carregado (13 estratégias: 8 clássicas + 5 SMC)
+✅ Confluence Lab: Carregado
+✅ OpenAI API: Configurada
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 1
+
+💱 Digite o símbolo (padrão BTCUSDT): BDAGUSDT
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ 🧭 ANÁLISE DE SENTIMENTO DE MERCADO                                                                                                              │
+│                                                                                                                                                  │
+│ Ativo: BDAGUSDT  |  Score: 0.71  |  Status: 📈 OTIMISTA                                                                                          │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────── 📖 Interpretação ────────────────────────────────────────────────────────────────╮
+│                                                                                                                                                  │
+│  📊 **Análise para BDAGUSDT**                                                                                                                    │
+│  Com base em 3 fonte(s) de dados confiável(is), o sentimento do mercado está 📈 otimista. Sentimento positivo predomina, indicando boa           │
+│  disposição de compra.                                                                                                                           │
+│                                                                                                                                                  │
+│  🎭 **Sentimento Geral**: O índice Fear & Greed está em 71.0/100 (Greed), mostrando leve otimismo entre investidores.                            │
+│  📊 **Open Interest**: Rastreamento de posições abertas mostra derivatives em movimento.                                                         │
+│                                                                                                                                                  │
+│  ✅ **Recomendação**: O sentimento favorável pode indicar boas oportunidades de entrada em posições long. Monitore níveis de resistência.        │
+│                                                                                                                                                  │
+│  💡 *Nota: 5 fonte(s) adicional(is) está(ão) disponível(is) mediante configuração de API keys.*                                                  │
+│                                                                                                                                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+━━━ Detalhamento Técnico das Fontes ━━━
+
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Fonte         ┃ Categoria       ┃ Status                                            ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ alt_fng       │ macro_sentiment │ ✅ F&G: 71.0 (Greed)                              │
+│ coingecko     │ spot_market     │ ❌ not-found                                      │
+│ bybit         │ derivatives     │ ❌ no-data                                        │
+│ coinglass     │ derivatives     │ ✅ Ativo                                          │
+│ cryptopanic   │ news            │ ⚠️ 0 notícias                                      │
+│ santiment     │ social          │ ℹ️ implement SAN queries                           │
+│ glassnode     │ onchain         │ ℹ️ implement specific metric endpoint for BDAGUSDT │
+│ google_trends │ interest        │ ℹ️ implement pytrends if enabled                   │
+└───────────────┴─────────────────┴───────────────────────────────────────────────────┘
+
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 3
+
+🎯 INICIANDO CONFLUENCE MODE...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 1
+
+🪙 SELEÇÃO DE ATIVO
+==================================================
+   1️⃣     🪙 BTCUSDT - Bitcoin
+   2️⃣     💎 ETHUSDT - Ethereum
+   3️⃣     🟡 BNBUSDT - Binance Coin
+   4️⃣     ⚡ SOLUSDT - Solana
+   5️⃣     💧 XRPUSDT - XRP
+   6️⃣     🔵 ADAUSDT - Cardano
+   7️⃣     🐕 DOGEUSDT - Dogecoin
+   8️⃣     🟣 MATICUSDT - Polygon
+
+   0️⃣  Voltar
+
+🔢 Escolha um ativo (0-8): 2
+
+✅ Ativo selecionado: 💎 ETHUSDT - Ethereum
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣     15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 3
+
+✅ Timeframe selecionado: 15 minutos - Swing trading curto
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣     🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣     🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣     📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣     ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣     🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 9,10,11,12,13
+
+✅ Estratégias selecionadas:
+   🔥 SMC: Break of Structure
+   🔄 SMC: Change of Character
+   📦 SMC: Order Blocks
+   ⚡ SMC: Fair Value Gap
+   🎣 SMC: Liquidity Sweep
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣     ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 2
+
+✅ Modo selecionado: ⚡ ANY (Qualquer estratégia)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 5
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2025-10-01
+✅ Data inicial: 2025-10-01
+
+📅 Data final (YYYY-MM-DD): 2025-10-03
+✅ Data final: 2025-10-03
+
+✅ Período personalizado configurado:
+   📅 De: 2025-10-01
+   📅 Até: 2025-10-03
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 15 minutos
+   📈 Estratégias: 5 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~192 candles
+   📡 Batch 1: Buscando 192 candles a partir de 2025-10-01 00:00...
+   ✅ Recebidos 192 candles (total acumulado: 192)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 192
+📅 Período: 2025-10-01 00:00:00 → 2025-10-02 23:45:00
+✅ API Success Rate: 100.0% (1/1 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 5 estratégias sobre 192 candles...
+  [5/5] 🎣 SMC: Liquidity Sweep • 341 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 960/960 work units •  0:00:02 • 0:00:00
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.03
+   📈 P&L: $+0.03
+   📊 ROI: +0.03%
+   🎯 Sinais de confluência: 142
+   ✅ Trades vencedores: 5
+   ❌ Trades perdedores: 6
+   📊 Win Rate: 45.5%
+
+📈 DETALHES POR ESTRATÉGIA:
+   SMC: Break of Structure: 8 sinais (peso: 1.0)
+   SMC: Change of Character: 50 sinais (peso: 1.0)
+   SMC: Order Blocks: 0 sinais (peso: 1.0)
+   SMC: Fair Value Gap: 142 sinais (peso: 1.0)
+   SMC: Liquidity Sweep: 142 sinais (peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.03
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 2
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣  ✅ 15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 1
+
+✅ Timeframe selecionado: 1 minuto - Scalping ultra-rápido
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣  ✅ 🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣  ✅ 🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣  ✅ 📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣  ✅ ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣  ✅ 🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 4,5,6,8,13
+
+✅ Estratégias selecionadas:
+   📊 MACD
+   📈 Stochastic Oscillator
+   📉 Williams %R
+   🔢 Fibonacci Retracement
+   🎣 SMC: Liquidity Sweep
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣  ✅ ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4):
+❌ Digite um número válido
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 1 minuto
+   📈 Estratégias: 5 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~2880 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-10-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-10-01 08:20...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-10-01 16:40...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-10-02 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-10-02 09:20...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 380 candles a partir de 2025-10-02 17:40...
+   ✅ Recebidos 380 candles (total acumulado: 2880)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 2,880
+📅 Período: 2025-10-01 00:00:00 → 2025-10-02 23:59:00
+✅ API Success Rate: 100.0% (6/6 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 5 estratégias sobre 2,880 candles...
+  [5/5] 🎣 SMC: Liquidity Sweep • 3485 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 14400/14400 work units •  0:00:04 • 0:00:00
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.11
+   📈 P&L: $+0.11
+   📊 ROI: +0.11%
+   🎯 Sinais de confluência: 2797
+   ✅ Trades vencedores: 38
+   ❌ Trades perdedores: 31
+   📊 Win Rate: 55.1%
+
+📈 DETALHES POR ESTRATÉGIA:
+   MACD: 247 sinais (peso: 1.0)
+   Stochastic Oscillator: 1909 sinais (peso: 1.0)
+   Williams %R: 1909 sinais (peso: 1.0)
+   Fibonacci Retracement: 143 sinais (peso: 1.0)
+   SMC: Liquidity Sweep: 2579 sinais (peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.11
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣  ✅ ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 4
+
+✅ Modo selecionado: ⚖️ WEIGHTED (Ponderado)
+
+⚖️ CONFIGURAÇÃO DE PESOS
+==================================================
+💡 Configure o peso de cada estratégia (0.1 a 2.0)
+
+📊 MACD
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 1.5
+   ✅ Peso atualizado: 1.5
+
+📊 Stochastic Oscillator
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 2.0
+   ✅ Peso atualizado: 2.0
+
+📊 Williams %R
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 2.0
+   ✅ Peso atualizado: 2.0
+
+📊 Fibonacci Retracement
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 1.5
+   ✅ Peso atualizado: 1.5
+
+📊 SMC: Liquidity Sweep
+   Peso atual: 1.0
+   Novo peso (0.1-2.0, ENTER para manter): 2.0
+   ✅ Peso atualizado: 2.0
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: ETHUSDT
+   ⏰ Timeframe: 1 minuto
+   📈 Estratégias: 5 selecionadas
+   🎯 Modo: WEIGHTED (Ponderado)
+   📅 Período: 2025-10-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~2880 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-10-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-10-01 08:20...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-10-01 16:40...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-10-02 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-10-02 09:20...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 380 candles a partir de 2025-10-02 17:40...
+   ✅ Recebidos 380 candles (total acumulado: 2880)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 2,880
+📅 Período: 2025-10-01 00:00:00 → 2025-10-02 23:59:00
+✅ API Success Rate: 100.0% (6/6 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 5 estratégias sobre 2,880 candles...
+  [5/5] 🎣 SMC: Liquidity Sweep • 3463 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 14400/14400 work units •  0:00:04 • 0:00:00
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.21
+   📈 P&L: $+0.21
+   📊 ROI: +0.21%
+   🎯 Sinais de confluência: 1729
+   ✅ Trades vencedores: 40
+   ❌ Trades perdedores: 25
+   📊 Win Rate: 61.5%
+
+📈 DETALHES POR ESTRATÉGIA:
+   MACD: 247 sinais (peso: 1.5)
+   Stochastic Oscillator: 1909 sinais (peso: 2.0)
+   Williams %R: 1909 sinais (peso: 2.0)
+   Fibonacci Retracement: 143 sinais (peso: 1.5)
+   SMC: Liquidity Sweep: 2579 sinais (peso: 2.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.21
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣  ✅ 📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣  ✅ 📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣  ✅ 📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣  ✅ 🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣     🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣     🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣     📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣     ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣  ✅ 🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 0
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ ETHUSDT
+   ⏰ Timeframe: ✅ 1 minuto
+   📈 Estratégias: ✅ 5 estratégias
+   🎯 Modo Confluência: ✅ WEIGHTED (Ponderado)
+   📅 Período: 2025-10-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 0
+
+👋 Saindo do Confluence Lab...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+🔥 CONFLUÊNCIA SMC + CLÁSSICOS:
+   8️⃣  Executar Confluência em Tempo Real
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 8
+
+🔥 CONFLUÊNCIA LIVE - SMC + CLÁSSICOS (WebSocket Streaming)
+============================================================
+
+📊 ATIVOS DISPONÍVEIS:
+   1️⃣  BTC/USDT
+   2️⃣  ETH/USDT
+   3️⃣  SOL/USDT
+   4️⃣  Personalizar
+
+🔢 Escolha o ativo (1-4): 1
+
+⏱️ TIMEFRAMES DISPONÍVEIS:
+   1️⃣  1 minuto (scalping)
+   2️⃣  5 minutos (scalping)
+   3️⃣  15 minutos (swing curto)
+   4️⃣  1 hora (intraday)
+   5️⃣  4 horas (swing longo)
+
+🔢 Escolha o timeframe (1-5): 1
+
+🚀 INICIANDO LIVE STREAMING:
+   📊 Ativo: BTCUSDT
+   ⏱️ Timeframe: 1m
+   🔥 Detectores: 5 SMC + 7 Clássicos
+   📡 Streaming: WebSocket (Binance.US)
+   🎨 UI: Rich Live (atualização em tempo real)
+
+⚠️  MODO PAPER TRADING (read-only)
+
+🔄 Pressione CTRL+C para parar...
+
+📖 Pressione ENTER para começar...
+📥 Carregando dados históricos...
+✅ 500 candles carregados
+╭─────────────────────────────────────────────────────────────── 🔴 LIVE STREAMING ────────────────────────────────────────────────────────────────╮
+│ Provider: Binance.US                                    Symbol: BTCUSDT                      TF: 1m                              Latency: 1980ms │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─────────────── 💰 Preço Atual ────────────────╮╭───────────────────────────── 🔍 Confluência (5 SMC + 7 Clássicos) ──────────────────────────────╮
+│ $121,971.59                                   ││ ┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│ +$0.00 desde mudança                          ││ ┃ Estado               ┃      Conf.       ┃      Score       ┃ Razões Principais              ┃ │
+│                                               ││ ┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩ │
+│                                               ││ │ • HOLD               │       0.00       │      0.000       │ Aguardando...                  │ │
+│                                               ││ └──────────────────────┴──────────────────┴──────────────────┴────────────────────────────────┘ │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+╰───────────────────────────────────────────────╯╰─────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────── 📊 Últimas Mudanças de Estado ──────────────────────────────────────────────────────────╮
+│ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃ Quando                              ┃ Ação                         ┃                                    Preço ┃            Score             ┃ │
+│ ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩ │
+│ └─────────────────────────────────────┴──────────────────────────────┴──────────────────────────────────────────┴──────────────────────────────┘ │
+│                                                                                                                                                  │
+│                                                                                                                                                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

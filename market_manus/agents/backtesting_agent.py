@@ -26,23 +26,29 @@ class BacktestingAgent(BaseAgent):
     Agente de Backtesting
     
     Responsabilidades:
-    - Validação de estratégias com dados históricos
-    - Simulação de cenários de mercado
+    - Validação de estratégias com dados históricos REAIS
+    - Simulação de cenários de mercado com dados REAIS
     - Análise de robustez das estratégias
     - Otimização de parâmetros
     - Geração de relatórios de backtesting
     - Validação cruzada de estratégias
     
     Frequência: Diário via PowerShell scheduled task
+    
+    IMPORTANTE: Este agente usa APENAS dados reais das APIs Binance/Bybit.
+    Nenhum dado mockado ou simulado é utilizado.
     """
     
-    def __init__(self):
+    def __init__(self, data_provider=None):
         super().__init__("BacktestingAgent")
+        
+        # Data provider para dados reais
+        self.data_provider = data_provider
         
         # Configurações de backtesting
         self.backtest_config = self.load_backtest_config()
         
-        # Dados históricos simulados
+        # Cache de dados históricos REAIS
         self.historical_data = {}
         
         # Resultados de backtests
@@ -51,7 +57,33 @@ class BacktestingAgent(BaseAgent):
         # Cache de estratégias testadas
         self.strategy_cache = {}
         
-        self.logger.info("BacktestingAgent inicializado")
+        if self.data_provider:
+            self.logger.info("BacktestingAgent inicializado com data_provider REAL")
+        else:
+            self.logger.warning("BacktestingAgent inicializado SEM data_provider - backtests não funcionarão")
+            
+    def _validate_api_credentials(self) -> bool:
+        """
+        Valida se as credenciais da API estão configuradas
+        
+        Returns:
+            bool: True se credenciais válidas, False caso contrário
+        """
+        if not self.data_provider:
+            self.logger.error("❌ Data provider não configurado. Impossível executar backtest sem dados reais.")
+            return False
+        
+        # Verificar se o provider tem API key configurada
+        if not hasattr(self.data_provider, 'api_key') or not self.data_provider.api_key:
+            self.logger.error("❌ API Key não configurada. Configure BINANCE_API_KEY ou BYBIT_API_KEY no ambiente.")
+            return False
+        
+        if not hasattr(self.data_provider, 'api_secret') or not self.data_provider.api_secret:
+            self.logger.error("❌ API Secret não configurado. Configure BINANCE_API_SECRET ou BYBIT_API_SECRET no ambiente.")
+            return False
+        
+        self.logger.info("✅ Credenciais da API validadas com sucesso")
+        return True
     
     def load_backtest_config(self) -> Dict:
         """Carrega configuração de backtesting"""
@@ -96,114 +128,163 @@ class BacktestingAgent(BaseAgent):
             }
         }
     
-    def generate_historical_data(self, symbol: str, days: int, timeframe: str = "1m") -> pd.DataFrame:
+    def _display_data_metrics(self, total_candles: int, first_time: datetime, last_time: datetime, 
+                              successful_batches: int, total_batches: int, data_source: str):
         """
-        Gera dados históricos simulados para backtesting
-        
-        Em produção, conectaria com APIs de dados históricos reais
-        Para demonstração, simula dados OHLC realistas
+        Exibe métricas de dados históricos carregados em formato visual consistente
         
         Args:
-            symbol: Par de trading
+            total_candles: Total de candles carregados
+            first_time: Timestamp do primeiro candle
+            last_time: Timestamp do último candle
+            successful_batches: Número de batches bem-sucedidos
+            total_batches: Total de batches realizados
+            data_source: Nome da fonte de dados
+        """
+        print("\n" + "═" * 63)
+        print("📊 DADOS HISTÓRICOS CARREGADOS")
+        print("═" * 63)
+        print(f"📈 Total de Candles: {total_candles:,}")
+        
+        first_str = first_time.strftime("%Y-%m-%d %H:%M:%S")
+        last_str = last_time.strftime("%Y-%m-%d %H:%M:%S")
+        print(f"📅 Período: {first_str} → {last_str}")
+        
+        success_rate = (successful_batches / total_batches * 100) if total_batches > 0 else 0
+        print(f"✅ API Success Rate: {success_rate:.1f}% ({successful_batches}/{total_batches} batches bem-sucedidos)")
+        print(f"🔗 Fonte: {data_source} (dados reais)")
+        print("═" * 63)
+    
+    def get_historical_data(self, symbol: str, days: int, timeframe: str = "1m") -> pd.DataFrame:
+        """
+        Obtém dados históricos REAIS da API Binance/Bybit
+        
+        IMPORTANTE: Este método usa APENAS dados reais das APIs.
+        Nenhum dado mockado ou simulado é gerado.
+        
+        Args:
+            symbol: Par de trading (ex: "BTCUSDT")
             days: Número de dias de histórico
             timeframe: Timeframe dos dados (1m, 5m, 15m, etc.)
             
         Returns:
-            pd.DataFrame: Dados OHLC históricos
+            pd.DataFrame: Dados OHLC históricos REAIS da API
         """
         try:
-            # Calcular número de períodos baseado no timeframe
-            timeframe_minutes = {
-                "1m": 1,
-                "5m": 5,
-                "15m": 15,
-                "1h": 60,
-                "4h": 240,
-                "1d": 1440
+            # Validar credenciais antes de buscar dados
+            if not self._validate_api_credentials():
+                self.logger.error("❌ Impossível obter dados: credenciais da API não configuradas")
+                return pd.DataFrame()
+            
+            # Converter timeframe para formato da API
+            timeframe_map = {
+                "1m": "1",
+                "5m": "5", 
+                "15m": "15",
+                "30m": "30",
+                "1h": "60",
+                "4h": "240",
+                "1d": "D"
             }
             
-            minutes_per_period = timeframe_minutes.get(timeframe, 1)
-            periods_per_day = 1440 // minutes_per_period  # 1440 minutos por dia
-            total_periods = days * periods_per_day
+            api_timeframe = timeframe_map.get(timeframe, "5")
             
-            # Gerar timestamps
+            # Calcular timestamps
             end_time = datetime.now()
             start_time = end_time - timedelta(days=days)
             
-            timestamps = pd.date_range(
-                start=start_time,
-                end=end_time,
-                periods=total_periods
+            start_timestamp = int(start_time.timestamp() * 1000)
+            end_timestamp = int(end_time.timestamp() * 1000)
+            
+            self.logger.info(f"📡 Buscando dados REAIS da API: {symbol}, {days} dias, timeframe {timeframe}")
+            self.logger.info(f"📅 Período: {start_time.strftime('%Y-%m-%d')} até {end_time.strftime('%Y-%m-%d')}")
+            
+            # Buscar dados reais via data_provider
+            all_klines = []
+            current_start = start_timestamp
+            batch_num = 1
+            successful_batches = 0
+            failed_batches = 0
+            
+            while current_start < end_timestamp:
+                # Calcular limite de candles para este batch
+                remaining_ms = end_timestamp - current_start
+                limit = min(500, int(remaining_ms / (60 * 1000)))  # Aproximação
+                
+                if limit <= 0:
+                    break
+                
+                self.logger.debug(f"📊 Batch {batch_num}: Buscando até {limit} candles...")
+                
+                # Chamada REAL à API
+                try:
+                    klines = self.data_provider.get_kline(
+                        category='spot',
+                        symbol=symbol,
+                        interval=api_timeframe,
+                        limit=limit,
+                        start=current_start,
+                        end=end_timestamp
+                    )
+                    
+                    if not klines:
+                        self.logger.warning(f"⚠️  Nenhum dado retornado para batch {batch_num}")
+                        failed_batches += 1
+                        break
+                    
+                    all_klines.extend(klines)
+                    successful_batches += 1
+                    self.logger.debug(f"✅ Batch {batch_num}: Recebidos {len(klines)} candles (total: {len(all_klines)})")
+                    
+                    # Próximo batch
+                    last_candle_time = int(klines[-1][0])
+                    current_start = last_candle_time + (60 * 1000)  # Próximo minuto
+                    batch_num += 1
+                    
+                    # Rate limiting
+                    time.sleep(0.1)
+                except Exception as e:
+                    self.logger.error(f"❌ Erro no batch {batch_num}: {str(e)}")
+                    failed_batches += 1
+                    break
+            
+            if not all_klines:
+                self.logger.error(f"❌ Nenhum dado REAL obtido da API para {symbol}")
+                return pd.DataFrame()
+            
+            # Converter para DataFrame
+            df = pd.DataFrame(all_klines, columns=[
+                'timestamp', 'open', 'high', 'low', 'close', 'volume'
+            ])
+            
+            # Converter tipos
+            df['timestamp'] = pd.to_datetime(df['timestamp'].astype(int), unit='ms')
+            for col in ['open', 'high', 'low', 'close', 'volume']:
+                df[col] = pd.to_numeric(df[col])
+            
+            # Definir timestamp como índice
+            df.set_index('timestamp', inplace=True)
+            df.sort_index(inplace=True)
+            
+            # Exibir métricas de dados carregados
+            total_batches = successful_batches + failed_batches
+            data_source = self.data_provider.__class__.__name__ if self.data_provider else "Unknown"
+            self._display_data_metrics(
+                total_candles=len(df),
+                first_time=df.index[0].to_pydatetime(),
+                last_time=df.index[-1].to_pydatetime(),
+                successful_batches=successful_batches,
+                total_batches=total_batches,
+                data_source=data_source
             )
             
-            # Parâmetros de simulação baseados no símbolo
-            if "BTC" in symbol:
-                base_price = 45000
-                volatility = 0.02
-            elif "ETH" in symbol:
-                base_price = 3000
-                volatility = 0.025
-            elif "EUR" in symbol:
-                base_price = 1.1
-                volatility = 0.008
-            else:
-                base_price = 1000
-                volatility = 0.015
-            
-            # Gerar série de preços com random walk + tendência
-            np.random.seed(42)  # Para reprodutibilidade
-            
-            # Tendência sutil
-            trend = np.linspace(0, 0.1, total_periods)  # 10% de tendência ao longo do período
-            
-            # Random walk
-            returns = np.random.normal(0, volatility / np.sqrt(periods_per_day), total_periods)
-            
-            # Adicionar alguns padrões realistas
-            # Volatilidade clustering
-            volatility_regime = np.random.choice([0.5, 1.0, 1.5], total_periods, p=[0.3, 0.5, 0.2])
-            returns *= volatility_regime
-            
-            # Calcular preços
-            log_prices = np.log(base_price) + np.cumsum(returns) + trend
-            prices = np.exp(log_prices)
-            
-            # Gerar OHLC
-            ohlc_data = []
-            
-            for i, price in enumerate(prices):
-                # Simular variação intraperiod
-                high_factor = 1 + abs(np.random.normal(0, volatility * 0.3))
-                low_factor = 1 - abs(np.random.normal(0, volatility * 0.3))
-                
-                open_price = prices[i-1] if i > 0 else price
-                close_price = price
-                high_price = max(open_price, close_price) * high_factor
-                low_price = min(open_price, close_price) * low_factor
-                
-                # Volume simulado (maior volume em movimentos maiores)
-                price_change = abs(close_price - open_price) / open_price
-                base_volume = np.random.uniform(1000, 5000)
-                volume = base_volume * (1 + price_change * 10)
-                
-                ohlc_data.append({
-                    "timestamp": timestamps[i],
-                    "open": round(open_price, 2),
-                    "high": round(high_price, 2),
-                    "low": round(low_price, 2),
-                    "close": round(close_price, 2),
-                    "volume": round(volume, 0)
-                })
-            
-            df = pd.DataFrame(ohlc_data)
-            df.set_index("timestamp", inplace=True)
-            
-            self.logger.debug(f"Dados históricos gerados: {symbol}, {days} dias, {len(df)} períodos")
+            self.logger.info(f"✅ Dados REAIS obtidos com sucesso: {len(df)} candles")
             
             return df
             
         except Exception as e:
-            self.handle_error(e, "generate_historical_data")
+            self.handle_error(e, "get_historical_data")
+            self.logger.error(f"❌ Erro ao obter dados REAIS da API: {str(e)}")
             return pd.DataFrame()
     
     def calculate_technical_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -561,12 +642,21 @@ class BacktestingAgent(BaseAgent):
                 "bollinger_breakout": {"bb_period": 20, "bb_std": 2}
             }
             
+            # Validar API credentials antes de iniciar backtests
+            if not self._validate_api_credentials():
+                self.logger.error("❌ Backtest cancelado: API credentials não configuradas")
+                return {
+                    "error": "API credentials não configuradas. Configure BINANCE_API_KEY/BYBIT_API_KEY e seus secrets.",
+                    "symbol": symbol,
+                    "backtest_timestamp": datetime.now().isoformat()
+                }
+            
             # Testar em diferentes períodos
             for period_name, period_config in self.backtest_config["periods"].items():
-                self.logger.info(f"Testando período: {period_name}")
+                self.logger.info(f"Testando período: {period_name} com dados REAIS da API")
                 
-                # Gerar dados históricos
-                df = self.generate_historical_data(
+                # Obter dados históricos REAIS da API
+                df = self.get_historical_data(
                     symbol, 
                     period_config["days"], 
                     period_config["timeframe"]

@@ -34,6 +34,32 @@ class BybitAPIV5:
         
         self.logger = logging.getLogger(__name__)
     
+    def _display_data_metrics(self, total_candles: int, first_time: datetime, last_time: datetime, 
+                              successful_batches: int, total_batches: int):
+        """
+        Exibe métricas de dados históricos carregados em formato visual consistente
+        
+        Args:
+            total_candles: Total de candles carregados
+            first_time: Timestamp do primeiro candle
+            last_time: Timestamp do último candle
+            successful_batches: Número de batches bem-sucedidos
+            total_batches: Total de batches realizados
+        """
+        print("\n" + "═" * 63)
+        print("📊 DADOS HISTÓRICOS CARREGADOS")
+        print("═" * 63)
+        print(f"📈 Total de Candles: {total_candles:,}")
+        
+        first_str = first_time.strftime("%Y-%m-%d %H:%M:%S")
+        last_str = last_time.strftime("%Y-%m-%d %H:%M:%S")
+        print(f"📅 Período: {first_str} → {last_str}")
+        
+        success_rate = (successful_batches / total_batches * 100) if total_batches > 0 else 0
+        print(f"✅ API Success Rate: {success_rate:.1f}% ({successful_batches}/{total_batches} batches bem-sucedidos)")
+        print(f"🔗 Fonte: Bybit API V5 (dados reais)")
+        print("═" * 63)
+    
     def get_historical_data(self, symbol: str, interval: str, start_date: str, end_date: str) -> pd.DataFrame:
         """Obter dados históricos da API V5"""
         try:
@@ -43,6 +69,8 @@ class BybitAPIV5:
             
             all_data = []
             current_start = start_timestamp
+            successful_batches = 0
+            failed_batches = 0
             
             self.logger.info(f"Obtendo dados históricos: {symbol} de {start_date} a {end_date}")
             
@@ -64,29 +92,37 @@ class BybitAPIV5:
                     'limit': 1000
                 }
                 
-                response = requests.get(url, params=params)
-                
-                if response.status_code == 200:
-                    data = response.json()
+                try:
+                    response = requests.get(url, params=params)
                     
-                    if data['retCode'] == 0 and data['result']['list']:
-                        klines = data['result']['list']
-                        all_data.extend(klines)
+                    if response.status_code == 200:
+                        data = response.json()
                         
-                        # Atualizar current_start para próximo batch
-                        last_timestamp = int(klines[-1][0])
-                        current_start = last_timestamp + interval_ms
-                        
-                        self.logger.info(f"Dados obtidos: {len(klines)} registros")
+                        if data['retCode'] == 0 and data['result']['list']:
+                            klines = data['result']['list']
+                            all_data.extend(klines)
+                            successful_batches += 1
+                            
+                            # Atualizar current_start para próximo batch
+                            last_timestamp = int(klines[-1][0])
+                            current_start = last_timestamp + interval_ms
+                            
+                            self.logger.info(f"Dados obtidos: {len(klines)} registros")
+                        else:
+                            self.logger.warning(f"Nenhum dado retornado para período {current_start}-{batch_end}")
+                            failed_batches += 1
+                            break
                     else:
-                        self.logger.warning(f"Nenhum dado retornado para período {current_start}-{batch_end}")
+                        self.logger.error(f"Erro na API: {response.status_code} - {response.text}")
+                        failed_batches += 1
                         break
-                else:
-                    self.logger.error(f"Erro na API: {response.status_code} - {response.text}")
+                    
+                    # Rate limiting
+                    time.sleep(0.1)
+                except Exception as e:
+                    self.logger.error(f"Erro na requisição: {str(e)}")
+                    failed_batches += 1
                     break
-                
-                # Rate limiting
-                time.sleep(0.1)
             
             if not all_data:
                 self.logger.warning("Nenhum dado histórico obtido")
@@ -105,7 +141,20 @@ class BybitAPIV5:
             # Ordenar por timestamp
             df = df.sort_values('timestamp').reset_index(drop=True)
             
-            self.logger.info(f"Dados obtidos: {len(df)} registros de {df['timestamp'].min()} a {df['timestamp'].max()}")
+            # Exibir métricas de dados carregados
+            if not df.empty:
+                total_batches = successful_batches + failed_batches
+                first_time = df['timestamp'].min().to_pydatetime()
+                last_time = df['timestamp'].max().to_pydatetime()
+                self._display_data_metrics(
+                    total_candles=len(df),
+                    first_time=first_time,
+                    last_time=last_time,
+                    successful_batches=successful_batches,
+                    total_batches=total_batches
+                )
+            
+            self.logger.info(f"Dados obtidos: {len(df)} registros")
             
             return df
         
@@ -471,7 +520,13 @@ class BacktestEngine:
         }
 
 class BacktestingAgentV5(BaseAgent):
-    """Agente de Backtesting com API V5 Bybit e gestão de risco integrada"""
+    """
+    Agente de Backtesting com API V5 Bybit e gestão de risco integrada
+    
+    IMPORTANTE: Este agente usa APENAS dados reais da API Bybit V5.
+    Nenhum dado mockado ou simulado é utilizado.
+    API keys são validadas antes de executar qualquer backtest.
+    """
     
     def __init__(self):
         super().__init__(name="BacktestingAgentV5")
@@ -480,6 +535,23 @@ class BacktestingAgentV5(BaseAgent):
         self.backtest_engine = BacktestEngine()
         
         self.logger.info("BacktestingAgentV5 inicializado com gestão de risco")
+        self.logger.info(f"📊 Fonte de dados: API Bybit V5 (dados REAIS)")
+        
+    def _validate_api_credentials(self) -> bool:
+        """
+        Valida se as credenciais da API estão configuradas
+        
+        Returns:
+            bool: True se credenciais válidas, False caso contrário
+        """
+        if not self.api_client.api_key or not self.api_client.api_secret:
+            self.logger.error("❌ API credentials não configuradas")
+            self.logger.error("❌ Configure BYBIT_API_KEY e BYBIT_API_SECRET no ambiente")
+            self.logger.error("❌ Impossível executar backtest sem dados reais da API")
+            return False
+        
+        self.logger.info("✅ Credenciais da API Bybit validadas com sucesso")
+        return True
     
     def load_risk_parameters(self) -> Dict[str, Any]:
         """Carregar parâmetros de risco do arquivo JSON"""
@@ -500,8 +572,21 @@ class BacktestingAgentV5(BaseAgent):
             }
     
     async def run_backtest(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        """Executar backtesting individual com gestão de risco integrada"""
+        """
+        Executar backtesting individual com gestão de risco integrada
+        
+        IMPORTANTE: Valida API credentials antes de executar.
+        Usa APENAS dados reais da API Bybit V5.
+        """
         try:
+            # VALIDAÇÃO OBRIGATÓRIA DE API CREDENTIALS
+            if not self._validate_api_credentials():
+                return {
+                    'status': 'error',
+                    'error': 'API credentials não configuradas. Configure BYBIT_API_KEY e BYBIT_API_SECRET.',
+                    'config': config
+                }
+            
             symbol = config.get('symbol', 'BTCUSDT')
             strategy = config.get('strategy', 'ema_crossover')
             start_date = config.get('start_date', '2025-01-01')
@@ -515,10 +600,12 @@ class BacktestingAgentV5(BaseAgent):
                 # Carregar do arquivo se não fornecido
                 risk_params = self.load_risk_parameters()
             
-            self.logger.info(f"Iniciando backtesting: {symbol} {strategy} {start_date}-{end_date}")
-            self.logger.info(f"Parâmetros de risco: {risk_params}")
+            self.logger.info(f"🚀 Iniciando backtesting com dados REAIS da API Bybit V5")
+            self.logger.info(f"📊 Config: {symbol} {strategy} {start_date}-{end_date}")
+            self.logger.info(f"⚠️  Parâmetros de risco: {risk_params}")
             
-            # Obter dados históricos
+            # Obter dados históricos REAIS da API
+            self.logger.info(f"📡 Buscando dados REAIS da API Bybit para {symbol}...")
             df = self.api_client.get_historical_data(symbol, timeframe, start_date, end_date)
             
             if df.empty:

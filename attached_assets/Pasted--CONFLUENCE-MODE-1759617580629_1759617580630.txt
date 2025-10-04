@@ -1,0 +1,143 @@
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 1 hora
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ MAJORITY (Maioria)
+   📅 Período: 2024-01-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+
+📊 RESULTADOS:
+   7️⃣  Visualizar Resultados
+   8️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-8): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 1 hora
+   📈 Estratégias: 6 selecionadas
+   🎯 Modo: MAJORITY (Maioria)
+   📅 Período: 2024-01-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~15384 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2024-01-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2024-01-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2024-02-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2024-03-03 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2024-03-24 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2024-04-14 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2024-05-05 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2024-05-25 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2024-06-15 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2024-07-06 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2024-07-27 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2024-08-17 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 500 candles a partir de 2024-09-07 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 6500)
+   📡 Batch 14: Buscando 500 candles a partir de 2024-09-27 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 7000)
+   📡 Batch 15: Buscando 500 candles a partir de 2024-10-18 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 7500)
+   📡 Batch 16: Buscando 500 candles a partir de 2024-11-08 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 8000)
+   📡 Batch 17: Buscando 500 candles a partir de 2024-11-29 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 8500)
+   📡 Batch 18: Buscando 500 candles a partir de 2024-12-20 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 9000)
+   📡 Batch 19: Buscando 500 candles a partir de 2025-01-10 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 9500)
+   📡 Batch 20: Buscando 500 candles a partir de 2025-01-30 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 10000)
+   📡 Batch 21: Buscando 500 candles a partir de 2025-02-20 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 10500)
+   📡 Batch 22: Buscando 500 candles a partir de 2025-03-13 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 11000)
+   📡 Batch 23: Buscando 500 candles a partir de 2025-04-03 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 11500)
+   📡 Batch 24: Buscando 500 candles a partir de 2025-04-24 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 12000)
+   📡 Batch 25: Buscando 500 candles a partir de 2025-05-15 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 12500)
+   📡 Batch 26: Buscando 500 candles a partir de 2025-06-04 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 13000)
+   📡 Batch 27: Buscando 500 candles a partir de 2025-06-25 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 13500)
+   📡 Batch 28: Buscando 500 candles a partir de 2025-07-16 12:00...
+   ✅ Recebidos 500 candles (total acumulado: 14000)
+   📡 Batch 29: Buscando 500 candles a partir de 2025-08-06 08:00...
+   ✅ Recebidos 500 candles (total acumulado: 14500)
+   📡 Batch 30: Buscando 500 candles a partir de 2025-08-27 04:00...
+   ✅ Recebidos 500 candles (total acumulado: 15000)
+   📡 Batch 31: Buscando 384 candles a partir de 2025-09-17 00:00...
+   ✅ Recebidos 384 candles (total acumulado: 15384)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 15,384
+📅 Período: 2024-01-01 00:00:00 → 2025-10-02 23:00:00
+✅ API Success Rate: 100.0% (31/31 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 6 estratégias sobre 15,384 candles...
+  [6/6] 🎣 SMC: Liquidity Sweep • 284 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 92304/92304 work units •  0:05:24 • 0:00:00
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.25
+   📈 P&L: $+0.25
+   📊 ROI: +0.25%
+   🎯 Sinais de confluência: 139
+   ✅ Trades vencedores: 41
+   ❌ Trades perdedores: 56
+   📊 Win Rate: 42.3%
+
+📈 DETALHES POR ESTRATÉGIA:
+   Fibonacci Retracement: 769 sinais (peso: 1.0)
+   SMC: Break of Structure: 934 sinais (peso: 1.0)
+   SMC: Change of Character: 5615 sinais (peso: 1.0)
+   SMC: Order Blocks: 0 sinais (peso: 1.0)
+   SMC: Fair Value Gap: 2974 sinais (peso: 1.0)
+   SMC: Liquidity Sweep: 12283 sinais (peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.25
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...

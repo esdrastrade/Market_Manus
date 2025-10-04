@@ -14,6 +14,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Any
 from pathlib import Path
+from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 # Importar estratégias SMC
 from market_manus.strategies.smc.patterns import (
@@ -740,18 +741,53 @@ class ConfluenceModeModule:
         highs = [float(k[2]) for k in klines]   # Máximas
         lows = [float(k[3]) for k in klines]    # Mínimas
         
-        print(f"\n📊 Executando estratégias sobre dados reais...")
+        total_candles = len(closes)
+        total_strategies = len(self.selected_strategies)
+        total_work = total_candles * total_strategies
         
-        # Executar cada estratégia sobre os dados reais (NOVO: retorna índices)
+        print(f"\n📊 Executando {total_strategies} estratégias sobre {total_candles:,} candles...")
+        
+        # Executar cada estratégia sobre os dados reais com barra de progresso
         strategy_signals = {}
-        for strategy_key in self.selected_strategies:
-            strategy = self.available_strategies[strategy_key]
-            signal_indices = self._execute_strategy_on_data(strategy_key, closes, highs, lows)
-            strategy_signals[strategy_key] = {
-                "name": strategy['name'],
-                "signal_indices": signal_indices,
-                "weight": strategy.get('weight', 1.0)
-            }
+        start_time = time.time()
+        
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            TextColumn("•"),
+            TextColumn("{task.completed}/{task.total} work units"),
+            TextColumn("•"),
+            TextColumn("[cyan]{task.speed:.1f} units/s[/cyan]" if hasattr(Progress, 'speed') else ""),
+            TimeElapsedColumn(),
+            TextColumn("•"),
+            TimeRemainingColumn(),
+        ) as progress:
+            task_id = progress.add_task("Processando estratégias...", total=total_work)
+            
+            for idx, strategy_key in enumerate(self.selected_strategies, 1):
+                strategy = self.available_strategies[strategy_key]
+                strategy_start = time.time()
+                
+                signal_indices = self._execute_strategy_on_data(strategy_key, closes, highs, lows)
+                
+                strategy_signals[strategy_key] = {
+                    "name": strategy['name'],
+                    "signal_indices": signal_indices,
+                    "weight": strategy.get('weight', 1.0)
+                }
+                
+                # Atualizar progresso
+                completed_work = idx * total_candles
+                elapsed = time.time() - start_time
+                speed = completed_work / elapsed if elapsed > 0 else 0
+                
+                progress.update(
+                    task_id, 
+                    advance=total_candles,
+                    description=f"[{idx}/{total_strategies}] {strategy['emoji']} {strategy['name']} • [cyan]{speed:.0f} units/s[/cyan]"
+                )
         
         # Calcular confluência baseado no modo (NOVO: retorna lista de índices)
         confluence_signal_indices = self._calculate_confluence_signals(strategy_signals)

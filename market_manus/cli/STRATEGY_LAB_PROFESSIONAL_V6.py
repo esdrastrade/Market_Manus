@@ -24,6 +24,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Any
 from pathlib import Path
+from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 # Importar as novas estratégias
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -468,7 +469,9 @@ class StrategyLabProfessionalV6:
             print("❌ Formato de data inválido. Use YYYY-MM-DD")
     
     def _run_historical_backtest(self):
-        """Executa backtest histórico"""
+        """Executa backtest histórico com dados REAIS da API usando BacktestingAgent"""
+        from market_manus.agents.backtesting_agent import BacktestingAgent
+        
         if not self._validate_configuration():
             return
         
@@ -477,8 +480,175 @@ class StrategyLabProfessionalV6:
         print(f"📊 Ativo: {self.selected_asset}")
         print(f"📈 Estratégia: {self.strategies[self.selected_strategy]['name']}")
         print(f"⏰ Timeframe: {self.timeframes[self.selected_timeframe]['name']}")
-        print("\n🔄 Executando backtest com dados históricos...")
-        print("🚧 Implementação em desenvolvimento...")
+        
+        if self.custom_start_date and self.custom_end_date:
+            print(f"📅 Período: {self.custom_start_date} até {self.custom_end_date}")
+        else:
+            print(f"📅 Período: Últimos 30 dias")
+        
+        # Criar BacktestingAgent com data provider REAL
+        backtest_agent = BacktestingAgent(data_provider=self.data_provider)
+        
+        # Validar credenciais da API
+        if not backtest_agent._validate_api_credentials():
+            print("\n❌ API credentials não configuradas!")
+            print("   Configure BINANCE_API_KEY/BYBIT_API_KEY e seus secrets no ambiente.")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        try:
+            # Determinar período em dias
+            if self.custom_start_date and self.custom_end_date:
+                start_date = datetime.strptime(self.custom_start_date, "%Y-%m-%d")
+                end_date = datetime.strptime(self.custom_end_date, "%Y-%m-%d")
+                days = (end_date - start_date).days
+            else:
+                days = 30
+            
+            # Converter timeframe para formato esperado pelo BacktestingAgent
+            timeframe_map = {
+                "1": "1m",
+                "5": "5m", 
+                "15": "15m",
+                "30": "30m",
+                "60": "1h",
+                "240": "4h",
+                "D": "1d"
+            }
+            timeframe = timeframe_map.get(self.selected_timeframe, "5m")
+            
+            # Buscar dados históricos REAIS da API com Progress Bar
+            print(f"\n📊 Buscando dados históricos REAIS de {self.selected_asset}...")
+            print(f"📡 Conectando à API para obter {days} dias de dados em timeframe {timeframe}...")
+            
+            start_time = time.time()
+            
+            # Buscar dados REAIS (BacktestingAgent já exibe métricas de carregamento)
+            df = backtest_agent.get_historical_data(
+                symbol=self.selected_asset,
+                days=days,
+                timeframe=timeframe
+            )
+            
+            if df.empty:
+                print("\n❌ Nenhum dado histórico obtido da API")
+                print("   Verifique se o símbolo e timeframe estão corretos.")
+                input("\n📖 Pressione ENTER para continuar...")
+                return
+            
+            # Calcular indicadores técnicos
+            print(f"\n🔧 Calculando indicadores técnicos...")
+            df = backtest_agent.calculate_technical_indicators(df)
+            
+            # Preparar parâmetros da estratégia
+            strategy_params = {}
+            if self.selected_strategy in self.strategy_params:
+                strategy_params = self.strategy_params[self.selected_strategy]
+            else:
+                # Usar parâmetros padrão
+                for param_name, param_info in self.strategies[self.selected_strategy]['params'].items():
+                    strategy_params[param_name] = param_info['default']
+            
+            # Executar estratégia com Progress Bar
+            print(f"\n📊 Executando {self.strategies[self.selected_strategy]['name']} sobre {len(df):,} candles...")
+            
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                TextColumn("•"),
+                TextColumn("{task.completed}/{task.total} candles"),
+                TimeElapsedColumn(),
+            ) as progress:
+                task_id = progress.add_task(
+                    f"🔬 Analisando {self.strategies[self.selected_strategy]['emoji']} {self.strategies[self.selected_strategy]['name']}", 
+                    total=len(df)
+                )
+                
+                # Executar simulação REAL da estratégia
+                results = backtest_agent.simulate_strategy(
+                    df=df,
+                    strategy_name=self.selected_strategy,
+                    parameters=strategy_params
+                )
+                
+                # Completar barra de progresso
+                progress.update(task_id, completed=len(df))
+            
+            # Verificar se houve erro
+            if "error" in results:
+                print(f"\n❌ Erro ao executar estratégia: {results['error']}")
+                input("\n📖 Pressione ENTER para continuar...")
+                return
+            
+            # Calcular tempo total
+            elapsed_total = time.time() - start_time
+            
+            # Exibir resultados REAIS
+            print(f"\n✅ Backtest concluído em {elapsed_total:.2f}s")
+            print("\n" + "="*70)
+            print("📊 RESULTADOS DO BACKTEST (DADOS REAIS)")
+            print("="*70)
+            
+            # Métricas de trades
+            print(f"\n📈 TRADES:")
+            print(f"   Total de Trades: {results['total_trades']}")
+            print(f"   Trades Vencedores: {results['winning_trades']} ({results['win_rate']*100:.1f}%)")
+            print(f"   Trades Perdedores: {results['losing_trades']}")
+            
+            # Métricas financeiras
+            print(f"\n💰 PERFORMANCE FINANCEIRA:")
+            print(f"   P&L Total: ${results['total_pnl']:,.2f}")
+            print(f"   Capital Final: ${results['final_capital']:,.2f}")
+            print(f"   Retorno: {results['return_percentage']*100:.2f}%")
+            
+            if results['total_trades'] > 0:
+                print(f"   Ganho Médio: ${results['avg_win']:,.2f}")
+                print(f"   Perda Média: ${results['avg_loss']:,.2f}")
+                print(f"   Profit Factor: {results['profit_factor']:.2f}")
+            
+            # Métricas de risco
+            print(f"\n⚠️  RISCO:")
+            print(f"   Sharpe Ratio: {results['sharpe_ratio']:.3f}")
+            print(f"   Max Drawdown: {results['max_drawdown']*100:.2f}%")
+            
+            # Período do backtest
+            print(f"\n📅 PERÍODO:")
+            print(f"   Início: {results['backtest_period']['start']}")
+            print(f"   Fim: {results['backtest_period']['end']}")
+            print(f"   Candles: {results['backtest_period']['periods']:,}")
+            
+            print("="*70)
+            
+            # Salvar no histórico
+            test_result = {
+                "timestamp": datetime.now().isoformat(),
+                "type": "historical_backtest",
+                "asset": self.selected_asset,
+                "strategy": self.selected_strategy,
+                "strategy_name": self.strategies[self.selected_strategy]['name'],
+                "timeframe": self.selected_timeframe,
+                "parameters": strategy_params,
+                "total_trades": results['total_trades'],
+                "win_rate": results['win_rate'],
+                "total_pnl": results['total_pnl'],
+                "final_capital": results['final_capital'],
+                "return_percentage": results['return_percentage'],
+                "sharpe_ratio": results['sharpe_ratio'],
+                "max_drawdown": results['max_drawdown'],
+                "candles_analyzed": len(df),
+                "processing_time": elapsed_total,
+                "period_start": str(results['backtest_period']['start']),
+                "period_end": str(results['backtest_period']['end'])
+            }
+            self.test_history.append(test_result)
+            
+        except Exception as e:
+            print(f"\n❌ Erro ao executar backtest: {e}")
+            import traceback
+            traceback.print_exc()
+        
         input("\n📖 Pressione ENTER para continuar...")
     
     def _run_realtime_test(self):

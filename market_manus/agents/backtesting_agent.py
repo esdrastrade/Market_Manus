@@ -21,6 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agents.base_agent import BaseAgent, SuggestionType, AlertSeverity
 from data_providers.historical_cache import HistoricalDataCache
+from analysis.market_context_analyzer import MarketContextAnalyzer
 
 class BacktestingAgent(BaseAgent):
     """
@@ -60,6 +61,9 @@ class BacktestingAgent(BaseAgent):
         
         # Cache de estratégias testadas
         self.strategy_cache = {}
+        
+        # Market Context Analyzer para análise de regime de mercado
+        self.context_analyzer = MarketContextAnalyzer(lookback_days=60)
         
         if self.data_provider:
             self.logger.info("BacktestingAgent inicializado com data_provider REAL")
@@ -158,6 +162,36 @@ class BacktestingAgent(BaseAgent):
         print(f"✅ API Success Rate: {success_rate:.1f}% ({successful_batches}/{total_batches} batches bem-sucedidos)")
         print(f"🔗 Fonte: {data_source} (dados reais)")
         print("═" * 63)
+    
+    def _analyze_market_context(self, symbol: str, timeframe: str):
+        """
+        Analisa contexto de mercado antes do backtest
+        
+        Args:
+            symbol: Símbolo do ativo (ex: BTCUSDT)
+            timeframe: Timeframe para análise
+            
+        Returns:
+            MarketContext ou None se falhar
+        """
+        if not self.data_provider:
+            return None
+        
+        try:
+            print("\n🔍 Analisando contexto de mercado dos últimos 60 dias...")
+            context = self.context_analyzer.analyze(
+                self.data_provider,
+                symbol,
+                timeframe
+            )
+            
+            if context:
+                self.context_analyzer.display_context(context)
+            
+            return context
+        except Exception as e:
+            self.logger.warning(f"⚠️ Erro ao analisar contexto de mercado: {e}")
+            return None
     
     def get_historical_data(self, symbol: str, days: int, timeframe: str = "1m", use_cache: bool = False) -> pd.DataFrame:
         """
@@ -394,7 +428,7 @@ class BacktestingAgent(BaseAgent):
             self.handle_error(e, "calculate_technical_indicators")
             return df
     
-    def simulate_strategy(self, df: pd.DataFrame, strategy_name: str, parameters: Dict) -> Dict:
+    def simulate_strategy(self, df: pd.DataFrame, strategy_name: str, parameters: Dict, market_context=None) -> Dict:
         """
         Simula uma estratégia específica nos dados históricos
         
@@ -402,6 +436,7 @@ class BacktestingAgent(BaseAgent):
             df: DataFrame com dados e indicadores
             strategy_name: Nome da estratégia
             parameters: Parâmetros da estratégia
+            market_context: Contexto de mercado para ajustes de peso (opcional)
             
         Returns:
             Dict: Resultados da simulação
@@ -414,6 +449,13 @@ class BacktestingAgent(BaseAgent):
                     "strategy_name": strategy_name,
                     "parameters": parameters
                 }
+            
+            # Exibir ajustes de contexto se aplicável
+            weight_adjustment = 1.0
+            if market_context and market_context.recommendations:
+                weight_adjustment = market_context.recommendations.get(strategy_name, 1.0)
+                if weight_adjustment != 1.0:
+                    print(f"\n⚙️  Ajuste de contexto aplicado para {strategy_name}: {weight_adjustment:.2f}x")
             
             signals = []
             positions = []
@@ -436,11 +478,20 @@ class BacktestingAgent(BaseAgent):
                 signal = self.generate_strategy_signal(row, strategy_name, parameters, df.iloc[max(0, i-20):i+1])
                 
                 if signal and signal != "HOLD":
+                    # Calcular confidence base
+                    base_confidence = signal.get("confidence", 0.7) if isinstance(signal, dict) else 0.7
+                    
+                    # Aplicar ajuste de peso do contexto de mercado
+                    adjusted_confidence = base_confidence * weight_adjustment
+                    adjusted_confidence = max(0.0, min(1.0, adjusted_confidence))  # Limitar entre 0 e 1
+                    
                     signals.append({
                         "timestamp": row.name,
                         "signal": signal,
                         "price": row['close'],
-                        "confidence": signal.get("confidence", 0.7) if isinstance(signal, dict) else 0.7
+                        "confidence": adjusted_confidence,
+                        "base_confidence": base_confidence,
+                        "weight_adjustment": weight_adjustment
                     })
                     
                     # Processar sinal
@@ -719,6 +770,13 @@ class BacktestingAgent(BaseAgent):
             for period_name, period_config in self.backtest_config["periods"].items():
                 self.logger.info(f"Testando período: {period_name} com dados REAIS da API")
                 
+                # Analisar contexto de mercado ANTES do backtest
+                market_context = None
+                try:
+                    market_context = self._analyze_market_context(symbol, period_config["timeframe"])
+                except Exception as e:
+                    self.logger.warning(f"⚠️ Análise de contexto falhou, continuando sem ajustes: {e}")
+                
                 # Obter dados históricos REAIS da API
                 df = self.get_historical_data(
                     symbol, 
@@ -736,7 +794,8 @@ class BacktestingAgent(BaseAgent):
                 for strategy_name, parameters in strategies_to_test.items():
                     self.logger.debug(f"Testando estratégia: {strategy_name}")
                     
-                    strategy_results = self.simulate_strategy(df, strategy_name, parameters)
+                    # Passar contexto de mercado para simulate_strategy
+                    strategy_results = self.simulate_strategy(df, strategy_name, parameters, market_context)
                     
                     if strategy_name not in results["strategies"]:
                         results["strategies"][strategy_name] = {}

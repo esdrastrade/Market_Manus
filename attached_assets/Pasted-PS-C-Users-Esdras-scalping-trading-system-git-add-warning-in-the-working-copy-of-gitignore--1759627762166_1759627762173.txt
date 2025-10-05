@@ -1,0 +1,288 @@
+PS C:\Users\Esdras\scalping-trading-system> git add .
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.replit', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'attached_assets/_1759329317438.env', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'attached_assets/patterns_1759600044244.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'capital_data.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'config/capital_config.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'config/settings.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/deployment_guide.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/strategies.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/troubleshooting.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'logs/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/backtesting_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/backtesting_agent_v5.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/base_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/market_analysis_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/notification_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/orchestrator_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/performance_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/agents/risk_management_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/analysis/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/analysis/market_context_analyzer.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/analysis/volume_filter.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/backtest/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/backtest/confluence_backtest.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/backtest/confluence_realtime.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/cli/MARKET_MANUS_CLI_COMPLETE_V4.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/cli/STRATEGY_LAB_PROFESSIONAL_V6.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/cli/live_view.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/cli/market_manus_cli_complete_final.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/cli/market_manus_final_implemented.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/confluence_mode/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/confluence_mode/confluence_mode_module.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/core/advanced_features.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/core/capital_manager.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/core/signal.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/core/test_configuration_manager.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/data_providers/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/data_providers/binance_data_provider.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/data_providers/bybit_real_data_provider.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/data_providers/historical_cache.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/data_providers/market_data_ws.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/engines/IMPLEMENTATION_SUMMARY.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/engines/README_REALTIME.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/engines/realtime_strategy_engine.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/engines/stream_runtime.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/adx.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/bollinger_breakout.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/ema_crossover.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/fibonacci.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/macd.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/rsi_mean_reversion.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/smc_bos.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/smc_choch.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/smc_fvg.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/smc_liquidity_sweep.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/smc_order_blocks.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/stochastic.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/strategy_explanations.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/explanations/williams_r.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/cache/memo.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/alt_fng.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/binance_ws.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/bybit_derivs.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/coingecko.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/coinglass.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/cryptopanic.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/glassnode.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/google_trends.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/collectors/santiment.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/sentiment_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/services/normalizers.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/services/weights.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/sentiment/ui/cli_views.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/adx_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/ai_agent_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/base_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/bollinger_breakout_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/ema_crossover_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/fibonacci_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/macd_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/rsi_mean_reversion_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/smc/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/smc/patterns.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/stochastic_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/strategy_manager.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V2.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V3.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V4.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V5.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/STRATEGY_LAB_PROFESSIONAL_V6.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/assets_manager.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/config/selected_assets.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/test_assets_manager.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'pyproject.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'replit.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/backtest_report_20250719_152156.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/bollinger_breakout_10-08-25_15-52-56.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/dual_mix_ema_bol_10-08-25_15-53-41.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/dual_mix_ema_rsi_10-08-25_15-53-20.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/dual_mix_rsi_bol_10-08-25_15-54-04.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/ema_crossover_10-08-25_15-52-18.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/quick_backtest_with_capital_BTCUSDT_ema_crossover_20250808_220637.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/rsi_mean_reversion_10-08-25_15-52-36.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/triple_mix_all_basic_10-08-25_14-13-45.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/triple_mix_all_basic_10-08-25_15-54-28.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/triple_mix_all_basic_10-08-25_15-54-50.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'requirements.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/integration/test_system_integration.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/run_tests.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_framework.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/unit/test_agents/test_market_analysis_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/unit/test_agents/test_risk_management_agent.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/unit/test_strategies/test_strategy_factory.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api_test.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/cli/market_manus_cli_2025_09_30.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/data_providers/bybit_real_data_provider_fixed.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/data_providers/bybit_real_data_provider_pybit.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis/adx_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis/bollinger_breakout_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis/ema_crossover_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis/fibonacci_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis/macd_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis/rsi_mean_reversion_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/classic_analysis/stochastic_strategy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategies/strategy_manager_integrated.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus/strategy_lab/strategy_lab_professional.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'market_manus_semantic_kernel_integration.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test_complete_system_final.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/capital_data.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/pyproject.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/replit.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/requirements.txt', LF will be replaced by CRLF the next time Git touches it
+PS C:\Users\Esdras\scalping-trading-system> git commit -m "versao de 04/10/2025" --no-verify
+[main bf1898f] versão de 04/10/2025
+ 91 files changed, 6784 insertions(+)
+ create mode 100644 .local/state/replit/agent/.agent_state_05007d1afb2831f5865909a4771d5aeef2e64215.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_090e3d0dd59aff03c74840960050e9269cfb568c.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_0b77ac0e19be5d15849a248c912f06f721d56635.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_0b94121fcd0d2bbbbffd6f3a2f737fe70680e85a.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_22d318e1191d1f57dd43f953561a0836605c5bfb.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_2324f9c6e3d849aa3dd0f530d9f36ae6f563a5ed.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_2cf8deed058e4e92c6e374d23d1c29a0c275f435.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_2cfdd02a23d6f54451e4ebf7bd26016f2e055fb4.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_2e707a47c8f99cf5525db4c725a23599a55998e3.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_327c48e32b03e9c0cf6a810c45401dd7fdd844a1.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_36db265d1c9e5e32ce7800771837a2a25e517731.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_375f2dcc9c4e2c2b9373856c835e9ee5f7629062.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_435e12cb66b4aa2e6ac541aaa602b4b9db7d18fc.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_45bed79173553fed088b152df6b7795b96149511.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_583579335bbaa98a84f1a64919ab7d8efa9e2719.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_5913e066549ae2f69fa060a4958b6f9b32c4e7c9.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_5b37983cde4f6d27eb481c35af528918bd2294b4.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_5d7e563d80ff7c38f440e1425883897b689a2d63.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_63b21a94d35cfdf8057e5680f8a11ff4fc677134.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_658e76670b1a7752220e186e1c75ec09c518e4ff.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_6823111ccebd8247a4ef82feaec2312fae204a6a.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_6c2b8f953b2a5f824c75dad9ca979026f0c5e8a9.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_6c33068d676b7ce87b18d116f182192ce7d24027.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_6c435767d56db80347e84b36a7b5bf9426d848ae.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_6d23227c541b27cc3c6431a447120ffb500d8b49.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_6f64fbda7e20389734cedc2f3e963de7260b201b.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_720a392e7f350698e664e15dee1f03f5434e7d27.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_7a4b640f4cc3c39972a844328a5cdc36fb84f800.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_7a66514a3e9053152b4e9c0dc3c256d15a111537.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_7f258915c0551379c1c3c93f636151e9fbd203c1.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_8022ba5c24eaf4d7318423ec59d58e94f16412a2.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_81290b8d0ac8d51f4776f6828b68ece72af239d5.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_8b003f6ca8ead654bdd2b90a11c5b202b51f86cd.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_930c91caf0b2ad7ee1c74ab0abe644c51b75ea24.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_942c09a48b06b8d1858c48bab4979933e6e22f2d.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_94eac594fd4c157527ffd858242a03af418c2d02.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_957020174b8bc9057ff479873b8bea42fae7daf3.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_97350b5fa9eee4f7c5d7e713ed87e26fb20e67b4.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_9ce068e6c339a9a3a57076e36e1be279a1ff5b77.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_9fffa7b40650dcb9c93eda9b330480ca5907a60d.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_a1e9b39aefb80ea2b97d8ade7346b4663950ba57.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_a46a67424788baef800cb8eb1ba4b94b4086ed4f.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_a4d5e7104eea9b3e55d8434ff6ca0f71ac6a23cb.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_b06edf63ad548069815bff9e0916c1ed7d15d16a.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_b80a8d0be13e29ae775a718e4289c0200babb15d.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_bdd2e28fc8aac33f6278e7365f4b6fc68420086c.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_c02619822ae22d6c2c12288eddfb6ade53b9302e.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_c3fc7c9e2150c00f4a4fe61393d5cec64d32a265.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_cb55c7d70d09cc168e12437f1b9b6e194f16db01.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_d31ab62d95057b218fa88cef59541f0b6f6591be.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_d458b4a027ebebb80ea70f6e10d8e3d00d09e97c.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_d4ff4e9931b6e07134c26c71c3a322bac915a873.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_d510af2af4c4b8e654ca30c1efeb99b897029300.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_dc99dd68062e6d15679224f58d4a53e82178df8f.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_dd49b4b093f33fd685cd412972552043016b2cca.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_de5e21992fe27ea1bc88b6f158f098cc2edca4cd.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_e3428b5bb4c1f02c3f9ae60b7dcf1445998a5420.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_e799197504e0c335b0cfb0f43bf8a93304f551dc.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_ec061d116c70839343a7773fd65185236a057f3c.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_f0c9a184b9eceecfa2a7596c6f4b6e31e4693fb1.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_f38eed422b0b493627ca40351d3eb7be4ba5a912.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_fbcaf58657462ac5c9fb075f27014d00d4ea74f1.bin
+ create mode 100644 .local/state/replit/agent/.agent_state_main.bin
+ create mode 100644 .local/state/replit/agent/.latest.json
+ create mode 100644 .local/state/replit/agent/repl_state.bin
+ create mode 100644 api_test.py
+ create mode 100644 market_manus/cli/market_manus_cli_2025_09_30.py
+ create mode 100644 market_manus/data_providers/bybit_real_data_provider_fixed.py
+ create mode 100644 market_manus/data_providers/bybit_real_data_provider_pybit.py
+ create mode 100644 market_manus/strategies/classic_analysis/bollinger_breakout_strategy.py
+ create mode 100644 market_manus/strategies/classic_analysis/ema_crossover_strategy.py
+ create mode 100644 market_manus/strategies/classic_analysis/fibonacci_strategy.py
+ create mode 100644 market_manus/strategies/classic_analysis/macd_strategy.py
+ create mode 100644 market_manus/strategies/classic_analysis/rsi_mean_reversion_strategy.py
+ create mode 100644 market_manus/strategies/classic_analysis/stochastic_strategy.py
+ create mode 100644 market_manus/strategies/strategy_manager_integrated.py
+ create mode 100644 market_manus_semantic_kernel_integration.py
+ create mode 100644 scripts/README.md
+ create mode 100644 scripts/main.py
+ create mode 100644 test_complete_system_final.py
+ create mode 100644 tests/LICENSE
+ create mode 100644 tests/README.md
+ create mode 100644 tests/capital_data.json
+ create mode 100644 tests/main.py
+ create mode 100644 tests/pyproject.toml
+ create mode 100644 tests/replit.md
+ create mode 100644 tests/requirements.txt
+PS C:\Users\Esdras\scalping-trading-system> git push origin main
+To https://github.com/esdrastrade/Market_Manus
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/esdrastrade/Market_Manus'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. If you want to integrate the remote changes,
+hint: use 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+PS C:\Users\Esdras\scalping-trading-system> git status
+On branch main
+Your branch is ahead of 'origin/main' by 64 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+PS C:\Users\Esdras\scalping-trading-system> git push origin main
+To https://github.com/esdrastrade/Market_Manus
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/esdrastrade/Market_Manus'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. If you want to integrate the remote changes,
+hint: use 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+PS C:\Users\Esdras\scalping-trading-system> git push origin main --force
+Counting objects: 100% (457/457), done.
+Delta compression using up to 2 threads
+Writing objects: 100% (419/419), 10.18 MiB | 1.48 MiB/s, done.
+Total 419 (delta 202), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (202/202), completed with 18 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote:
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote:
+remote:     - Push cannot contain secrets
+remote:
+remote:
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:
+remote:
+remote:       —— OpenAI API Key ————————————————————————————————————
+remote:        locations:
+remote:          - commit: 7a66514a3e9053152b4e9c0dc3c256d15a111537
+remote:            path: attached_assets/_1759329317438.env:11
+remote:
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/esdrastrade/Market_Manus/security/secret-scanning/unblock-secret/33crRtRLx8cwZ0MPekX4YVVS4EY
+remote:
+remote:
+remote:
+To https://github.com/esdrastrade/Market_Manus
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/esdrastrade/Market_Manus'

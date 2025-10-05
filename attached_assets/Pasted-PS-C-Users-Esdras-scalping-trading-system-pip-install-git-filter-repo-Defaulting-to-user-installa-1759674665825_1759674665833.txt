@@ -1,0 +1,124 @@
+PS C:\Users\Esdras\scalping-trading-system> pip install git-filter-repo
+Defaulting to user installation because normal site-packages is not writeable
+Collecting git-filter-repo
+  Downloading git_filter_repo-2.47.0-py3-none-any.whl.metadata (31 kB)
+Downloading git_filter_repo-2.47.0-py3-none-any.whl (76 kB)
+Installing collected packages: git-filter-repo
+  WARNING: The script git-filter-repo.exe is installed in 'C:\Users\Esdras\AppData\Roaming\Python\Python313\Scripts' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed git-filter-repo-2.47.0
+PS C:\Users\Esdras\scalping-trading-system> # 4. Remova o arquivo do HISTORICO
+PS C:\Users\Esdras\scalping-trading-system> git filter-repo --invert-paths --path attached_assets/_1759329317438.env --force
+git: 'filter-repo' is not a git command. See 'git --help'.
+PS C:\Users\Esdras\scalping-trading-system> # 5. Re-adicione o remote
+PS C:\Users\Esdras\scalping-trading-system> git remote add origin https://github.com/esdrastrade/Market_Manus.git
+error: remote origin already exists.
+PS C:\Users\Esdras\scalping-trading-system> # 6. Force push
+PS C:\Users\Esdras\scalping-trading-system> git push origin --force --all
+Enumerating objects: 594, done.
+Counting objects: 100% (578/578), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (513/513), done.
+Writing objects: 100% (519/519), 10.24 MiB | 2.19 MiB/s, done.
+Total 519 (delta 226), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (226/226), completed with 24 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote:
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote:
+remote:     - Push cannot contain secrets
+remote:
+remote:
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:
+remote:
+remote:       —— OpenAI API Key ————————————————————————————————————
+remote:        locations:
+remote:          - commit: 7a66514a3e9053152b4e9c0dc3c256d15a111537
+remote:            path: attached_assets/_1759329317438.env:11
+remote:
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/esdrastrade/Market_Manus/security/secret-scanning/unblock-secret/33crRtRLx8cwZ0MPekX4YVVS4EY
+remote:
+remote:
+remote:
+remote: error: GH013: Repository rule violations found for refs/heads/backup-before-cleanup.
+remote:
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote:
+remote:     - Push cannot contain secrets
+remote:
+remote:
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:
+remote:
+remote:       —— OpenAI API Key ————————————————————————————————————
+remote:        locations:
+remote:          - commit: 7a66514a3e9053152b4e9c0dc3c256d15a111537
+remote:            path: attached_assets/_1759329317438.env:11
+remote:
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/esdrastrade/Market_Manus/security/secret-scanning/unblock-secret/33crRtRLx8cwZ0MPekX4YVVS4EY
+remote:
+remote:
+remote:
+remote: error: GH013: Repository rule violations found for refs/heads/backup-before-restructure.
+remote:
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote:
+remote:     - Push cannot contain secrets
+remote:
+remote:
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:
+remote:
+remote:       —— OpenAI API Key ————————————————————————————————————
+remote:        locations:
+remote:          - commit: 7a66514a3e9053152b4e9c0dc3c256d15a111537
+remote:            path: attached_assets/_1759329317438.env:11
+remote:
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:
+remote:
+remote:
+remote: error: GH013: Repository rule violations found for refs/heads/replit-agent.
+remote:
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote:
+remote:     - Push cannot contain secrets
+remote:
+remote:
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:
+remote:
+remote:       —— OpenAI API Key ————————————————————————————————————
+remote:        locations:
+remote:          - commit: 7a66514a3e9053152b4e9c0dc3c256d15a111537
+remote:            path: attached_assets/_1759329317438.env:11
+remote:
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/esdrastrade/Market_Manus/security/secret-scanning/unblock-secret/33crRtRLx8cwZ0MPekX4YVVS4EY
+remote:
+remote:
+remote:
+To https://github.com/esdrastrade/Market_Manus
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+ ! [remote rejected] backup-before-cleanup -> backup-before-cleanup (push declined due to repository rule violations)
+ ! [remote rejected] backup-before-restructure -> backup-before-restructure (push declined due to repository rule violations)
+ ! [remote rejected] replit-agent -> replit-agent (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/esdrastrade/Market_Manus'
+PS C:\Users\Esdras\scalping-trading-system> git push origin --force --tags
+Everything up-to-date
+PS C:\Users\Esdras\scalping-trading-system>

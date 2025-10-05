@@ -88,7 +88,7 @@ class MarketManusMain:
         
         while True:
             self._show_main_menu()
-            choice = input("\n🔢 Escolha uma opção (0-9): ").strip()
+            choice = input("\n🔢 Escolha uma opção (0-8): ").strip()
             
             if choice == '0':
                 self._show_goodbye()
@@ -108,8 +108,6 @@ class MarketManusMain:
             elif choice == '7':
                 self._show_settings()
             elif choice == '8':
-                self._run_realtime_confluence()
-            elif choice == '9':
                 run_explanations_menu()
             else:
                 print("❌ Opção inválida")
@@ -172,16 +170,13 @@ class MarketManusMain:
         print(f"\n🤖 RECURSOS AVANÇADOS:")
         print("   4️⃣  Assistente IA (Semantic Kernel)")
         
-        print(f"\n🔥 CONFLUÊNCIA SMC + CLÁSSICOS:")
-        print("   8️⃣  Executar Confluência em Tempo Real")
-        
         print(f"\n⚙️ CONFIGURAÇÕES:")
         print("   5️⃣  Capital Dashboard")
         print("   6️⃣  Connectivity Status")
         print("   7️⃣  Settings")
         
         print(f"\n📚 DOCUMENTAÇÃO:")
-        print("   9️⃣  Explanations (Explicações das Estratégias)")
+        print("   8️⃣  Explanations (Explicações das Estratégias)")
         
         print(f"\n   0️⃣  Sair do sistema")
     
@@ -424,109 +419,6 @@ class MarketManusMain:
         print(f"   📂 Logs: logs/")
         
         input("\n📖 Pressione ENTER para continuar...")
-    
-    def _run_realtime_confluence(self):
-        """Executa Confluência em Tempo Real com WebSocket + Rich UI Live"""
-        print("\n🔥 CONFLUÊNCIA LIVE - SMC + CLÁSSICOS (WebSocket Streaming)")
-        print("=" * 60)
-        
-        # Seleção de ativo
-        print("\n📊 ATIVOS DISPONÍVEIS:")
-        print("   1️⃣  BTC/USDT")
-        print("   2️⃣  ETH/USDT")
-        print("   3️⃣  SOL/USDT")
-        print("   4️⃣  Personalizar")
-        
-        asset_choice = input("\n🔢 Escolha o ativo (1-4): ").strip()
-        
-        if asset_choice == '1':
-            symbol = "BTCUSDT"
-        elif asset_choice == '2':
-            symbol = "ETHUSDT"
-        elif asset_choice == '3':
-            symbol = "SOLUSDT"
-        elif asset_choice == '4':
-            symbol = input("\n📝 Digite o símbolo (ex: BTCUSDT): ").strip().upper()
-        else:
-            print("❌ Opção inválida")
-            input("\n📖 Pressione ENTER para continuar...")
-            return
-        
-        # Seleção de timeframe
-        print(f"\n⏱️ TIMEFRAMES DISPONÍVEIS:")
-        print("   1️⃣  1 minuto (scalping)")
-        print("   2️⃣  5 minutos (scalping)")
-        print("   3️⃣  15 minutos (swing curto)")
-        print("   4️⃣  1 hora (intraday)")
-        print("   5️⃣  4 horas (swing longo)")
-        
-        tf_choice = input("\n🔢 Escolha o timeframe (1-5): ").strip()
-        
-        tf_map = {
-            '1': '1m',
-            '2': '5m',
-            '3': '15m',
-            '4': '1h',
-            '5': '4h'
-        }
-        
-        timeframe = tf_map.get(tf_choice, '5m')
-        
-        print(f"\n🚀 INICIANDO LIVE STREAMING:")
-        print(f"   📊 Ativo: {symbol}")
-        print(f"   ⏱️ Timeframe: {timeframe}")
-        print(f"   🔥 Detectores: 5 SMC + 7 Clássicos")
-        print(f"   📡 Streaming: WebSocket (Binance.US)")
-        print(f"   🎨 UI: Rich Live (atualização em tempo real)")
-        print(f"\n⚠️  MODO PAPER TRADING (read-only)")
-        print("\n🔄 Pressione CTRL+C para parar...")
-        
-        input("\n📖 Pressione ENTER para começar...")
-        
-        try:
-            import asyncio
-            from market_manus.data_providers.market_data_ws import BinanceUSWebSocket
-            from market_manus.engines.stream_runtime import StreamRuntime
-            from market_manus.cli.live_view import run_live_view
-            
-            # Converter timeframe para formato Binance WebSocket
-            interval_map = {
-                '1m': '1m',
-                '5m': '5m',
-                '15m': '15m',
-                '1h': '1h',
-                '4h': '4h'
-            }
-            ws_interval = interval_map.get(timeframe, '5m')
-            
-            # Inicializar WebSocket provider
-            ws_provider = BinanceUSWebSocket(symbol=symbol, interval=ws_interval)
-            
-            # Criar engine simplificado que funciona com streaming
-            from market_manus.backtest.confluence_realtime import RealTimeConfluenceEngine
-            engine = RealTimeConfluenceEngine(config_path="config/confluence.yaml")
-            
-            # Criar stream runtime
-            runtime = StreamRuntime(
-                ws_provider=ws_provider,
-                data_provider=self.data_provider,
-                symbol=symbol,
-                interval=timeframe,
-                engine=engine,
-                debounce_sec=1.0
-            )
-            
-            # Executar UI live
-            asyncio.run(run_live_view(runtime))
-            
-        except KeyboardInterrupt:
-            print("\n\n⏹️  Streaming interrompido pelo usuário")
-        except Exception as e:
-            print(f"\n❌ Erro no streaming: {e}")
-            import traceback
-            traceback.print_exc()
-        
-        input("\n📖 Pressione ENTER para voltar ao menu...")
     
     def _show_goodbye(self):
         """Mostra mensagem de despedida"""

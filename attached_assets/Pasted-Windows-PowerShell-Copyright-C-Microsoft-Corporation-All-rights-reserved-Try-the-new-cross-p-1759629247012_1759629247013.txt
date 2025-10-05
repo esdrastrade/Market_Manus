@@ -1,0 +1,42 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+Loading personal and system profiles took 18081ms.
+PS C:\Users\Esdras> cd scalping-trading-system
+PS C:\Users\Esdras\scalping-trading-system> git push origin main --force
+Enumerating objects: 466, done.
+Counting objects: 100% (457/457), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (414/414), done.
+Writing objects: 100% (419/419), 10.18 MiB | 2.03 MiB/s, done.
+Total 419 (delta 202), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (202/202), completed with 18 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote:
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote:
+remote:     - Push cannot contain secrets
+remote:
+remote:
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:
+remote:
+remote:       —— OpenAI API Key ————————————————————————————————————
+remote:        locations:
+remote:          - commit: 7a66514a3e9053152b4e9c0dc3c256d15a111537
+remote:            path: attached_assets/_1759329317438.env:11
+remote:
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/esdrastrade/Market_Manus/security/secret-scanning/unblock-secret/33crRtRLx8cwZ0MPekX4YVVS4EY
+remote:
+remote:
+remote:
+To https://github.com/esdrastrade/Market_Manus
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/esdrastrade/Market_Manus'
+PS C:\Users\Esdras\scalping-trading-system>

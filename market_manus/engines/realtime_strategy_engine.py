@@ -45,7 +45,9 @@ class RealtimeStrategyEngine:
         strategies: List[str],
         data_provider,
         confluence_mode: str = "MAJORITY",
-        enable_audio_alerts: bool = False
+        enable_audio_alerts: bool = False,
+        enable_paper_trading: bool = False,
+        initial_capital: float = 10000.0
     ):
         self.symbol = symbol
         self.interval = interval
@@ -62,6 +64,11 @@ class RealtimeStrategyEngine:
         self.data_provider = data_provider
         self.confluence_mode = confluence_mode
         self.enable_audio_alerts = enable_audio_alerts
+        
+        self.enable_paper_trading = enable_paper_trading
+        self.initial_capital = initial_capital
+        self.paper_trades = []
+        self.current_position = None
         
         self.ws_provider = None
         self.candles_deque = deque(maxlen=1000)
@@ -93,7 +100,13 @@ class RealtimeStrategyEngine:
             'total_signals': 0,
             'buy_signals': 0,
             'sell_signals': 0,
-            'is_strong_signal': False
+            'is_strong_signal': False,
+            'paper_equity': initial_capital,
+            'paper_unrealized_pnl': 0.0,
+            'paper_realized_pnl': 0.0,
+            'paper_total_trades': 0,
+            'paper_winning_trades': 0,
+            'paper_losing_trades': 0
         }
         
         self.strategy_functions = {
@@ -517,6 +530,66 @@ class RealtimeStrategyEngine:
             'reasons': ['Confluência insuficiente']
         }
     
+    def _execute_paper_trade(self, action: str, price: float, confidence: float):
+        """Execute virtual paper trade"""
+        if not self.enable_paper_trading:
+            return
+        
+        if action == 'BUY' and not self.current_position:
+            position_size = (self.state['paper_equity'] * 0.95) / price
+            self.current_position = {
+                'type': 'LONG',
+                'entry_price': price,
+                'size': position_size,
+                'entry_time': datetime.now(),
+                'stop_loss': price * 0.98,
+                'take_profit': price * 1.05,
+                'confidence': confidence
+            }
+        
+        elif action == 'SELL' and self.current_position and self.current_position['type'] == 'LONG':
+            exit_price = price
+            entry_price = self.current_position['entry_price']
+            size = self.current_position['size']
+            
+            pnl = (exit_price - entry_price) * size
+            
+            self.state['paper_realized_pnl'] += pnl
+            self.state['paper_equity'] += pnl
+            self.state['paper_total_trades'] += 1
+            
+            if pnl > 0:
+                self.state['paper_winning_trades'] += 1
+            else:
+                self.state['paper_losing_trades'] += 1
+            
+            self.paper_trades.append({
+                **self.current_position,
+                'exit_price': exit_price,
+                'exit_time': datetime.now(),
+                'pnl': pnl,
+                'pnl_pct': (pnl / (entry_price * size)) * 100
+            })
+            
+            self.current_position = None
+    
+    def _update_paper_pnl(self, current_price: float):
+        """Update unrealized P&L for current position"""
+        if not self.enable_paper_trading or not self.current_position:
+            self.state['paper_unrealized_pnl'] = 0.0
+            return
+        
+        entry_price = self.current_position['entry_price']
+        size = self.current_position['size']
+        
+        unrealized = (current_price - entry_price) * size
+        self.state['paper_unrealized_pnl'] = unrealized
+        
+        if self.current_position['stop_loss'] and current_price <= self.current_position['stop_loss']:
+            self._execute_paper_trade('SELL', current_price, 0.0)
+        elif self.current_position['take_profit'] and current_price >= self.current_position['take_profit']:
+            self._execute_paper_trade('SELL', current_price, 0.0)
+    
     async def process_candle(self, candle_data: Dict[str, Any]):
         """Process incoming candle data - OPTIMIZED"""
         try:
@@ -578,6 +651,9 @@ class RealtimeStrategyEngine:
             
             self.state['is_strong_signal'] = is_strong_signal
             
+            self._execute_paper_trade(confluence['action'], self.state['price'], confluence['confidence'])
+            self._update_paper_pnl(self.state['price'])
+            
             if self.state['last_state_price'] > 0:
                 self.state['delta_since'] = self.state['price'] - self.state['last_state_price']
             
@@ -616,12 +692,21 @@ class RealtimeStrategyEngine:
         """Render live UI"""
         layout = Layout()
         
-        layout.split_column(
-            Layout(name="header", size=3),
-            Layout(name="metrics", size=2),
-            Layout(name="body"),
-            Layout(name="footer", size=6)
-        )
+        if self.enable_paper_trading:
+            layout.split_column(
+                Layout(name="header", size=3),
+                Layout(name="metrics", size=2),
+                Layout(name="paper", size=3),
+                Layout(name="body"),
+                Layout(name="footer", size=6)
+            )
+        else:
+            layout.split_column(
+                Layout(name="header", size=3),
+                Layout(name="metrics", size=2),
+                Layout(name="body"),
+                Layout(name="footer", size=6)
+            )
         
         header_table = Table.grid(expand=True)
         header_table.add_column(justify="left")
@@ -660,6 +745,36 @@ class RealtimeStrategyEngine:
         )
         
         layout["metrics"].update(Panel(metrics_table, title="📈 Métricas de Performance", border_style="yellow"))
+        
+        if self.enable_paper_trading:
+            win_rate = (self.state['paper_winning_trades'] / self.state['paper_total_trades'] * 100) if self.state['paper_total_trades'] > 0 else 0
+            total_pnl = self.state['paper_realized_pnl'] + self.state['paper_unrealized_pnl']
+            pnl_color = "green" if total_pnl >= 0 else "red"
+            pnl_symbol = "+" if total_pnl >= 0 else ""
+            
+            paper_table = Table.grid(expand=True)
+            paper_table.add_column(justify="center")
+            paper_table.add_column(justify="center")
+            paper_table.add_column(justify="center")
+            paper_table.add_column(justify="center")
+            
+            paper_table.add_row(
+                f"[bold cyan]Equity:[/bold cyan] ${self.state['paper_equity']:,.2f}",
+                f"[{pnl_color}]P&L Total:[/{pnl_color}] {pnl_symbol}${total_pnl:,.2f}",
+                f"[bold yellow]Win Rate:[/bold yellow] {win_rate:.1f}%",
+                f"[bold magenta]Trades:[/bold magenta] {self.state['paper_total_trades']}"
+            )
+            
+            if self.current_position:
+                unrealized_color = "green" if self.state['paper_unrealized_pnl'] >= 0 else "red"
+                paper_table.add_row(
+                    f"[bold green]Posição:[/bold green] LONG",
+                    f"[dim]Entrada: ${self.current_position['entry_price']:,.2f}[/dim]",
+                    f"[dim]Size: {self.current_position['size']:.4f}[/dim]",
+                    f"[{unrealized_color}]P&L: ${self.state['paper_unrealized_pnl']:,.2f}[/{unrealized_color}]"
+                )
+            
+            layout["paper"].update(Panel(paper_table, title="💰 Paper Trading (Virtual)", border_style="green"))
         
         layout["body"].split_row(
             Layout(name="price", ratio=1),

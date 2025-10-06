@@ -63,6 +63,7 @@ class RealtimeStrategyEngine:
         
         self.ws_provider = None
         self.candles_deque = deque(maxlen=1000)
+        self.signals_history = deque(maxlen=100)
         self.running = False
         
         self.candles_df = None
@@ -571,6 +572,14 @@ class RealtimeStrategyEngine:
             
             if confluence['action'] != 'HOLD':
                 self.state['last_state_price'] = self.state['price']
+                
+                self.signals_history.append({
+                    'timestamp': datetime.now(),
+                    'price': self.state['price'],
+                    'action': confluence['action'],
+                    'confidence': confluence['confidence'],
+                    'strategies': confluence['reasons'][:3]
+                })
             
             end_time = datetime.now()
             latency = int((end_time - start_time).total_seconds() * 1000)
@@ -693,8 +702,35 @@ class RealtimeStrategyEngine:
                         f"{signal.confidence:.2f}"
                     )
         
-        layout["footer"].update(
+        layout["footer"].split_row(
+            Layout(name="strategies", ratio=2),
+            Layout(name="history", ratio=1)
+        )
+        
+        layout["strategies"].update(
             Panel(strategy_table, title="📊 Estratégias Individuais", border_style="blue")
+        )
+        
+        history_table = Table(show_header=True, expand=True, show_lines=False)
+        history_table.add_column("Hora", style="dim", width=8)
+        history_table.add_column("Ação", justify="center", width=6)
+        history_table.add_column("Conf.", justify="center", width=6)
+        history_table.add_column("Preço", justify="right", width=10)
+        
+        for signal in list(self.signals_history)[-10:]:
+            time_str = signal['timestamp'].strftime("%H:%M:%S")
+            action_color = "green" if signal['action'] == "BUY" else "red"
+            action_emoji = "↑" if signal['action'] == "BUY" else "↓"
+            
+            history_table.add_row(
+                time_str,
+                f"[{action_color}]{action_emoji} {signal['action']}[/{action_color}]",
+                f"{signal['confidence']:.2f}",
+                f"${signal['price']:,.2f}"
+            )
+        
+        layout["history"].update(
+            Panel(history_table, title="📜 Histórico de Sinais (últimos 10)", border_style="yellow")
         )
         
         return layout

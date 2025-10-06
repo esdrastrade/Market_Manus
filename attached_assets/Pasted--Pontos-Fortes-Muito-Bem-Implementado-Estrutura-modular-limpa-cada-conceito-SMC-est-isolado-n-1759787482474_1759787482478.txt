@@ -1,0 +1,113 @@
+✅ Pontos Fortes (Muito Bem Implementado):
+
+Estrutura modular limpa: cada conceito SMC está isolado numa função dedicada (detect_bos, detect_choch, etc.), seguindo boas práticas de separação de responsabilidades.
+
+Sistema de confiabilidade (confidence): a atribuição de confiança ao sinal é coerente e escalável — isso é raro em implementações SMC.
+
+Uso de Signal com metadados: ótimo para análises mais profundas, permitindo backtests e visualizações precisas.
+
+Engine de confluência ponderada com regime filters (ADX, ATR, BB Width) é sofisticada e evita entradas em mercados flat.
+
+Integração com indicadores clássicos: excelente ideia, principalmente para confirmar cenários (ex: MACD + CHoCH).
+
+Extensibilidade para outros estilos (Scalping, Momentum, Ribbon) é bem pensada.
+
+🧠 Avaliação Técnica dos Detectores Individuais
+1. BOS (Break of Structure)
+
+👍 Adequado: bem definido via swing high / low, com min_displacement e confiança escalável.
+
+⚠️ Ponto de melhoria: considerar volume como parte da confiança (citou mas não implementou).
+
+2. CHoCH
+
+👍 Lógica correta de inversão.
+
+⚠️ Falta validação de contexto: CHoCH sem estrutura BOS prévia pode gerar falsos positivos.
+
+⚠️ Poderia verificar se o BOS foi invalidado para confirmar a virada.
+
+3. Order Blocks
+
+⚠️ Fraco comparado ao padrão ICT.
+
+Não verifica se o candle causou BOS.
+
+Não diferencia OBs mitigados de fresh.
+
+Não considera volume ou engolfamento real.
+
+✍️ Comentário técnico: um OB só é válido se causar desequilíbrio real (idealmente um FVG subsequente).
+
+4. Fair Value Gaps (FVG)
+
+👍 Gap detection funcional.
+
+⚠️ Gap de 2 candles é simplista: ICT ensina a usar gaps entre candle 1 e 3 (não implementado).
+
+⚠️ Falta identificação se já foi retestado (gap mitigado) — relevante para setup.
+
+5. Liquidity Sweep
+
+👍 Lógica de pavio com retorno fechando dentro da zona: boa abstração de stop hunt.
+
+⚠️ Poderia melhorar detectando igualdades de máximas/mínimas com múltiplos toques (draw on liquidity).
+
+⚠️ Ignora localização no range premium/discount — essencial no modelo ICT.
+
+6. Confluence Engine
+
+👍 Muito forte, flexível, ponderado.
+
+👏 Penalidade por conflito (BUY vs SELL) é brilhante.
+
+⚠️ Melhoria: usar clusters de sinais para compor market structure shift zones, não só decisão final.
+
+🔧 Sugestões para Complementar e Elevar ao Padrão ICT Pro
+🔹 1. Adicionar modelos de Contexto e Narrativa
+
+Classificar mercado em: consolidação, impulso, reversão, liquidez internal/external, etc.
+
+Implementar ICT-style market structure map.
+
+🔹 2. Mitigação e Validação de Zonas
+
+Adicionar status para:
+
+Zonas mitigadas (OBs e FVGs tocadas)
+
+Zonas intactas com draw-on-liquidity próximo
+
+🔹 3. Time-Based Analysis (HTF / LTF Context)
+
+Usar contexto de timeframe maior (HTF) para filtrar sinais LTF.
+
+Ex: só aceitar BUY LTF se HTF estiver em premium + bullish BOS.
+
+🔹 4. Incorporar Indicadores ICT como
+
+Judas Swing Detection
+
+Killzone Timing (Londres/NYC)
+
+Session High/Low sweep detectors
+
+Power of Three (Accumulation-Manipulation-Distribution)
+
+🔹 5. Trailing Logic e Setup Builder
+
+Criar classe SMCSetupBuilder para gerar setups tipo:
+
+CHoCH + OB + Sweep + Entry Candle (Engulfing ou M15 Entry Model)
+
+BOS + FVG + Retest
+
+Judas Swing + Liquidity Grab + Return to OB
+
+📌 Conclusão (Nota Geral Técnica)
+
+Nota: 8.5 / 10
+
+Veredito: Bem acima da média, com uma base sólida, mas alguns conceitos ICT estão simplificados ou ausentes, o que pode levar a sinais excessivamente genéricos.
+
+Recomendação: Aplicar melhorias estruturais nas ordens de eventos (causalidade SMC) e introduzir validações de contexto temporal e estrutural.

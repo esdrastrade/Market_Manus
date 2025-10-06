@@ -3,6 +3,14 @@
 ## Overview
 Market Manus is an automated trading system designed for scalping and swing trading using real-time market data from Binance.US. It integrates AI, advanced technical analysis (including Smart Money Concepts), and robust capital management to achieve a high win rate through intelligent signal confluence. The project aims to provide a professional-grade tool for automated trading with a focus on intelligent market analysis and strategic execution.
 
+## Recent Changes (October 2025)
+### Phase 1 Quick Corrections - COMPLETED ✅
+- **Directional Trading Signals**: All strategies (classic and SMC) now return BUY/SELL directional signals instead of generic "BUY" only. Confluence system uses `VoteData` class to aggregate directional votes with proper type safety.
+- **SHORT Position Trading**: Paper trading simulator now supports SHORT positions with inverted SL/TP logic, enabling bidirectional backtesting.
+- **Realistic SL/TP Evaluation**: Simulator uses high/low intrabar data to validate stop-loss and take-profit levels, with absolute priority for stop execution in case of gaps (when both SL/TP are touched in same candle).
+- **Real OHLCV Data for SMC**: Removed fake `open=close` workaround, all SMC strategies now receive complete OHLCV data with real open prices.
+- **Type Safety Improvements**: Reduced LSP errors from 21 to 8, with remaining errors being non-critical typing warnings.
+
 ## User Preferences
 *No specific user preferences recorded yet*
 

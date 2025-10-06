@@ -763,10 +763,11 @@ class ConfluenceModeModule:
         # Exibir métricas de dados carregados
         self._display_data_metrics(metrics)
         
-        # Converter dados para análise
-        closes = [float(k[4]) for k in klines]  # Preços de fechamento
+        # Converter dados para análise (OHLCV completo)
+        opens = [float(k[1]) for k in klines]   # Preços de abertura
         highs = [float(k[2]) for k in klines]   # Máximas
         lows = [float(k[3]) for k in klines]    # Mínimas
+        closes = [float(k[4]) for k in klines]  # Preços de fechamento
         
         total_candles = len(closes)
         total_strategies = len(self.selected_strategies)
@@ -797,7 +798,7 @@ class ConfluenceModeModule:
                 strategy = self.available_strategies[strategy_key]
                 strategy_start = time.time()
                 
-                signal_indices = self._execute_strategy_on_data(strategy_key, closes, highs, lows)
+                signal_indices = self._execute_strategy_on_data(strategy_key, closes, highs, lows, opens)
                 
                 strategy_signals[strategy_key] = {
                     "name": strategy['name'],
@@ -858,25 +859,29 @@ class ConfluenceModeModule:
             # Exibir resumo do filtro
             print(f"\n{self.volume_pipeline.get_stats_summary()}")
         
-        # Calcular confluência baseado no modo (NOVO: retorna lista de índices)
-        confluence_signal_indices = self._calculate_confluence_signals(filtered_strategy_signals)
+        # Calcular confluência baseado no modo (NOVO: retorna lista de (índice, direção))
+        confluence_signals = self._calculate_confluence_signals(filtered_strategy_signals)
         
-        # Calcular resultados financeiros baseados nos sinais reais
+        # Calcular resultados financeiros baseados nos sinais reais COM DIREÇÃO
         initial_capital = self.capital_manager.current_capital if self.capital_manager else 10000
         final_capital, total_trades, winning_trades = self._simulate_trades_from_signals(
-            confluence_signal_indices, closes, initial_capital
+            confluence_signals, closes, initial_capital, highs, lows
         )
         losing_trades = total_trades - winning_trades
         pnl = final_capital - initial_capital
         roi = (pnl / initial_capital) * 100
         win_rate = (winning_trades / total_trades) * 100 if total_trades > 0 else 0
         
+        # Contar sinais por direção
+        buy_signals = sum(1 for _, direction in confluence_signals if direction == "BUY")
+        sell_signals = sum(1 for _, direction in confluence_signals if direction == "SELL")
+        
         print(f"\n📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:")
         print(f"   💰 Capital inicial: ${initial_capital:.2f}")
         print(f"   💵 Capital final: ${final_capital:.2f}")
         print(f"   📈 P&L: ${pnl:+.2f}")
         print(f"   📊 ROI: {roi:+.2f}%")
-        print(f"   🎯 Sinais de confluência: {len(confluence_signal_indices)}")
+        print(f"   🎯 Sinais de confluência: {len(confluence_signals)} ({buy_signals} BUY, {sell_signals} SELL)")
         print(f"   ✅ Trades vencedores: {winning_trades}")
         print(f"   ❌ Trades perdedores: {losing_trades}")
         print(f"   📊 Win Rate: {win_rate:.1f}%")
@@ -911,7 +916,9 @@ class ConfluenceModeModule:
                 "winning_trades": winning_trades,
                 "losing_trades": losing_trades,
                 "win_rate": win_rate,
-                "confluence_signals": len(confluence_signal_indices),
+                "confluence_signals": len(confluence_signals),
+                "buy_signals": buy_signals,
+                "sell_signals": sell_signals,
                 "strategy_signals": {k: {"name": v["name"], "signals": len(v["signal_indices"]), "weight": v["weight"], "original_signals": v.get("original_count", len(v["signal_indices"]))} for k, v in filtered_strategy_signals.items()},
                 "volume_filter_stats": self.volume_pipeline.stats
             }
@@ -920,12 +927,15 @@ class ConfluenceModeModule:
         
         input("\n📖 Pressione ENTER para continuar...")
     
-    def _execute_strategy_on_data(self, strategy_key: str, closes: List[float], highs: List[float], lows: List[float]) -> List[int]:
+    def _execute_strategy_on_data(self, strategy_key: str, closes: List[float], highs: List[float], lows: List[float], opens: List[float]) -> List[Tuple[int, str]]:
         """
-        Executa uma estratégia sobre dados reais e retorna ÍNDICES onde sinais ocorreram
+        Executa uma estratégia sobre dados reais OHLCV e retorna (ÍNDICE, DIREÇÃO) onde sinais ocorreram
         
-        NOVO (Out 2025): Retorna List[int] de índices em vez de contagem
-        Permite simulação realista de trades pois sabemos QUANDO sinais ocorrem
+        NOVO (Out 2025 - Fase 2): Retorna List[Tuple[int, str]] com direção BUY/SELL
+        Usa dados OHLCV completos (não fake open=close) para análise SMC precisa
+        
+        Returns:
+            List[Tuple[int, str]]: Lista de (índice, direção) onde direção é "BUY" ou "SELL"
         """
         signal_indices = []
         
@@ -933,8 +943,10 @@ class ConfluenceModeModule:
         if strategy_key == "rsi_mean_reversion":
             rsi_values = self._calculate_rsi(closes, period=14)
             for i, rsi in enumerate(rsi_values):
-                if rsi < 30 or rsi > 70:  # Sobrevenda ou sobrecompra
-                    signal_indices.append(i + 14)  # +14 offset do período RSI
+                if rsi < 30:  # Sobrevenda - comprar
+                    signal_indices.append((i + 14, "BUY"))
+                elif rsi > 70:  # Sobrecompra - vender
+                    signal_indices.append((i + 14, "SELL"))
         
         # EMA Crossover
         elif strategy_key == "ema_crossover":
@@ -942,10 +954,12 @@ class ConfluenceModeModule:
             ema_slow = self._calculate_ema(closes, 26)
             offset = 26  # Offset do EMA mais longo
             for i in range(1, min(len(ema_fast), len(ema_slow))):
-                # Cruzamento
-                if (ema_fast[i-1] <= ema_slow[i-1] and ema_fast[i] > ema_slow[i]) or \
-                   (ema_fast[i-1] >= ema_slow[i-1] and ema_fast[i] < ema_slow[i]):
-                    signal_indices.append(i + offset)
+                # Cruzamento para cima - BUY
+                if ema_fast[i-1] <= ema_slow[i-1] and ema_fast[i] > ema_slow[i]:
+                    signal_indices.append((i + offset, "BUY"))
+                # Cruzamento para baixo - SELL
+                elif ema_fast[i-1] >= ema_slow[i-1] and ema_fast[i] < ema_slow[i]:
+                    signal_indices.append((i + offset, "SELL"))
         
         # Bollinger Bands
         elif strategy_key == "bollinger_breakout":
@@ -954,142 +968,166 @@ class ConfluenceModeModule:
             for i in range(len(bb_upper)):
                 if i < len(closes) - offset:
                     candle_index = i + offset
-                    if closes[candle_index] > bb_upper[i] or closes[candle_index] < bb_lower[i]:
-                        signal_indices.append(candle_index)
+                    if closes[candle_index] > bb_upper[i]:  # Rompimento superior - SELL
+                        signal_indices.append((candle_index, "SELL"))
+                    elif closes[candle_index] < bb_lower[i]:  # Rompimento inferior - BUY
+                        signal_indices.append((candle_index, "BUY"))
         
         # MACD
         elif strategy_key == "macd":
             macd_line, signal_line = self._calculate_macd(closes)
             offset = 26 + 9  # Offset do EMA26 + Signal Line
             for i in range(1, min(len(macd_line), len(signal_line))):
-                # Cruzamento MACD
-                if (macd_line[i-1] <= signal_line[i-1] and macd_line[i] > signal_line[i]) or \
-                   (macd_line[i-1] >= signal_line[i-1] and macd_line[i] < signal_line[i]):
-                    signal_indices.append(i + offset)
+                # Cruzamento MACD para cima - BUY
+                if macd_line[i-1] <= signal_line[i-1] and macd_line[i] > signal_line[i]:
+                    signal_indices.append((i + offset, "BUY"))
+                # Cruzamento MACD para baixo - SELL
+                elif macd_line[i-1] >= signal_line[i-1] and macd_line[i] < signal_line[i]:
+                    signal_indices.append((i + offset, "SELL"))
         
         # Stochastic
         elif strategy_key == "stochastic":
             stoch_values = self._calculate_stochastic(closes, highs, lows, period=14)
             offset = 13  # Offset do período
             for i, stoch in enumerate(stoch_values):
-                if stoch < 20 or stoch > 80:
-                    signal_indices.append(i + offset)
+                if stoch < 20:  # Sobrevenda - BUY
+                    signal_indices.append((i + offset, "BUY"))
+                elif stoch > 80:  # Sobrecompra - SELL
+                    signal_indices.append((i + offset, "SELL"))
         
         # Williams %R
         elif strategy_key == "williams_r":
             williams_values = self._calculate_williams_r(closes, highs, lows, period=14)
             offset = 13  # Offset do período
             for i, wr in enumerate(williams_values):
-                if wr < -80 or wr > -20:
-                    signal_indices.append(i + offset)
+                if wr < -80:  # Sobrevenda - BUY
+                    signal_indices.append((i + offset, "BUY"))
+                elif wr > -20:  # Sobrecompra - SELL
+                    signal_indices.append((i + offset, "SELL"))
         
         # ADX
         elif strategy_key == "adx":
             adx_values = self._calculate_adx(closes, highs, lows, period=14)
             offset = 14  # Offset do período
             for i, adx in enumerate(adx_values):
-                if adx > 25:  # Tendência forte
-                    signal_indices.append(i + offset)
+                if adx > 25:  # Tendência forte - inferir direção pela tendência de preço
+                    # Comparar close atual vs média recente para determinar direção
+                    if i + offset < len(closes):
+                        current_idx = i + offset
+                        if current_idx > 10:
+                            recent_avg = sum(closes[current_idx-10:current_idx]) / 10
+                            direction = "BUY" if closes[current_idx] > recent_avg else "SELL"
+                            signal_indices.append((current_idx, direction))
         
         # Fibonacci
         elif strategy_key == "fibonacci":
             # Detectar topos e fundos e gerar sinais em níveis de Fibonacci
-            # Simplificado: sinal a cada 20 candles
-            for i in range(20, len(closes), 20):
-                signal_indices.append(i)
+            # Simplificado: alternando BUY/SELL a cada 20 candles
+            for i in range(20, len(closes), 40):
+                signal_indices.append((i, "BUY"))
+            for i in range(40, len(closes), 40):
+                signal_indices.append((i, "SELL"))
         
         # SMC: Break of Structure
         elif strategy_key == "smc_bos":
             df = pd.DataFrame({
-                'close': closes,
+                'open': opens,
                 'high': highs,
                 'low': lows,
-                'open': closes  # Simplificado: usar close como proxy para open
+                'close': closes
             })
             # Aplicar em janelas deslizantes
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
                 signal = detect_bos(window_df)
                 if signal.action != "HOLD":
-                    signal_indices.append(i)
+                    signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
         # SMC: Change of Character
         elif strategy_key == "smc_choch":
             df = pd.DataFrame({
-                'close': closes,
+                'open': opens,
                 'high': highs,
                 'low': lows,
-                'open': closes
+                'close': closes
             })
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
                 signal = detect_choch(window_df)
                 if signal.action != "HOLD":
-                    signal_indices.append(i)
+                    signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
         # SMC: Order Blocks
         elif strategy_key == "smc_order_blocks":
             df = pd.DataFrame({
-                'close': closes,
+                'open': opens,
                 'high': highs,
                 'low': lows,
-                'open': closes
+                'close': closes
             })
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
                 signal = detect_order_blocks(window_df)
                 if signal.action != "HOLD":
-                    signal_indices.append(i)
+                    signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
         # SMC: Fair Value Gap
         elif strategy_key == "smc_fvg":
             df = pd.DataFrame({
-                'close': closes,
+                'open': opens,
                 'high': highs,
                 'low': lows,
-                'open': closes
+                'close': closes
             })
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
                 signal = detect_fvg(window_df)
                 if signal.action != "HOLD":
-                    signal_indices.append(i)
+                    signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
         # SMC: Liquidity Sweep
         elif strategy_key == "smc_liquidity_sweep":
             df = pd.DataFrame({
-                'close': closes,
+                'open': opens,
                 'high': highs,
                 'low': lows,
-                'open': closes
+                'close': closes
             })
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
                 signal = detect_liquidity_sweep(window_df)
                 if signal.action != "HOLD":
-                    signal_indices.append(i)
+                    signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
         return signal_indices
     
-    def _simulate_trades_from_signals(self, confluence_signal_indices: List[int], closes: List[float], initial_capital: float) -> Tuple[float, int, int]:
+    def _simulate_trades_from_signals(self, confluence_signals: List[Tuple[int, str]], closes: List[float], initial_capital: float, highs: List[float] = None, lows: List[float] = None) -> Tuple[float, int, int]:
         """
-        Simula trades REALISTAS baseados nos ÍNDICES dos sinais de confluência
+        Simula trades REALISTAS com LONG e SHORT usando high/low intrabar
         
-        NOVA ARQUITETURA (Out 2025):
-        - Usa ÍNDICES reais onde sinais ocorrem (não aproximação uniforme)
-        - Abre trade APENAS quando candle_index está em confluence_signal_indices
+        NOVA ARQUITETURA (Out 2025 - Fase 2):
+        - Usa ÍNDICES e DIREÇÃO reais (BUY/SELL) dos sinais de confluência
+        - Abre LONG ou SHORT baseado na direção do sinal
         - Respeita position lock (apenas 1 posição por vez)
         - Implementa Stop Loss (0.5%) e Take Profit (1.0%)
-        - Usa movimento real de preço para determinar win/loss
+        - Usa HIGH/LOW intrabar para SL/TP realista (stop tem prioridade)
         
         Args:
-            confluence_signal_indices: Lista de índices onde sinais de confluência ocorreram
+            confluence_signals: Lista de (índice, direção) onde sinais de confluência ocorreram
             closes: Lista de preços de fechamento
             initial_capital: Capital inicial
+            highs: Lista de preços máximos (opcional, se None usa closes)
+            lows: Lista de preços mínimos (opcional, se None usa closes)
             
         Returns:
             Tuple[capital_final, total_trades, winning_trades]
         """
+        # Fallback para highs/lows se não fornecidos
+        if highs is None:
+            highs = closes
+        if lows is None:
+            lows = closes
+        
         capital = initial_capital
         position_size_pct = 0.02  # 2% do capital por trade
         stop_loss_pct = 0.005  # 0.5% stop loss
@@ -1099,72 +1137,124 @@ class ConfluenceModeModule:
         losing_trades = 0
         current_position = None  # None quando sem posição, dict quando em posição
         
-        # Converter para set para lookup O(1)
-        signal_indices_set = set(confluence_signal_indices)
+        # Converter para dict para lookup O(1): {índice: direção}
+        signal_dict = {idx: direction for idx, direction in confluence_signals}
         
         # Iterar através de TODOS os candles
         for candle_index in range(len(closes)):
             # Verificar se há posição aberta
             if current_position is not None:
-                current_price = closes[candle_index]
+                high = highs[candle_index]
+                low = lows[candle_index]
+                close = closes[candle_index]
+                direction = current_position['direction']
                 
-                # Check Stop Loss
-                if current_price <= current_position['stop_loss']:
-                    # Trade perdedor
-                    pnl = -current_position['position_size'] * stop_loss_pct
-                    capital += pnl
-                    losing_trades += 1
-                    current_position = None  # Fechar posição
-                
-                # Check Take Profit
-                elif current_price >= current_position['take_profit']:
-                    # Trade vencedor
-                    pnl = current_position['position_size'] * take_profit_pct
-                    capital += pnl
-                    winning_trades += 1
-                    current_position = None  # Fechar posição
-                
-                # Check timeout (máximo 50 candles por trade)
-                elif candle_index - current_position['entry_index'] >= 50:
-                    # Fechar no preço atual
-                    pnl_pct = (current_price - current_position['entry_price']) / current_position['entry_price']
-                    pnl = current_position['position_size'] * pnl_pct
-                    capital += pnl
+                # LONG: Check Stop Loss PRIMEIRO (prioridade absoluta), depois Take Profit
+                if direction == "BUY":
+                    sl_hit = low <= current_position['stop_loss']
+                    tp_hit = high >= current_position['take_profit']
                     
-                    if pnl > 0:
-                        winning_trades += 1
-                    else:
+                    # Se ambos foram tocados no mesmo candle, STOP tem prioridade
+                    if sl_hit and tp_hit:
+                        # Gap/volatilidade: assumir que stop foi tocado primeiro
+                        pnl = -current_position['position_size'] * stop_loss_pct
+                        capital += pnl
                         losing_trades += 1
+                        current_position = None
+                    elif sl_hit:
+                        # Apenas stop tocado
+                        pnl = -current_position['position_size'] * stop_loss_pct
+                        capital += pnl
+                        losing_trades += 1
+                        current_position = None
+                    elif tp_hit:
+                        # Apenas take profit tocado
+                        pnl = current_position['position_size'] * take_profit_pct
+                        capital += pnl
+                        winning_trades += 1
+                        current_position = None
+                    # Timeout (máximo 50 candles por trade)
+                    elif candle_index - current_position['entry_index'] >= 50:
+                        pnl_pct = (close - current_position['entry_price']) / current_position['entry_price']
+                        pnl = current_position['position_size'] * pnl_pct
+                        capital += pnl
+                        winning_trades += 1 if pnl > 0 else 0
+                        losing_trades += 1 if pnl <= 0 else 0
+                        current_position = None
+                
+                # SHORT: Lógica invertida, mas STOP ainda tem prioridade
+                elif direction == "SELL":
+                    sl_hit = high >= current_position['stop_loss']
+                    tp_hit = low <= current_position['take_profit']
                     
-                    current_position = None  # Fechar posição
+                    # Se ambos foram tocados no mesmo candle, STOP tem prioridade
+                    if sl_hit and tp_hit:
+                        # Gap/volatilidade: assumir que stop foi tocado primeiro
+                        pnl = -current_position['position_size'] * stop_loss_pct
+                        capital += pnl
+                        losing_trades += 1
+                        current_position = None
+                    elif sl_hit:
+                        # Apenas stop tocado
+                        pnl = -current_position['position_size'] * stop_loss_pct
+                        capital += pnl
+                        losing_trades += 1
+                        current_position = None
+                    elif tp_hit:
+                        # Apenas take profit tocado
+                        pnl = current_position['position_size'] * take_profit_pct
+                        capital += pnl
+                        winning_trades += 1
+                        current_position = None
+                    # Timeout
+                    elif candle_index - current_position['entry_index'] >= 50:
+                        pnl_pct = (current_position['entry_price'] - close) / current_position['entry_price']  # Invertido para SHORT
+                        pnl = current_position['position_size'] * pnl_pct
+                        capital += pnl
+                        winning_trades += 1 if pnl > 0 else 0
+                        losing_trades += 1 if pnl <= 0 else 0
+                        current_position = None
             
             # Tentar abrir nova posição APENAS se:
             # 1. Não há posição aberta
             # 2. Este candle_index tem sinal de confluência
-            elif candle_index in signal_indices_set:
+            elif candle_index in signal_dict:
                 entry_price = closes[candle_index]
                 position_size = capital * position_size_pct
+                direction = signal_dict[candle_index]
                 
-                # Abrir posição LONG (assumindo sinais de confluência são predominantemente long)
+                # Configurar SL/TP baseado na direção
+                if direction == "BUY":
+                    stop_loss = entry_price * (1 - stop_loss_pct)
+                    take_profit = entry_price * (1 + take_profit_pct)
+                else:  # SELL
+                    stop_loss = entry_price * (1 + stop_loss_pct)  # Invertido para SHORT
+                    take_profit = entry_price * (1 - take_profit_pct)  # Invertido para SHORT
+                
                 current_position = {
                     'entry_price': entry_price,
                     'entry_index': candle_index,
                     'position_size': position_size,
-                    'stop_loss': entry_price * (1 - stop_loss_pct),
-                    'take_profit': entry_price * (1 + take_profit_pct)
+                    'stop_loss': stop_loss,
+                    'take_profit': take_profit,
+                    'direction': direction
                 }
         
         # Fechar posição pendente se ainda aberta
         if current_position is not None:
             exit_price = closes[-1]
-            pnl_pct = (exit_price - current_position['entry_price']) / current_position['entry_price']
+            direction = current_position['direction']
+            
+            if direction == "BUY":
+                pnl_pct = (exit_price - current_position['entry_price']) / current_position['entry_price']
+            else:  # SELL
+                pnl_pct = (current_position['entry_price'] - exit_price) / current_position['entry_price']
+            
             pnl = current_position['position_size'] * pnl_pct
             capital += pnl
             
-            if pnl > 0:
-                winning_trades += 1
-            else:
-                losing_trades += 1
+            winning_trades += 1 if pnl > 0 else 0
+            losing_trades += 1 if pnl <= 0 else 0
         
         total_trades = winning_trades + losing_trades
         return capital, total_trades, winning_trades
@@ -1289,83 +1379,96 @@ class ConfluenceModeModule:
         
         return adx_values
     
-    def _calculate_confluence_signals(self, strategy_signals: Dict) -> List[int]:
+    def _calculate_confluence_signals(self, strategy_signals: Dict) -> List[Tuple[int, str]]:
         """
-        Calcula sinais de confluência baseado no modo selecionado
+        Calcula sinais de confluência baseado no modo selecionado COM DIREÇÃO
         
-        NOVO (Out 2025): Retorna List[int] de índices em vez de contagem
-        Usa operações de conjunto para combinar índices de diferentes estratégias
+        NOVO (Out 2025 - Fase 2): Retorna List[Tuple[int, str]] = [(índice, direção), ...]
+        Acumula votos BUY/SELL separadamente por índice e determina direção vencedora
         
         Args:
-            strategy_signals: Dict com signal_indices de cada estratégia
+            strategy_signals: Dict com signal_indices List[Tuple[int, str]] de cada estratégia
             
         Returns:
-            List[int]: Índices ordenados onde confluência ocorre
+            List[Tuple[int, str]]: Lista de tuplas (índice, direção) ordenadas por índice
+                                   onde direção é "BUY" ou "SELL"
         """
+        from collections import defaultdict
+        
+        # Estrutura para acumular votos por índice
+        # Cada índice tem: buy_weight, sell_weight, e set de estratégias que votaram
+        class VoteData:
+            def __init__(self):
+                self.buy_weight = 0.0
+                self.sell_weight = 0.0
+                self.strategies = set()
+        
+        index_votes = defaultdict(VoteData)
+        
+        # Acumular votos de todas as estratégias
+        for strategy_key, data in strategy_signals.items():
+            weight = data['weight']
+            for idx, direction in data['signal_indices']:
+                vote = index_votes[idx]
+                if direction == "BUY":
+                    vote.buy_weight += weight
+                elif direction == "SELL":
+                    vote.sell_weight += weight
+                vote.strategies.add(strategy_key)
+        
+        # Determinar sinais de confluência baseado no modo
+        confluence_signals = []
+        total_strategies = len(strategy_signals)
+        total_weight = sum(data['weight'] for data in strategy_signals.values())
+        
         if self.selected_confluence_mode == "ALL":
-            # Todas as estratégias devem concordar (INTERSEÇÃO)
-            # Apenas índices onde TODAS as estratégias têm sinais
-            if not strategy_signals:
-                return []
-            
-            # Começar com o conjunto do primeiro
-            strategy_sets = [set(data['signal_indices']) for data in strategy_signals.values()]
-            confluence_set = strategy_sets[0]
-            
-            # Interseção com todos os outros
-            for s in strategy_sets[1:]:
-                confluence_set = confluence_set.intersection(s)
-            
-            return sorted(list(confluence_set))
+            # Todas as estratégias devem concordar no MESMO índice e MESMA direção
+            for idx, vote in index_votes.items():
+                if len(vote.strategies) == total_strategies:  # Todas presentes
+                    # Determinar direção vencedora
+                    if vote.buy_weight > vote.sell_weight:
+                        confluence_signals.append((idx, "BUY"))
+                    elif vote.sell_weight > vote.buy_weight:
+                        confluence_signals.append((idx, "SELL"))
+                    # Se empate, não gera sinal (ALL exige consenso)
         
         elif self.selected_confluence_mode == "ANY":
-            # Qualquer estratégia pode gerar sinal (UNIÃO)
-            # Todos os índices onde QUALQUER estratégia tem sinal
-            confluence_set = set()
-            for data in strategy_signals.values():
-                confluence_set = confluence_set.union(set(data['signal_indices']))
-            
-            return sorted(list(confluence_set))
+            # Qualquer estratégia pode gerar sinal - usa direção vencedora
+            for idx, vote in index_votes.items():
+                if vote.buy_weight > vote.sell_weight:
+                    confluence_signals.append((idx, "BUY"))
+                elif vote.sell_weight > vote.buy_weight:
+                    confluence_signals.append((idx, "SELL"))
+                # Se empate, usa BUY como padrão
+                elif vote.buy_weight > 0:
+                    confluence_signals.append((idx, "BUY"))
         
         elif self.selected_confluence_mode == "MAJORITY":
-            # Maioria das estratégias deve concordar
-            # Índices onde >50% das estratégias têm sinais
-            from collections import Counter
-            
-            # Contar quantas vezes cada índice aparece
-            all_indices = []
-            for data in strategy_signals.values():
-                all_indices.extend(data['signal_indices'])
-            
-            index_counts = Counter(all_indices)
-            total_strategies = len(strategy_signals)
+            # Maioria das estratégias deve concordar (>50%)
             majority_threshold = total_strategies / 2
-            
-            # Filtrar índices que aparecem em mais de 50% das estratégias
-            confluence_indices = [idx for idx, count in index_counts.items() if count > majority_threshold]
-            
-            return sorted(confluence_indices)
+            for idx, vote in index_votes.items():
+                num_strategies = len(vote.strategies)
+                if num_strategies > majority_threshold:
+                    # Direção vencedora entre os votos
+                    if vote.buy_weight > vote.sell_weight:
+                        confluence_signals.append((idx, "BUY"))
+                    elif vote.sell_weight > vote.buy_weight:
+                        confluence_signals.append((idx, "SELL"))
         
         elif self.selected_confluence_mode == "WEIGHTED":
-            # Ponderado: similar a MAJORITY mas considera pesos
-            # Índices onde soma dos pesos > 50% do total
-            from collections import defaultdict
-            
-            index_weights = defaultdict(float)
-            total_weight = sum(data['weight'] for data in strategy_signals.values())
-            
-            # Acumular pesos por índice
-            for data in strategy_signals.values():
-                for idx in data['signal_indices']:
-                    index_weights[idx] += data['weight']
-            
-            # Filtrar índices onde peso acumulado > 50% do total
+            # Peso total deve ser >50% E direção vencedora clara
             weighted_threshold = total_weight / 2
-            confluence_indices = [idx for idx, weight in index_weights.items() if weight > weighted_threshold]
-            
-            return sorted(confluence_indices)
+            for idx, vote in index_votes.items():
+                total_vote_weight = vote.buy_weight + vote.sell_weight
+                if total_vote_weight > weighted_threshold:
+                    # Direção vencedora por peso
+                    if vote.buy_weight > vote.sell_weight:
+                        confluence_signals.append((idx, "BUY"))
+                    elif vote.sell_weight > vote.buy_weight:
+                        confluence_signals.append((idx, "SELL"))
         
-        return []
+        # Ordenar por índice
+        return sorted(confluence_signals, key=lambda x: x[0])
     
     def _run_realtime_confluence_test(self):
         """

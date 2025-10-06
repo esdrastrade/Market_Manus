@@ -44,6 +44,24 @@ class ConfluenceModeModule:
         # Volume Filter Pipeline
         self.volume_pipeline = VolumeFilterPipeline()
         
+        # ORDEM FIXA de estratégias para garantir mapeamento consistente UI → Engine
+        # Esta lista DEVE corresponder exatamente à ordem exibida no menu
+        self.strategies_order = [
+            "rsi_mean_reversion",
+            "ema_crossover",
+            "bollinger_breakout",
+            "macd",
+            "stochastic",
+            "williams_r",
+            "adx",
+            "fibonacci",
+            "smc_bos",
+            "smc_choch",
+            "smc_order_blocks",
+            "smc_fvg",
+            "smc_liquidity_sweep"
+        ]
+        
         # Estratégias disponíveis para confluência (13 estratégias: 8 clássicas + 5 SMC)
         self.available_strategies = {
             "rsi_mean_reversion": {
@@ -357,7 +375,7 @@ class ConfluenceModeModule:
         print("💡 Selecione múltiplas estratégias para confluência")
         print("   Digite os números separados por vírgula (ex: 1,3,5)")
         
-        strategies_list = list(self.available_strategies.keys())
+        strategies_list = self.strategies_order
         for i, strategy_key in enumerate(strategies_list, 1):
             strategy = self.available_strategies[strategy_key]
             selected = "✅" if strategy_key in self.selected_strategies else "  "

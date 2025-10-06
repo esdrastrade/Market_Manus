@@ -21,7 +21,8 @@ from market_manus.strategies.classic_analysis import (
     calculate_rsi,
     calculate_macd,
     calculate_bollinger_bands,
-    calculate_adx
+    calculate_adx,
+    fibonacci_signal
 )
 from market_manus.strategies.smc.patterns import (
     detect_bos,
@@ -47,13 +48,25 @@ class RealtimeStrategyEngine:
     ):
         self.symbol = symbol
         self.interval = interval
-        self.strategies = strategies
+        
+        self.strategy_name_map = {
+            "smc_bos": "bos",
+            "smc_choch": "choch",
+            "smc_order_blocks": "order_blocks",
+            "smc_fvg": "fvg",
+            "smc_liquidity_sweep": "liquidity_sweep"
+        }
+        
+        self.strategies = [self.strategy_name_map.get(s, s) for s in strategies]
         self.data_provider = data_provider
         self.confluence_mode = confluence_mode
         
         self.ws_provider = None
         self.candles_deque = deque(maxlen=1000)
         self.running = False
+        
+        self.candles_df = None
+        self.processing_window = 200
         
         self.context_analyzer = MarketContextAnalyzer(lookback_days=60)
         
@@ -71,7 +84,12 @@ class RealtimeStrategyEngine:
             'reconnections': 0,
             'last_update': datetime.now(),
             'strategy_results': [],
-            'market_context': None
+            'market_context': None,
+            'total_latency': 0,
+            'latency_count': 0,
+            'total_signals': 0,
+            'buy_signals': 0,
+            'sell_signals': 0
         }
         
         self.strategy_functions = {
@@ -80,7 +98,9 @@ class RealtimeStrategyEngine:
             'bollinger_breakout': self._apply_bollinger_strategy,
             'macd': self._apply_macd_strategy,
             'stochastic': self._apply_stochastic_strategy,
+            'williams_r': self._apply_williams_r_strategy,
             'adx': self._apply_adx_strategy,
+            'fibonacci': self._apply_fibonacci_strategy,
             'bos': detect_bos,
             'choch': detect_choch,
             'order_blocks': detect_order_blocks,
@@ -265,6 +285,47 @@ class RealtimeStrategyEngine:
         
         return Signal(action="HOLD", confidence=0.0, reasons=["ADX sem tendência forte"], tags=["ADX"])
     
+    def _apply_williams_r_strategy(self, df: pd.DataFrame) -> Signal:
+        """Apply Williams %R strategy"""
+        period = 14
+        if len(df) < period:
+            return Signal(action="HOLD", confidence=0.0, reasons=["Dados insuficientes"], tags=["WILLIAMS_R"])
+        
+        highest_high = df['high'].rolling(window=period).max().iloc[-1]
+        lowest_low = df['low'].rolling(window=period).min().iloc[-1]
+        last_close = df['close'].iloc[-1]
+        
+        if pd.isna(highest_high) or pd.isna(lowest_low):
+            return Signal(action="HOLD", confidence=0.0, reasons=["Dados insuficientes"], tags=["WILLIAMS_R"])
+        
+        if highest_high == lowest_low:
+            wr = -50
+        else:
+            wr = ((highest_high - last_close) / (highest_high - lowest_low)) * -100
+        
+        if wr < -80:
+            confidence = (80 - abs(wr)) / 20
+            return Signal(
+                action="BUY",
+                confidence=min(confidence, 1.0),
+                reasons=[f"Williams %R sobrevenda: {wr:.2f}"],
+                tags=["WILLIAMS_R", "OVERSOLD"]
+            )
+        elif wr > -20:
+            confidence = (20 - abs(wr)) / 20
+            return Signal(
+                action="SELL",
+                confidence=min(confidence, 1.0),
+                reasons=[f"Williams %R sobrecompra: {wr:.2f}"],
+                tags=["WILLIAMS_R", "OVERBOUGHT"]
+            )
+        
+        return Signal(action="HOLD", confidence=0.0, reasons=["Williams %R neutro"], tags=["WILLIAMS_R"])
+    
+    def _apply_fibonacci_strategy(self, df: pd.DataFrame) -> Signal:
+        """Apply Fibonacci Retracement strategy"""
+        return fibonacci_signal(df, params={'lookback': 50})
+    
     async def _analyze_context(self):
         """Analisa contexto de mercado antes de iniciar streaming"""
         try:
@@ -334,7 +395,12 @@ class RealtimeStrategyEngine:
         async def apply_single_strategy(strategy_name: str):
             try:
                 if strategy_name not in self.strategy_functions:
-                    return strategy_name, None
+                    return strategy_name, Signal(
+                        action="HOLD",
+                        confidence=0.0,
+                        reasons=["Estratégia não encontrada"],
+                        tags=["ERROR"]
+                    )
                 
                 strategy_func = self.strategy_functions[strategy_name]
                 signal = await asyncio.to_thread(strategy_func, df)
@@ -345,16 +411,26 @@ class RealtimeStrategyEngine:
                     signal.confidence *= weight_adjustment
                     signal.confidence = max(0.0, min(signal.confidence, 1.0))
                 
-                return strategy_name, signal
+                return strategy_name, signal or Signal(
+                    action="HOLD",
+                    confidence=0.0,
+                    reasons=["Sem sinal"],
+                    tags=["NO_SIGNAL"]
+                )
                 
             except Exception as e:
                 print(f"⚠️  Erro na estratégia {strategy_name}: {e}")
-                return strategy_name, None
+                return strategy_name, Signal(
+                    action="HOLD",
+                    confidence=0.0,
+                    reasons=[f"Erro: {str(e)[:30]}"],
+                    tags=["ERROR"]
+                )
         
         tasks = [apply_single_strategy(strategy) for strategy in self.strategies]
         results = await asyncio.gather(*tasks)
         
-        return {name: signal for name, signal in results if signal is not None}
+        return {name: signal for name, signal in results}
     
     def calculate_confluence(self, signals: Dict[str, Any]) -> Dict[str, Any]:
         """Calculate confluence from multiple signals"""
@@ -438,7 +514,7 @@ class RealtimeStrategyEngine:
         }
     
     async def process_candle(self, candle_data: Dict[str, Any]):
-        """Process incoming candle data"""
+        """Process incoming candle data - OPTIMIZED"""
         try:
             start_time = datetime.now()
             
@@ -451,7 +527,9 @@ class RealtimeStrategyEngine:
                 'volume': candle_data['volume']
             }
             
-            if candle_data.get('is_closed', False):
+            is_closed = candle_data.get('is_closed', False)
+            
+            if is_closed:
                 self.candles_deque.append(candle)
             else:
                 if len(self.candles_deque) > 0:
@@ -460,7 +538,13 @@ class RealtimeStrategyEngine:
             self.state['price'] = candle['close']
             self.state['msgs_processed'] += 1
             
-            df = pd.DataFrame(list(self.candles_deque))
+            if not is_closed or len(self.candles_deque) < 50:
+                self.state['latency_ms'] = int((datetime.now() - start_time).total_seconds() * 1000)
+                return
+            
+            candles_list = list(self.candles_deque)
+            window_size = min(self.processing_window, len(candles_list))
+            df = pd.DataFrame(candles_list[-window_size:])
             
             signals = await self.apply_strategies_parallel(df)
             
@@ -473,8 +557,12 @@ class RealtimeStrategyEngine:
             
             if confluence['action'] == 'BUY':
                 self.state['label_emoji'] = '↑ BUY'
+                self.state['buy_signals'] += 1
+                self.state['total_signals'] += 1
             elif confluence['action'] == 'SELL':
                 self.state['label_emoji'] = '↓ SELL'
+                self.state['sell_signals'] += 1
+                self.state['total_signals'] += 1
             else:
                 self.state['label_emoji'] = '• HOLD'
             
@@ -485,7 +573,10 @@ class RealtimeStrategyEngine:
                 self.state['last_state_price'] = self.state['price']
             
             end_time = datetime.now()
-            self.state['latency_ms'] = int((end_time - start_time).total_seconds() * 1000)
+            latency = int((end_time - start_time).total_seconds() * 1000)
+            self.state['latency_ms'] = latency
+            self.state['total_latency'] += latency
+            self.state['latency_count'] += 1
             self.state['last_update'] = datetime.now()
             
         except Exception as e:
@@ -507,6 +598,7 @@ class RealtimeStrategyEngine:
         
         layout.split_column(
             Layout(name="header", size=3),
+            Layout(name="metrics", size=2),
             Layout(name="body"),
             Layout(name="footer", size=6)
         )
@@ -531,6 +623,23 @@ class RealtimeStrategyEngine:
         )
         
         layout["header"].update(Panel(header_table, title="🔴 LIVE STREAMING", border_style="red"))
+        
+        avg_latency = int(self.state['total_latency'] / self.state['latency_count']) if self.state['latency_count'] > 0 else 0
+        
+        metrics_table = Table.grid(expand=True)
+        metrics_table.add_column(justify="center")
+        metrics_table.add_column(justify="center")
+        metrics_table.add_column(justify="center")
+        metrics_table.add_column(justify="center")
+        
+        metrics_table.add_row(
+            f"[bold yellow]Latência Média:[/bold yellow] {avg_latency}ms",
+            f"[bold cyan]Total Sinais:[/bold cyan] {self.state['total_signals']}",
+            f"[bold green]BUY:[/bold green] {self.state['buy_signals']}",
+            f"[bold red]SELL:[/bold red] {self.state['sell_signals']}"
+        )
+        
+        layout["metrics"].update(Panel(metrics_table, title="📈 Métricas de Performance", border_style="yellow"))
         
         layout["body"].split_row(
             Layout(name="price", ratio=1),

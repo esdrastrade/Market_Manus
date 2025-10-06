@@ -818,22 +818,45 @@ class ConfluenceModeModule:
         
         # Aplicar filtro de volume
         print("\n🔍 Aplicando filtro de volume...")
-        volumes = pd.Series([float(k[5]) for k in klines])
         
-        # Exibir estatísticas do filtro antes de aplicar (opcional)
-        self.volume_pipeline.volume_filter.display_filter_stats(volumes)
+        # Extrair volumes com validação
+        volumes_raw = []
+        for k in klines:
+            try:
+                vol = float(k[5]) if len(k) > 5 and k[5] else 0.0
+                volumes_raw.append(vol)
+            except (ValueError, IndexError, TypeError):
+                volumes_raw.append(0.0)
         
-        # Resetar estatísticas antes de aplicar
-        self.volume_pipeline.reset_stats()
+        volumes = pd.Series(volumes_raw)
         
-        # Aplicar filtro aos sinais de todas as estratégias
-        filtered_strategy_signals = self.volume_pipeline.apply_to_strategy_signals(
-            strategy_signals,
-            volumes
-        )
-        
-        # Exibir resumo do filtro
-        print(f"\n{self.volume_pipeline.get_stats_summary()}")
+        # Validar se temos dados de volume válidos
+        if volumes.sum() == 0:
+            print("⚠️  AVISO: Dados de volume zerados ou ausentes!")
+            print("   O filtro de volume será desabilitado para este backtest.")
+            print("   Dica: Verifique se o provider suporta dados de volume históricos.\n")
+            
+            # Pular filtro de volume e usar sinais originais
+            filtered_strategy_signals = strategy_signals
+            
+            # Exibir resumo indicando que filtro foi desabilitado
+            print("\n📊 Filtro de Volume: DESABILITADO")
+            print("   Usando todos os sinais originais sem filtragem de volume.\n")
+        else:
+            # Exibir estatísticas do filtro antes de aplicar
+            self.volume_pipeline.volume_filter.display_filter_stats(volumes)
+            
+            # Resetar estatísticas antes de aplicar
+            self.volume_pipeline.reset_stats()
+            
+            # Aplicar filtro aos sinais de todas as estratégias
+            filtered_strategy_signals = self.volume_pipeline.apply_to_strategy_signals(
+                strategy_signals,
+                volumes
+            )
+            
+            # Exibir resumo do filtro
+            print(f"\n{self.volume_pipeline.get_stats_summary()}")
         
         # Calcular confluência baseado no modo (NOVO: retorna lista de índices)
         confluence_signal_indices = self._calculate_confluence_signals(filtered_strategy_signals)

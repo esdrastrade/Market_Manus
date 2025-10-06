@@ -1,0 +1,77 @@
+PS C:\Users\Esdras\scalping-trading-system> # 1. Adicionar ao PATH temporariamente
+PS C:\Users\Esdras\scalping-trading-system> $env:PATH += ";C:\Users\Esdras\AppData\Roaming\Python\Python313\Scripts"
+PS C:\Users\Esdras\scalping-trading-system>
+PS C:\Users\Esdras\scalping-trading-system> # 2. Executar filter-repo para CADA branch
+PS C:\Users\Esdras\scalping-trading-system> git checkout main
+D       attached_assets/_1759329317438.env
+  (use "git push" to publish your local commits)
+NOTICE: Removing 'origin' remote; see 'Why is my origin removed?'
+        in the manual if you want to push back there.
+        (was https://github.com/esdrastrade/Market_Manus)
+Parsed 142 commits
+New history written in 0.82 seconds; now repacking/cleaning...
+Repacking your repo and cleaning out old unneeded objects
+HEAD is now at 82d1077 versão de 04/10/2025
+Enumerating objects: 743, done.
+Counting objects: 100% (743/743), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (535/535), done.
+Removing duplicate objects: 100% (256/256), done.
+PS C:\Users\Esdras\scalping-trading-system>
+PS C:\Users\Esdras\scalping-trading-system> git checkout backup-before-cleanup
+Switched to branch 'backup-before-cleanup'
+PS C:\Users\Esdras\scalping-trading-system> git filter-repo --invert-paths --path attached_assets/_1759329317438.env --force
+Parsed 142 commits
+New history written in 0.65 seconds; now repacking/cleaning...
+Repacking your repo and cleaning out old unneeded objects
+HEAD is now at 850e41b feat: Interface CLI linha de produção para backtesting
+Enumerating objects: 743, done.
+Counting objects: 100% (743/743), done.
+Delta compression using up to 2 threads
+Switched to branch 'backup-before-restructure'
+PS C:\Users\Esdras\scalping-trading-system> git filter-repo --invert-paths --path attached_assets/_1759329317438.env --force
+Parsed 142 commits
+New history written in 0.79 seconds; now repacking/cleaning...
+Repacking your repo and cleaning out old unneeded objects
+HEAD is now at 8d1417c sua mensagem
+Enumerating objects: 743, done.
+Counting objects: 100% (743/743), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (440/440), done.
+Writing objects: 100% (743/743), done.
+Total 743 (delta 290), reused 743 (delta 290), pack-reused 0 (from 0)
+Completely finished after 2.70 seconds.
+PS C:\Users\Esdras\scalping-trading-system>
+PS C:\Users\Esdras\scalping-trading-system> git checkout replit-agent
+Switched to branch 'replit-agent'
+PS C:\Users\Esdras\scalping-trading-system> git filter-repo --invert-paths --path attached_assets/_1759329317438.env --force
+Parsed 142 commits
+New history written in 0.63 seconds; now repacking/cleaning...
+Repacking your repo and cleaning out old unneeded objects
+HEAD is now at 2f297fc Update menu options to remove real-time confluence feature
+Enumerating objects: 743, done.
+Counting objects: 100% (743/743), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (440/440), done.
+Writing objects: 100% (743/743), done.
+Total 743 (delta 290), reused 743 (delta 290), pack-reused 0 (from 0)
+Completely finished after 2.24 seconds.
+PS C:\Users\Esdras\scalping-trading-system>
+PS C:\Users\Esdras\scalping-trading-system> # 3. Re-adicionar remote
+PS C:\Users\Esdras\scalping-trading-system> git remote add origin https://github.com/esdrastrade/Market_Manus.git
+PS C:\Users\Esdras\scalping-trading-system>
+PS C:\Users\Esdras\scalping-trading-system> # 4. Push todos os branches
+PS C:\Users\Esdras\scalping-trading-system> git push origin --force --all
+Enumerating objects: 742, done.
+Counting objects: 100% (742/742), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (439/439), done.
+Writing objects: 100% (742/742), 10.70 MiB | 2.28 MiB/s, done.
+Total 742 (delta 290), reused 742 (delta 290), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (290/290), done.
+To https://github.com/esdrastrade/Market_Manus.git
+ + 4696ac3...82d1077 main -> main (forced update)
+ * [new branch]      backup-before-cleanup -> backup-before-cleanup
+ * [new branch]      backup-before-restructure -> backup-before-restructure
+ * [new branch]      replit-agent -> replit-agent
+PS C:\Users\Esdras\scalping-trading-system>

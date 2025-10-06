@@ -1,0 +1,2308 @@
+PS C:\Users\Esdras> cd scalping-trading-system
+PS C:\Users\Esdras\scalping-trading-system> python main.py
+
+================================================================================
+     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V6.0
+================================================================================
+🎯 Sistema modular com Strategy Lab V6 e Confluence Lab
+📊 13 estratégias (8 clássicas + 5 SMC)
+   • Clássicas: RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci
+   • SMC: BOS, CHoCH, Order Blocks, FVG, Liquidity Sweep
+📅 Seleção de período personalizado
+💰 Capital management automático
+🔗 Data Provider: Binance API
+================================================================================
+
+🔄 INICIALIZANDO SISTEMA...
+✅ Data Provider: Conectado
+✅ Capital Manager: Inicializado ($100.00)
+✅ Strategy Lab V6: Carregado (13 estratégias: 8 clássicas + 5 SMC)
+✅ Confluence Lab: Carregado
+✅ OpenAI API: Configurada
+
+📖 Pressione ENTER para continuar...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+📚 DOCUMENTAÇÃO:
+   8️⃣  Explanations (Explicações das Estratégias)
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 3
+
+🎯 INICIANDO CONFLUENCE MODE...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ❌ Não selecionado
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 1
+
+🪙 SELEÇÃO DE ATIVO
+==================================================
+   1️⃣     🪙 BTCUSDT - Bitcoin
+   2️⃣     💎 ETHUSDT - Ethereum
+   3️⃣     🟡 BNBUSDT - Binance Coin
+   4️⃣     ⚡ SOLUSDT - Solana
+   5️⃣     💧 XRPUSDT - XRP
+   6️⃣     🔵 ADAUSDT - Cardano
+   7️⃣     🐕 DOGEUSDT - Dogecoin
+   8️⃣     🟣 MATICUSDT - Polygon
+
+   0️⃣  Voltar
+
+🔢 Escolha um ativo (0-8): 1
+
+✅ Ativo selecionado: 🪙 BTCUSDT - Bitcoin
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ❌ Não selecionado
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 2
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣     15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 3
+
+✅ Timeframe selecionado: 15 minutos - Swing trading curto
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ❌ Nenhuma selecionada
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣     📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣     🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣     🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣     📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣     ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣     🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 5,9,10,11,12,13
+
+✅ Estratégias selecionadas:
+   📈 Stochastic Oscillator
+   🔥 SMC: Break of Structure
+   🔄 SMC: Change of Character
+   📦 SMC: Order Blocks
+   ⚡ SMC: Fair Value Gap
+   🎣 SMC: Liquidity Sweep
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 5
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2015-08-01
+✅ Data inicial: 2015-08-01
+
+📅 Data final (YYYY-MM-DD): 20
+❌ Formato de data inválido, usando padrão
+
+📅 Usando período padrão (últimos 30 dias)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: Padrão (últimos 30 dias)
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 5
+
+📅 PERÍODO PERSONALIZADO
+==================================================
+🔧 Configure o período para backtesting:
+   📅 Data inicial (formato: YYYY-MM-DD)
+   📅 Data final (formato: YYYY-MM-DD)
+   💡 Deixe em branco para usar período padrão (últimos 30 dias)
+
+📅 Data inicial (YYYY-MM-DD): 2025-08-01
+✅ Data inicial: 2025-08-01
+
+📅 Data final (YYYY-MM-DD): 2025-10-03
+✅ Data final: 2025-10-03
+
+✅ Período personalizado configurado:
+   📅 De: 2025-08-01
+   📅 Até: 2025-10-03
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ❌ Não selecionado
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣     ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 1
+
+✅ Modo selecionado: 🎯 ALL (Todas as estratégias)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ALL (Todas as estratégias)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 15 minutos
+   📈 Estratégias: 6 selecionadas
+   🎯 Modo: ALL (Todas as estratégias)
+   📅 Período: 2025-08-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~6048 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-08-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-08-06 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-08-11 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-08-16 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-08-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2025-08-27 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2025-09-01 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2025-09-06 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2025-09-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2025-09-16 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2025-09-22 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2025-09-27 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 48 candles a partir de 2025-10-02 12:00...
+   ✅ Recebidos 48 candles (total acumulado: 6048)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 6,048
+📅 Período: 2025-08-01 00:00:00 → 2025-10-02 23:45:00
+✅ API Success Rate: 100.0% (13/13 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 6 estratégias sobre 6,048 candles...
+  [6/6] 🎣 SMC: Liquidity Sweep • 128 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 36288/36288 work units •  0:04:42 • 0:00:00
+
+🔍 Aplicando filtro de volume...
+
+============================================================
+📊 ANÁLISE DE VOLUME - FILTRO CONFIGURADO
+============================================================
+
+📈 Distribuição de Volume:
+   Média: 0
+   Desvio Padrão: 1
+
+📉 Distribuição de Z-Score:
+   Média: 0.03
+   25º Percentil: -0.48
+   50º Percentil: -0.32
+   75º Percentil: 0.00
+
+⚙️ Configuração do Filtro:
+   Threshold Rejeição: 0.5
+   Threshold Amplificação: 1.5
+   Fator de Amplificação: 1.3x
+
+🎯 Impacto Estimado:
+   Candles com volume BAIXO: 5165 (85.4%)
+   Candles com volume ALTO: 463 (7.7%)
+   Candles com volume NORMAL: 420
+============================================================
+
+📊 Filtro de Volume:
+   Total: 17134 sinais
+   ❌ Rejeitados: 14465 (84.4%)
+   📈 Amplificados: 1416 (8.3%)
+   ✅ Normais: 1253 (7.3%)
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.00
+   📈 P&L: $+0.00
+   📊 ROI: +0.00%
+   🎯 Sinais de confluência: 0
+   ✅ Trades vencedores: 0
+   ❌ Trades perdedores: 0
+   📊 Win Rate: 0.0%
+
+📈 DETALHES POR ESTRATÉGIA (APÓS FILTRO DE VOLUME):
+   Stochastic Oscillator: 421 sinais (original: 2661, peso: 1.0)
+   SMC: Break of Structure: 161 sinais (original: 374, peso: 1.0)
+   SMC: Change of Character: 380 sinais (original: 2359, peso: 1.0)
+   SMC: Order Blocks: 0 sinais (original: 0, peso: 1.0)
+   SMC: Fair Value Gap: 845 sinais (original: 5847, peso: 1.0)
+   SMC: Liquidity Sweep: 862 sinais (original: 5893, peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.00
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ALL (Todas as estratégias)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 8
+
+📊 VISUALIZAR RESULTADOS
+==================================================
+📈 1 teste(s) no histórico:
+   1. confluence_backtest - BTCUSDT - ALL
+      📊 ROI: +0.00% | Win Rate: 0.0%
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ALL (Todas as estratégias)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣  ✅ 🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣     ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 2
+
+✅ Modo selecionado: ⚡ ANY (Qualquer estratégia)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 15 minutos
+   📈 Estratégias: 6 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~6048 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-08-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-08-06 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-08-11 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-08-16 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-08-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2025-08-27 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2025-09-01 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2025-09-06 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2025-09-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2025-09-16 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2025-09-22 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2025-09-27 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 48 candles a partir de 2025-10-02 12:00...
+   ✅ Recebidos 48 candles (total acumulado: 6048)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 6,048
+📅 Período: 2025-08-01 00:00:00 → 2025-10-02 23:45:00
+✅ API Success Rate: 100.0% (13/13 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 6 estratégias sobre 6,048 candles...
+  [6/6] 🎣 SMC: Liquidity Sweep • 129 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 36288/36288 work units •  0:04:41 • 0:00:00
+
+🔍 Aplicando filtro de volume...
+
+============================================================
+📊 ANÁLISE DE VOLUME - FILTRO CONFIGURADO
+============================================================
+
+📈 Distribuição de Volume:
+   Média: 0
+   Desvio Padrão: 1
+
+📉 Distribuição de Z-Score:
+   Média: 0.03
+   25º Percentil: -0.48
+   50º Percentil: -0.32
+   75º Percentil: 0.00
+
+⚙️ Configuração do Filtro:
+   Threshold Rejeição: 0.5
+   Threshold Amplificação: 1.5
+   Fator de Amplificação: 1.3x
+
+🎯 Impacto Estimado:
+   Candles com volume BAIXO: 5165 (85.4%)
+   Candles com volume ALTO: 463 (7.7%)
+   Candles com volume NORMAL: 420
+============================================================
+
+📊 Filtro de Volume:
+   Total: 17134 sinais
+   ❌ Rejeitados: 14465 (84.4%)
+   📈 Amplificados: 1416 (8.3%)
+   ✅ Normais: 1253 (7.3%)
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.08
+   📈 P&L: $+0.08
+   📊 ROI: +0.08%
+   🎯 Sinais de confluência: 878
+   ✅ Trades vencedores: 68
+   ❌ Trades perdedores: 100
+   📊 Win Rate: 40.5%
+
+📈 DETALHES POR ESTRATÉGIA (APÓS FILTRO DE VOLUME):
+   Stochastic Oscillator: 421 sinais (original: 2661, peso: 1.0)
+   SMC: Break of Structure: 161 sinais (original: 374, peso: 1.0)
+   SMC: Change of Character: 380 sinais (original: 2359, peso: 1.0)
+   SMC: Order Blocks: 0 sinais (original: 0, peso: 1.0)
+   SMC: Fair Value Gap: 845 sinais (original: 5847, peso: 1.0)
+   SMC: Liquidity Sweep: 862 sinais (original: 5893, peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.08
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 0
+
+👋 Saindo do Confluence Lab...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+📚 DOCUMENTAÇÃO:
+   8️⃣  Explanations (Explicações das Estratégias)
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 3
+
+🎯 INICIANDO CONFLUENCE MODE...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 8
+
+📊 VISUALIZAR RESULTADOS
+==================================================
+📈 2 teste(s) no histórico:
+   1. confluence_backtest - BTCUSDT - ALL
+      📊 ROI: +0.00% | Win Rate: 0.0%
+   2. confluence_backtest - BTCUSDT - ANY
+      📊 ROI: +0.08% | Win Rate: 40.5%
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 4
+
+🎯 MODO DE CONFLUÊNCIA
+==================================================
+   1️⃣     🎯 ALL (Todas as estratégias)
+       📝 Sinal apenas quando TODAS as estratégias concordam
+   2️⃣  ✅ ⚡ ANY (Qualquer estratégia)
+       📝 Sinal quando QUALQUER estratégia gera sinal
+   3️⃣     🗳️ MAJORITY (Maioria)
+       📝 Sinal quando a MAIORIA das estratégias concorda
+   4️⃣     ⚖️ WEIGHTED (Ponderado)
+       📝 Sinal baseado em pesos das estratégias
+
+   0️⃣  Voltar
+
+🔢 Escolha um modo (0-4): 0
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 8
+
+📊 VISUALIZAR RESULTADOS
+==================================================
+📈 2 teste(s) no histórico:
+   1. confluence_backtest - BTCUSDT - ALL
+      📊 ROI: +0.00% | Win Rate: 0.0%
+   2. confluence_backtest - BTCUSDT - ANY
+      📊 ROI: +0.08% | Win Rate: 40.5%
+
+📖 Pressione ENTER para continuar...2
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9):
+❌ Opção inválida
+
+📖 Pressione ENTER para continuar...8
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 8
+
+📊 VISUALIZAR RESULTADOS
+==================================================
+📈 2 teste(s) no histórico:
+   1. confluence_backtest - BTCUSDT - ALL
+      📊 ROI: +0.00% | Win Rate: 0.0%
+   2. confluence_backtest - BTCUSDT - ANY
+      📊 ROI: +0.08% | Win Rate: 40.5%
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣  ✅ 📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣  ✅ 🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣  ✅ 🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣  ✅ 📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣  ✅ ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣  ✅ 🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 0
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 0
+
+👋 Saindo do Confluence Lab...
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+📚 DOCUMENTAÇÃO:
+   8️⃣  Explanations (Explicações das Estratégias)
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 8
+
+======================================================================
+📚 MENU DE EXPLICAÇÕES DAS ESTRATÉGIAS
+======================================================================
+
+1️⃣  Listar todas as estratégias
+2️⃣  Ver explicação detalhada de uma estratégia
+3️⃣  Gerar/Atualizar arquivos markdown
+0️⃣  Voltar
+
+🔢 Escolha uma opção (0-3): 2
+
+======================================================================
+📚 ESTRATÉGIAS DISPONÍVEIS (13 total)
+======================================================================
+
+📊 CLÁSSICAS (8):
+   📊 rsi_mean_reversion        - RSI Mean Reversion
+   📈 ema_crossover             - EMA Crossover
+   🎯 bollinger_breakout        - Bollinger Bands Breakout
+   📊 macd                      - MACD
+   📈 stochastic                - Stochastic Oscillator
+   📉 williams_r                - Williams %R
+   🎯 adx                       - ADX (Average Directional Index)
+   🔢 fibonacci                 - Fibonacci Retracement
+
+🔥 SMART MONEY CONCEPTS (5):
+   🔥 smc_bos                   - SMC: Break of Structure
+   🔄 smc_choch                 - SMC: Change of Character
+   📦 smc_order_blocks          - SMC: Order Blocks
+   ⚡ smc_fvg                   - SMC: Fair Value Gap
+   🎣 smc_liquidity_sweep       - SMC: Liquidity Sweep
+======================================================================
+
+💡 Digite o nome da estratégia (ex: rsi_mean_reversion): williams_r
+
+======================================================================
+📉 Williams %R
+======================================================================
+
+Tipo: Oscillator
+
+Oscilador de momentum medindo distância do preço em relação ao high/low
+
+
+Identifica condições extremas de mercado:
+- %R < -80: Oversold → BUY esperado
+- %R > -20: Overbought → SELL esperado
+
+
+Triggers:
+  • BUY: %R cruza acima de -80 (saindo de oversold)
+  • SELL: %R cruza abaixo de -20 (saindo de overbought)
+  • Confidence: Velocidade da mudança
+
+Parâmetros:
+  • period: 14 (lookback)
+  • oversold: -80
+  • overbought: -20
+
+✅ Melhor para: Identificar reversões, complementar outras estratégias
+❌ Evitar: Usar isoladamente em tendências
+======================================================================
+
+📖 Pressione ENTER para continuar...
+
+======================================================================
+📚 MENU DE EXPLICAÇÕES DAS ESTRATÉGIAS
+======================================================================
+
+1️⃣  Listar todas as estratégias
+2️⃣  Ver explicação detalhada de uma estratégia
+3️⃣  Gerar/Atualizar arquivos markdown
+0️⃣  Voltar
+
+🔢 Escolha uma opção (0-3): 0
+
+🎯 MARKET MANUS - MENU PRINCIPAL V6
+============================================================
+💰 RESUMO FINANCEIRO:
+   💵 Capital atual: $100.00
+   📊 Position size: $2.00
+   📈 P&L total: $+0.00
+   🎯 Total trades: 0 | Win Rate: 0.0%
+   🌐 Status API: 🟢 Online
+
+🧭 ANÁLISE DE MERCADO:
+   1️⃣  Market Sentiment Analysis
+
+🎯 MÓDULOS PRINCIPAIS:
+   2️⃣  Strategy Lab Professional V6 (13 estratégias: 8 clássicas + 5 SMC)
+   3️⃣  Confluence Lab (Sistema de confluência)
+
+🤖 RECURSOS AVANÇADOS:
+   4️⃣  Assistente IA (Semantic Kernel)
+
+⚙️ CONFIGURAÇÕES:
+   5️⃣  Capital Dashboard
+   6️⃣  Connectivity Status
+   7️⃣  Settings
+
+📚 DOCUMENTAÇÃO:
+   8️⃣  Explanations (Explicações das Estratégias)
+
+   0️⃣  Sair do sistema
+
+🔢 Escolha uma opção (0-8): 3
+
+🎯 INICIANDO CONFLUENCE MODE...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣  ✅ 📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣  ✅ 🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣  ✅ 🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣  ✅ 📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣  ✅ ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣  ✅ 🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 5,8
+
+✅ Estratégias selecionadas:
+   📈 Stochastic Oscillator
+   🔢 Fibonacci Retracement
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 2 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 15 minutos
+   📈 Estratégias: 2 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~6048 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-08-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-08-06 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-08-11 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-08-16 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-08-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2025-08-27 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2025-09-01 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2025-09-06 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2025-09-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2025-09-16 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2025-09-22 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2025-09-27 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 48 candles a partir de 2025-10-02 12:00...
+   ✅ Recebidos 48 candles (total acumulado: 6048)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 6,048
+📅 Período: 2025-08-01 00:00:00 → 2025-10-02 23:45:00
+✅ API Success Rate: 100.0% (13/13 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 2 estratégias sobre 6,048 candles...
+  [2/2] 🔢 Fibonacci Retracement • 194025 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 12096/12096 work units •  0:00:00 • 0:00:00
+
+🔍 Aplicando filtro de volume...
+
+============================================================
+📊 ANÁLISE DE VOLUME - FILTRO CONFIGURADO
+============================================================
+
+📈 Distribuição de Volume:
+   Média: 0
+   Desvio Padrão: 1
+
+📉 Distribuição de Z-Score:
+   Média: 0.03
+   25º Percentil: -0.48
+   50º Percentil: -0.32
+   75º Percentil: 0.00
+
+⚙️ Configuração do Filtro:
+   Threshold Rejeição: 0.5
+   Threshold Amplificação: 1.5
+   Fator de Amplificação: 1.3x
+
+🎯 Impacto Estimado:
+   Candles com volume BAIXO: 5165 (85.4%)
+   Candles com volume ALTO: 463 (7.7%)
+   Candles com volume NORMAL: 420
+============================================================
+
+📊 Filtro de Volume:
+   Total: 2963 sinais
+   ❌ Rejeitados: 2485 (83.9%)
+   📈 Amplificados: 264 (8.9%)
+   ✅ Normais: 214 (7.2%)
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.17
+   📈 P&L: $+0.17
+   📊 ROI: +0.17%
+   🎯 Sinais de confluência: 449
+   ✅ Trades vencedores: 61
+   ❌ Trades perdedores: 83
+   📊 Win Rate: 42.4%
+
+📈 DETALHES POR ESTRATÉGIA (APÓS FILTRO DE VOLUME):
+   Stochastic Oscillator: 421 sinais (original: 2661, peso: 1.0)
+   Fibonacci Retracement: 57 sinais (original: 302, peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.17
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 2 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣     🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣  ✅ 📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣  ✅ 🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣     🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣     🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣     📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣     ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣     🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 3,5,10,12
+
+✅ Estratégias selecionadas:
+   🎯 Bollinger Bands Breakout
+   📈 Stochastic Oscillator
+   🔄 SMC: Change of Character
+   ⚡ SMC: Fair Value Gap
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 15 minutos
+   📈 Estratégias: 4 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~6048 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-08-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-08-06 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-08-11 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-08-16 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-08-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2025-08-27 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2025-09-01 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2025-09-06 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2025-09-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2025-09-16 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2025-09-22 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2025-09-27 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 48 candles a partir de 2025-10-02 12:00...
+   ✅ Recebidos 48 candles (total acumulado: 6048)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 6,048
+📅 Período: 2025-08-01 00:00:00 → 2025-10-02 23:45:00
+✅ API Success Rate: 100.0% (13/13 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 4 estratégias sobre 6,048 candles...
+  [4/4] ⚡ SMC: Fair Value Gap • 130 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 24192/24192 work units •  0:03:05 • 0:00:00
+
+🔍 Aplicando filtro de volume...
+
+============================================================
+📊 ANÁLISE DE VOLUME - FILTRO CONFIGURADO
+============================================================
+
+📈 Distribuição de Volume:
+   Média: 0
+   Desvio Padrão: 1
+
+📉 Distribuição de Z-Score:
+   Média: 0.03
+   25º Percentil: -0.48
+   50º Percentil: -0.32
+   75º Percentil: 0.00
+
+⚙️ Configuração do Filtro:
+   Threshold Rejeição: 0.5
+   Threshold Amplificação: 1.5
+   Fator de Amplificação: 1.3x
+
+🎯 Impacto Estimado:
+   Candles com volume BAIXO: 5165 (85.4%)
+   Candles com volume ALTO: 463 (7.7%)
+   Candles com volume NORMAL: 420
+============================================================
+
+📊 Filtro de Volume:
+   Total: 11500 sinais
+   ❌ Rejeitados: 9646 (83.9%)
+   📈 Amplificados: 1006 (8.7%)
+   ✅ Normais: 848 (7.4%)
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.08
+   📈 P&L: $+0.08
+   📊 ROI: +0.08%
+   🎯 Sinais de confluência: 867
+   ✅ Trades vencedores: 68
+   ❌ Trades perdedores: 100
+   📊 Win Rate: 40.5%
+
+📈 DETALHES POR ESTRATÉGIA (APÓS FILTRO DE VOLUME):
+   Bollinger Bands Breakout: 208 sinais (original: 633, peso: 1.0)
+   Stochastic Oscillator: 421 sinais (original: 2661, peso: 1.0)
+   SMC: Change of Character: 380 sinais (original: 2359, peso: 1.0)
+   SMC: Fair Value Gap: 845 sinais (original: 5847, peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.08
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 4 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 3
+
+📈 SELEÇÃO DE ESTRATÉGIAS
+==================================================
+💡 Selecione múltiplas estratégias para confluência
+   Digite os números separados por vírgula (ex: 1,3,5)
+   1️⃣     📊 RSI Mean Reversion
+       📝 Reversão à média baseada no RSI
+   2️⃣     📈 EMA Crossover
+       📝 Cruzamento de médias móveis exponenciais
+   3️⃣  ✅ 🎯 Bollinger Bands Breakout
+       📝 Rompimento das Bandas de Bollinger
+   4️⃣     📊 MACD
+       📝 Moving Average Convergence Divergence
+   5️⃣  ✅ 📈 Stochastic Oscillator
+       📝 Oscilador Estocástico
+   6️⃣     📉 Williams %R
+       📝 Williams Percent Range
+   7️⃣     🎯 ADX
+       📝 Average Directional Index
+   8️⃣     🔢 Fibonacci Retracement
+       📝 Níveis de Fibonacci
+   9️⃣     🔥 SMC: Break of Structure
+       📝 Continuação de tendência após rompimento de swing high/low
+   10️⃣  ✅ 🔄 SMC: Change of Character
+       📝 Reversão quando sequência de topos/fundos muda
+   11️⃣     📦 SMC: Order Blocks
+       📝 Última vela de acumulação antes do rompimento
+   12️⃣  ✅ ⚡ SMC: Fair Value Gap
+       📝 Gap entre corpos/sombras indicando imbalance
+   13️⃣     🎣 SMC: Liquidity Sweep
+       📝 Pavio que varre liquidez indicando trap
+
+   0️⃣  Voltar
+
+🔢 Escolha estratégias (ex: 1,3,5 ou 0): 8,9,10,11,12,13
+
+✅ Estratégias selecionadas:
+   🔢 Fibonacci Retracement
+   🔥 SMC: Break of Structure
+   🔄 SMC: Change of Character
+   📦 SMC: Order Blocks
+   ⚡ SMC: Fair Value Gap
+   🎣 SMC: Liquidity Sweep
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 15 minutos
+   📈 Estratégias: 6 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~6048 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-08-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-08-06 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-08-11 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-08-16 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-08-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2025-08-27 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2025-09-01 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2025-09-06 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2025-09-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2025-09-16 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2025-09-22 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2025-09-27 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 48 candles a partir de 2025-10-02 12:00...
+   ✅ Recebidos 48 candles (total acumulado: 6048)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 6,048
+📅 Período: 2025-08-01 00:00:00 → 2025-10-02 23:45:00
+✅ API Success Rate: 100.0% (13/13 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 6 estratégias sobre 6,048 candles...
+  [6/6] 🎣 SMC: Liquidity Sweep • 138 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 36288/36288 work units •  0:04:22 • 0:00:00
+
+🔍 Aplicando filtro de volume...
+
+============================================================
+📊 ANÁLISE DE VOLUME - FILTRO CONFIGURADO
+============================================================
+
+📈 Distribuição de Volume:
+   Média: 0
+   Desvio Padrão: 1
+
+📉 Distribuição de Z-Score:
+   Média: 0.03
+   25º Percentil: -0.48
+   50º Percentil: -0.32
+   75º Percentil: 0.00
+
+⚙️ Configuração do Filtro:
+   Threshold Rejeição: 0.5
+   Threshold Amplificação: 1.5
+   Fator de Amplificação: 1.3x
+
+🎯 Impacto Estimado:
+   Candles com volume BAIXO: 5165 (85.4%)
+   Candles com volume ALTO: 463 (7.7%)
+   Candles com volume NORMAL: 420
+============================================================
+
+📊 Filtro de Volume:
+   Total: 14775 sinais
+   ❌ Rejeitados: 12470 (84.4%)
+   📈 Amplificados: 1216 (8.2%)
+   ✅ Normais: 1089 (7.4%)
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $100.08
+   📈 P&L: $+0.08
+   📊 ROI: +0.08%
+   🎯 Sinais de confluência: 879
+   ✅ Trades vencedores: 68
+   ❌ Trades perdedores: 100
+   📊 Win Rate: 40.5%
+
+📈 DETALHES POR ESTRATÉGIA (APÓS FILTRO DE VOLUME):
+   Fibonacci Retracement: 57 sinais (original: 302, peso: 1.0)
+   SMC: Break of Structure: 161 sinais (original: 374, peso: 1.0)
+   SMC: Change of Character: 380 sinais (original: 2359, peso: 1.0)
+   SMC: Order Blocks: 0 sinais (original: 0, peso: 1.0)
+   SMC: Fair Value Gap: 845 sinais (original: 5847, peso: 1.0)
+   SMC: Liquidity Sweep: 862 sinais (original: 5893, peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $100.08
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 15 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 2
+
+⏰ SELEÇÃO DE TIMEFRAME
+==================================================
+   1️⃣     1 minuto - Scalping ultra-rápido
+   2️⃣     5 minutos - Scalping rápido
+   3️⃣  ✅ 15 minutos - Swing trading curto
+   4️⃣     30 minutos - Swing trading médio
+   5️⃣     1 hora - Swing trading longo
+   6️⃣     4 horas - Position trading
+   7️⃣     1 dia - Investimento longo prazo
+
+   0️⃣  Voltar
+
+🔢 Escolha um timeframe (0-7): 2
+
+✅ Timeframe selecionado: 5 minutos - Scalping rápido
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 6
+
+🔐 Validando credenciais da API...
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+🧪 EXECUTANDO BACKTEST DE CONFLUÊNCIA COM DADOS REAIS
+============================================================
+📊 Configuração do teste:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 5 minutos
+   📈 Estratégias: 6 selecionadas
+   🎯 Modo: ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+
+🔄 Buscando dados reais da Binance...
+   📊 Período requer ~18144 candles
+   📡 Batch 1: Buscando 500 candles a partir de 2025-08-01 00:00...
+   ✅ Recebidos 500 candles (total acumulado: 500)
+   📡 Batch 2: Buscando 500 candles a partir de 2025-08-02 17:40...
+   ✅ Recebidos 500 candles (total acumulado: 1000)
+   📡 Batch 3: Buscando 500 candles a partir de 2025-08-04 11:20...
+   ✅ Recebidos 500 candles (total acumulado: 1500)
+   📡 Batch 4: Buscando 500 candles a partir de 2025-08-06 05:00...
+   ✅ Recebidos 500 candles (total acumulado: 2000)
+   📡 Batch 5: Buscando 500 candles a partir de 2025-08-07 22:40...
+   ✅ Recebidos 500 candles (total acumulado: 2500)
+   📡 Batch 6: Buscando 500 candles a partir de 2025-08-09 16:20...
+   ✅ Recebidos 500 candles (total acumulado: 3000)
+   📡 Batch 7: Buscando 500 candles a partir de 2025-08-11 10:00...
+   ✅ Recebidos 500 candles (total acumulado: 3500)
+   📡 Batch 8: Buscando 500 candles a partir de 2025-08-13 03:40...
+   ✅ Recebidos 500 candles (total acumulado: 4000)
+   📡 Batch 9: Buscando 500 candles a partir de 2025-08-14 21:20...
+   ✅ Recebidos 500 candles (total acumulado: 4500)
+   📡 Batch 10: Buscando 500 candles a partir de 2025-08-16 15:00...
+   ✅ Recebidos 500 candles (total acumulado: 5000)
+   📡 Batch 11: Buscando 500 candles a partir de 2025-08-18 08:40...
+   ✅ Recebidos 500 candles (total acumulado: 5500)
+   📡 Batch 12: Buscando 500 candles a partir de 2025-08-20 02:20...
+   ✅ Recebidos 500 candles (total acumulado: 6000)
+   📡 Batch 13: Buscando 500 candles a partir de 2025-08-21 20:00...
+   ✅ Recebidos 500 candles (total acumulado: 6500)
+   📡 Batch 14: Buscando 500 candles a partir de 2025-08-23 13:40...
+   ✅ Recebidos 500 candles (total acumulado: 7000)
+   📡 Batch 15: Buscando 500 candles a partir de 2025-08-25 07:20...
+   ✅ Recebidos 500 candles (total acumulado: 7500)
+   📡 Batch 16: Buscando 500 candles a partir de 2025-08-27 01:00...
+   ✅ Recebidos 500 candles (total acumulado: 8000)
+   📡 Batch 17: Buscando 500 candles a partir de 2025-08-28 18:40...
+   ✅ Recebidos 500 candles (total acumulado: 8500)
+   📡 Batch 18: Buscando 500 candles a partir de 2025-08-30 12:20...
+   ✅ Recebidos 500 candles (total acumulado: 9000)
+   📡 Batch 19: Buscando 500 candles a partir de 2025-09-01 06:00...
+   ✅ Recebidos 500 candles (total acumulado: 9500)
+   📡 Batch 20: Buscando 500 candles a partir de 2025-09-02 23:40...
+   ✅ Recebidos 500 candles (total acumulado: 10000)
+   📡 Batch 21: Buscando 500 candles a partir de 2025-09-04 17:20...
+   ✅ Recebidos 500 candles (total acumulado: 10500)
+   📡 Batch 22: Buscando 500 candles a partir de 2025-09-06 11:00...
+   ✅ Recebidos 500 candles (total acumulado: 11000)
+   📡 Batch 23: Buscando 500 candles a partir de 2025-09-08 04:40...
+   ✅ Recebidos 500 candles (total acumulado: 11500)
+   📡 Batch 24: Buscando 500 candles a partir de 2025-09-09 22:20...
+   ✅ Recebidos 500 candles (total acumulado: 12000)
+   📡 Batch 25: Buscando 500 candles a partir de 2025-09-11 16:00...
+   ✅ Recebidos 500 candles (total acumulado: 12500)
+   📡 Batch 26: Buscando 500 candles a partir de 2025-09-13 09:40...
+   ✅ Recebidos 500 candles (total acumulado: 13000)
+   📡 Batch 27: Buscando 500 candles a partir de 2025-09-15 03:20...
+   ✅ Recebidos 500 candles (total acumulado: 13500)
+   📡 Batch 28: Buscando 500 candles a partir de 2025-09-16 21:00...
+   ✅ Recebidos 500 candles (total acumulado: 14000)
+   📡 Batch 29: Buscando 500 candles a partir de 2025-09-18 14:40...
+   ✅ Recebidos 500 candles (total acumulado: 14500)
+   📡 Batch 30: Buscando 500 candles a partir de 2025-09-20 08:20...
+   ✅ Recebidos 500 candles (total acumulado: 15000)
+   📡 Batch 31: Buscando 500 candles a partir de 2025-09-22 02:00...
+   ✅ Recebidos 500 candles (total acumulado: 15500)
+   📡 Batch 32: Buscando 500 candles a partir de 2025-09-23 19:40...
+   ✅ Recebidos 500 candles (total acumulado: 16000)
+   📡 Batch 33: Buscando 500 candles a partir de 2025-09-25 13:20...
+   ✅ Recebidos 500 candles (total acumulado: 16500)
+   📡 Batch 34: Buscando 500 candles a partir de 2025-09-27 07:00...
+   ✅ Recebidos 500 candles (total acumulado: 17000)
+   📡 Batch 35: Buscando 500 candles a partir de 2025-09-29 00:40...
+   ✅ Recebidos 500 candles (total acumulado: 17500)
+   📡 Batch 36: Buscando 500 candles a partir de 2025-09-30 18:20...
+   ✅ Recebidos 500 candles (total acumulado: 18000)
+   📡 Batch 37: Buscando 144 candles a partir de 2025-10-02 12:00...
+   ✅ Recebidos 144 candles (total acumulado: 18144)
+
+═══════════════════════════════════════════════════════════════
+📊 DADOS HISTÓRICOS CARREGADOS
+═══════════════════════════════════════════════════════════════
+📈 Total de Candles: 18,144
+📅 Período: 2025-08-01 00:00:00 → 2025-10-02 23:55:00
+✅ API Success Rate: 100.0% (37/37 batches bem-sucedidos)
+🔗 Fonte: BinanceDataProvider (dados reais)
+═══════════════════════════════════════════════════════════════
+
+📊 Executando 6 estratégias sobre 18,144 candles...
+  [6/6] 🎣 SMC: Liquidity Sweep • 107 units/s ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% • 108864/108864 work units •  0:17:00 • 0:00:00
+
+🔍 Aplicando filtro de volume...
+
+============================================================
+📊 ANÁLISE DE VOLUME - FILTRO CONFIGURADO
+============================================================
+
+📈 Distribuição de Volume:
+   Média: 0
+   Desvio Padrão: 0
+
+📉 Distribuição de Z-Score:
+   Média: 0.02
+   25º Percentil: -0.41
+   50º Percentil: -0.29
+   75º Percentil: -0.10
+
+⚙️ Configuração do Filtro:
+   Threshold Rejeição: 0.5
+   Threshold Amplificação: 1.5
+   Fator de Amplificação: 1.3x
+
+🎯 Impacto Estimado:
+   Candles com volume BAIXO: 15873 (87.5%)
+   Candles com volume ALTO: 1190 (6.6%)
+   Candles com volume NORMAL: 1081
+============================================================
+
+📊 Filtro de Volume:
+   Total: 45337 sinais
+   ❌ Rejeitados: 39336 (86.8%)
+   📈 Amplificados: 3205 (7.1%)
+   ✅ Normais: 2796 (6.2%)
+
+📊 RESULTADOS DO BACKTEST DE CONFLUÊNCIA:
+   💰 Capital inicial: $100.00
+   💵 Capital final: $99.93
+   📈 P&L: $-0.07
+   📊 ROI: -0.07%
+   🎯 Sinais de confluência: 2271
+   ✅ Trades vencedores: 177
+   ❌ Trades perdedores: 205
+   📊 Win Rate: 46.3%
+
+📈 DETALHES POR ESTRATÉGIA (APÓS FILTRO DE VOLUME):
+   Fibonacci Retracement: 116 sinais (original: 907, peso: 1.0)
+   SMC: Break of Structure: 403 sinais (original: 1192, peso: 1.0)
+   SMC: Change of Character: 940 sinais (original: 7052, peso: 1.0)
+   SMC: Order Blocks: 0 sinais (original: 0, peso: 1.0)
+   SMC: Fair Value Gap: 2271 sinais (original: 18092, peso: 1.0)
+   SMC: Liquidity Sweep: 2271 sinais (original: 18094, peso: 1.0)
+
+💰 Capital real permanece: $100.00
+   📊 Capital simulado (backtest): $99.93
+   ℹ️  (Backtest não altera capital real)
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal
+
+🔢 Escolha uma opção (0-9): 7
+
+🔴 TESTE EM TEMPO REAL - CONFLUÊNCIA
+================================================================================
+✅ Credenciais da API validadas com sucesso
+📊 Fonte de dados: BinanceDataProvider (API REAL)
+
+📋 CONFIGURAÇÃO DO TESTE:
+   🪙 Ativo: BTCUSDT
+   ⏰ Timeframe: 5 minutos (5m)
+   🎯 Modo Confluência: ANY (Qualquer estratégia)
+   📈 Estratégias (6):
+      🔢 Fibonacci Retracement
+      🔥 SMC: Break of Structure
+      🔄 SMC: Change of Character
+      📦 SMC: Order Blocks
+      ⚡ SMC: Fair Value Gap
+      🎣 SMC: Liquidity Sweep
+
+💡 INSTRUÇÕES:
+   • O teste rodará em tempo real com WebSocket
+   • Você verá sinais de confluência ao vivo
+   • Pressione Ctrl+C para parar o teste
+
+🚀 Iniciar teste em tempo real? (s/N): S
+
+🔄 Inicializando engine de tempo real...
+📡 Conectando ao WebSocket...
+
+🔴 TESTE EM EXECUÇÃO - Pressione Ctrl+C para parar
+
+
+🔍 Analisando contexto de mercado dos últimos 60 dias...
+
+======================================================================
+📊 ANÁLISE DE CONTEXTO DE MERCADO (ÚLTIMOS 60 DIAS)
+======================================================================
+
+🎯 Regime: 🔄 CORRECTION
+   Confiança: 100.0%
+   Período: 07/08/2025 → 06/10/2025
+
+📊 Métricas:
+   Força da Tendência (ADX): 0.0
+   Volatilidade (ATR%): 0.14%
+   Variação de Preço: +8.22%
+
+💡 Ajustes Recomendados de Estratégias:
+   📈 rsi_mean_reversion: 1.40x
+   📈 bollinger_breakout: 1.30x
+   📈 stochastic: 1.20x
+   📈 order_blocks: 1.20x
+   📈 fvg: 1.10x
+======================================================================
+📥 Carregando dados históricos para BTCUSDT...
+✅ 500 candles carregados
+
+🚀 Iniciando execução em tempo real...
+📊 Símbolo: BTCUSDT
+⏰ Intervalo: 5m
+🎯 Estratégias: fibonacci, bos, choch, order_blocks, fvg, liquidity_sweep
+🤝 Modo Confluência: ANY
+
+⏹️  Pressione Ctrl+C para parar
+
+⚠️  WebSocket desconectado: sent 1011 (internal error) keepalive ping timeout; no close frame received. Reconectando em 1.2s...
+⚠️  WebSocket desconectado: no close frame received or sent. Reconectando em 1.1s...
+╭─────────────────────────────────────────────────────────────── 🔴 LIVE STREAMING ────────────────────────────────────────────────────────────────╮
+│ Exchange: Binance.US                                     Symbol: BTCUSDT                       TF: 5m                             Latency: 648ms │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─────────────── 💰 Preço Atual ────────────────╮╭───────────────────────────────────── 🎯 Confluência (ANY) ──────────────────────────────────────╮
+│ $125,447.99                                   ││ ┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│ +$1,575.72 desde mudança                      ││ ┃ Sinal            ┃    Conf.    ┃ Estratégias                                                ┃ │
+│                                               ││ ┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩ │
+│                                               ││ │ ↑ BUY            │    1.00     │ choch (1.00), order_blocks (0.60), fvg (1.00)              │ │
+│                                               ││ └──────────────────┴─────────────┴────────────────────────────────────────────────────────────┘ │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+│                                               ││                                                                                                 │
+╰───────────────────────────────────────────────╯╰─────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────────────────────────────────── 📊 Estratégias Individuais ───────────────────────────────────────────────────────────╮
+│ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃ Estratégia                                                      ┃                Sinal                 ┃                Conf.                ┃ │
+│ ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩ │
+│ │ Bos                                                             │               ⚪ HOLD                │                0.00                 │ │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
+⏸️  Teste interrompido pelo usuário
+✅ Engine parado gracefully
+
+📖 Pressione ENTER para continuar...
+
+================================================================================
+🎯 CONFLUENCE MODE - SISTEMA DE CONFLUÊNCIA
+================================================================================
+📊 CONFIGURAÇÃO ATUAL:
+   🪙 Ativo: ✅ BTCUSDT
+   ⏰ Timeframe: ✅ 5 minutos
+   📈 Estratégias: ✅ 6 estratégias
+   🎯 Modo Confluência: ✅ ANY (Qualquer estratégia)
+   📅 Período: 2025-08-01 até 2025-10-03
+   💰 Capital: $100.00
+   💼 Position Size: $2.00
+
+🔧 CONFIGURAÇÃO:
+   1️⃣  Seleção de Ativo
+   2️⃣  Seleção de Timeframe
+   3️⃣  Seleção de Estratégias
+   4️⃣  Modo de Confluência
+   5️⃣  Período Personalizado
+
+🧪 TESTES:
+   6️⃣  Executar Backtest de Confluência
+   7️⃣  Teste em Tempo Real de Confluência
+
+📊 RESULTADOS:
+   8️⃣  Visualizar Resultados
+   9️⃣  Exportar Relatórios
+
+   0️⃣  Voltar ao Menu Principal

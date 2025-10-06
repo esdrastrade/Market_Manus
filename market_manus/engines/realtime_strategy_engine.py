@@ -44,7 +44,8 @@ class RealtimeStrategyEngine:
         interval: str,
         strategies: List[str],
         data_provider,
-        confluence_mode: str = "MAJORITY"
+        confluence_mode: str = "MAJORITY",
+        enable_audio_alerts: bool = False
     ):
         self.symbol = symbol
         self.interval = interval
@@ -60,6 +61,7 @@ class RealtimeStrategyEngine:
         self.strategies = [self.strategy_name_map.get(s, s) for s in strategies]
         self.data_provider = data_provider
         self.confluence_mode = confluence_mode
+        self.enable_audio_alerts = enable_audio_alerts
         
         self.ws_provider = None
         self.candles_deque = deque(maxlen=1000)
@@ -90,7 +92,8 @@ class RealtimeStrategyEngine:
             'latency_count': 0,
             'total_signals': 0,
             'buy_signals': 0,
-            'sell_signals': 0
+            'sell_signals': 0,
+            'is_strong_signal': False
         }
         
         self.strategy_functions = {
@@ -556,16 +559,24 @@ class RealtimeStrategyEngine:
             self.state['confidence'] = confluence['confidence']
             self.state['strategy_results'] = confluence['reasons']
             
+            is_strong_signal = confluence['confidence'] >= 0.8
+            
             if confluence['action'] == 'BUY':
                 self.state['label_emoji'] = '↑ BUY'
                 self.state['buy_signals'] += 1
                 self.state['total_signals'] += 1
+                if is_strong_signal and self.enable_audio_alerts:
+                    print("\a")
             elif confluence['action'] == 'SELL':
                 self.state['label_emoji'] = '↓ SELL'
                 self.state['sell_signals'] += 1
                 self.state['total_signals'] += 1
+                if is_strong_signal and self.enable_audio_alerts:
+                    print("\a")
             else:
                 self.state['label_emoji'] = '• HOLD'
+            
+            self.state['is_strong_signal'] = is_strong_signal
             
             if self.state['last_state_price'] > 0:
                 self.state['delta_since'] = self.state['price'] - self.state['last_state_price']
@@ -682,8 +693,11 @@ class RealtimeStrategyEngine:
             ", ".join(self.state['strategy_results'][:3]) if self.state['strategy_results'] else "Aguardando..."
         )
         
+        signal_border = "bold bright_yellow" if self.state.get('is_strong_signal', False) else "magenta"
+        signal_title = f"🚨 ALERTA FORTE ({self.confluence_mode})" if self.state.get('is_strong_signal', False) else f"🎯 Confluência ({self.confluence_mode})"
+        
         layout["signal"].update(
-            Panel(signal_table, title=f"🎯 Confluência ({self.confluence_mode})", border_style="magenta")
+            Panel(signal_table, title=signal_title, border_style=signal_border)
         )
         
         strategy_table = Table(show_header=True, expand=True, show_lines=False)

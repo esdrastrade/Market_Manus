@@ -347,6 +347,95 @@ class ICTSetupBuilder:
         
         return None
     
+    def build_bos_basic_setup(self, df: pd.DataFrame, structure_state: MarketStructureState,
+                              context: MarketContext, narrative: MarketNarrative) -> Optional[ICTSetup]:
+        """
+        Setup básico: BOS + Context (fallback quando setups complexos não estão disponíveis)
+        
+        Critérios:
+        1. BOS confirmado
+        2. Context não-consolidação
+        3. SL baseado em swing high/low recente
+        """
+        if structure_state.last_bos is None:
+            return None
+        
+        if context.regime == "CONSOLIDATION":
+            return None
+        
+        bos = structure_state.last_bos
+        current_price = df['close'].iat[-1]
+        
+        lookback = 10
+        recent_high = df['high'].iloc[-lookback:].max()
+        recent_low = df['low'].iloc[-lookback:].min()
+        
+        if bos['type'] == "BULLISH":
+            entry_price = current_price
+            stop_loss = recent_low * 0.998
+            
+            risk = entry_price - stop_loss
+            target = entry_price + (risk * self.min_rr)
+            
+            base_confidence = 0.6
+            
+            if narrative.htf_bias == "BULLISH":
+                base_confidence += 0.1
+            if context.regime == "IMPULSE":
+                base_confidence += 0.1
+            if narrative.killzone:
+                base_confidence += 0.05
+            
+            return ICTSetup(
+                entry_price=entry_price,
+                stop_loss=stop_loss,
+                target=target,
+                direction="BUY",
+                risk_reward=self.min_rr,
+                confidence=min(base_confidence, 1.0),
+                setup_type="BOS_BASIC_BULL",
+                components=["BOS_BULLISH", f"CONTEXT_{context.regime}"],
+                meta={
+                    "bos_data": bos,
+                    "setup_level": "BASIC",
+                    "htf_bias": narrative.htf_bias
+                }
+            )
+        
+        elif bos['type'] == "BEARISH":
+            entry_price = current_price
+            stop_loss = recent_high * 1.002
+            
+            risk = stop_loss - entry_price
+            target = entry_price - (risk * self.min_rr)
+            
+            base_confidence = 0.6
+            
+            if narrative.htf_bias == "BEARISH":
+                base_confidence += 0.1
+            if context.regime == "IMPULSE":
+                base_confidence += 0.1
+            if narrative.killzone:
+                base_confidence += 0.05
+            
+            return ICTSetup(
+                entry_price=entry_price,
+                stop_loss=stop_loss,
+                target=target,
+                direction="SELL",
+                risk_reward=self.min_rr,
+                confidence=min(base_confidence, 1.0),
+                setup_type="BOS_BASIC_BEAR",
+                components=["BOS_BEARISH", f"CONTEXT_{context.regime}"],
+                meta={
+                    "bos_data": bos,
+                    "setup_level": "BASIC",
+                    "htf_bias": narrative.htf_bias
+                }
+            )
+        
+        return None
+    
     def get_best_setup(self, df: pd.DataFrame, structure_state: MarketStructureState,
                        context: MarketContext, narrative: MarketNarrative) -> Optional[ICTSetup]:
         """
@@ -354,6 +443,12 @@ class ICTSetupBuilder:
         - Confiança
         - Risk:Reward
         - Confluência de componentes
+        
+        Ordem de prioridade (melhor → básico):
+        1. CHoCH + OB + Sweep (premium setup)
+        2. BOS + FVG + Retest (confluence setup)
+        3. Sweep + OB Entry (liquidity setup)
+        4. BOS + Context (basic setup - fallback)
         """
         setups = []
         
@@ -368,6 +463,10 @@ class ICTSetupBuilder:
         sweep_setup = self.build_sweep_ob_entry_setup(df, structure_state, context, narrative)
         if sweep_setup:
             setups.append(sweep_setup)
+        
+        basic_setup = self.build_bos_basic_setup(df, structure_state, context, narrative)
+        if basic_setup:
+            setups.append(basic_setup)
         
         if not setups:
             return None

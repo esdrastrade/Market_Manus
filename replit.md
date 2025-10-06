@@ -1,148 +1,53 @@
 # Market Manus - Trading Automation System
 
 ## Overview
-Market Manus is a professional automated trading system that integrates AI, advanced technical analysis, and robust capital management. It is designed for scalping and swing trading, utilizing real-time market data from Binance.US. The project aims to achieve a high win rate through intelligent signal confluence, combining Smart Money Concepts (SMC) with classic technical strategies.
+Market Manus is an automated trading system designed for scalping and swing trading using real-time market data from Binance.US. It integrates AI, advanced technical analysis (including Smart Money Concepts), and robust capital management to achieve a high win rate through intelligent signal confluence. The project aims to provide a professional-grade tool for automated trading with a focus on intelligent market analysis and strategic execution.
 
 ## User Preferences
 *No specific user preferences recorded yet*
 
 ## System Architecture
-The system is a CLI/TUI application built with Python 3.11. Its core architecture revolves around several key components:
-
-### Core Components
-- **Market Sentiment Analysis (NEW - Oct 2025)**: Modular sentiment aggregation system consulting multiple reliable APIs/sources to provide a composite "Market Prognosis" for selected assets:
-  - **Data Sources**: Fear & Greed Index (Alternative.me), CoinGecko (spot market data), Bybit (funding/OI), CoinGlass (open interest), CryptoPanic (news sentiment), Santiment (social metrics), Glassnode (on-chain), Google Trends (search interest)
-  - **Normalization**: All signals normalized to 0-1 scale with weighted composite scoring
-  - **Caching**: TTL-based in-memory cache (60s) to prevent API hammering
-  - **CoinGecko Dynamic Resolution (Oct 2025)**: Universal crypto asset support via intelligent search:
-    - Automatic resolution of ANY Binance symbol to CoinGecko ID via search API
-    - TTL-based cache (1h, 500 items) prevents rate limit violations
-    - Intelligent symbol extraction (strips USDT/USDC/USD suffixes)
-    - Graceful error handling for rate limits and unsupported assets
-    - No fallback to Bitcoin - accurate "not-found" errors
-  - **CryptoPanic Integration (Oct 2025)**: News sentiment analysis via CryptoPanic API v2:
-    - Fetches 20+ recent news headlines per asset with vote counts
-    - Dynamic sentiment scoring: positive/(positive+negative) with neutral fallback
-    - 15% weight in composite score calculation
-    - Captures top 5 headlines for narrative context
-    - Automatic retry with exponential backoff for reliability
-  - **Narrative UI (Oct 2025)**: Natural language presentation transforming technical data into storytelling format:
-    - Auto-generated market narratives in Portuguese explaining sentiment context
-    - Progressive disclosure: header → interpretation panel → technical details
-    - Dynamic storytelling adapting to market conditions (panic, fear, neutral, optimism, greed)
-    - Macroeconomic context section with news headlines and sentiment analysis
-    - Contextual recommendations based on composite score
-    - Color-coded status indicators with Rich panels and tables
-- **Strategy Lab V6 (Updated Oct 2025)**: Contains **13 professional trading strategies** (8 clássicas + 5 SMC), supporting real-time and historical testing, and asset selection:
-  - **8 Classic**: RSI, EMA Crossover, Bollinger Bands, MACD, Stochastic, Williams %R, ADX, Fibonacci
-  - **5 SMC (NEW)**: BOS (Break of Structure), CHoCH (Change of Character), Order Blocks, FVG (Fair Value Gap), Liquidity Sweep
-  - **API Validation (Oct 2025)**: All backtests now validate Binance API keys before execution, ensuring 100% real data usage (no mock/simulated data)
-  - **Metrics Display (Oct 2025)**: Backtests show total candles loaded, exact period (start/end dates), API success rate
-  - **Real-Time Testing (NEW - Oct 2025)**: Option 6 "Teste em Tempo Real" integrates RealtimeStrategyEngine with Rich Live UI showing candles processed, signals, latency, SMC strategy mapping
-- **Confluence Lab**: Allows combining multiple strategies using four modes: ALL, MAJORITY, WEIGHTED, and ANY.
-  - **Real-Time Confluence (NEW - Oct 2025)**: Option 7 "Teste em Tempo Real de Confluência" executes multiple strategies simultaneously with WebSocket streaming, displaying live confluence signals and individual strategy results
-- **Data Provider**: Integrates with Binance.US API for real-time and historical market data.
-  - **Historical Data Cache (NEW - Oct 2025)**: Parquet-based caching system saves fetched data in `data/` directory with format `{symbol}_{interval}_{ddmmaa}_until_{ddmmaa}.parquet`, metadata tracking, and automatic reuse via `use_cache=True` parameter in BacktestingAgent
-- **Capital Manager**: Handles position sizing automation, drawdown protection, and performance tracking.
-- **Confluence System**: A new architecture combining Smart Money Concepts (SMC) detectors (BOS, CHOCH, Order Blocks, FVG, Liquidity Sweeps) with **10 Classic Technical Strategies** including 3 new scalping-optimized detectors:
-  - **Original 7**: EMA Crossover, MACD, RSI Mean Reversion, Bollinger Bands, ADX Trend Strength, Stochastic, Fibonacci
-  - **NEW Scalping Detectors (Oct 2025)**: 
-    - **MA Ribbon (5-8-13 SMAs)**: Detects trend alignment for scalping with spread threshold filtering
-    - **Momentum Combo (RSI+MACD)**: High-probability signals combining momentum indicators
-    - **Pivot Points**: Objective support/resistance levels with automatic daily calculations
-  - Uses weighted scoring engine with regime filters (ADX, ATR, BB Width) and conflict penalties to generate high-probability trade signals.
-- **Market Context Analyzer (NEW - Oct 2025)**: Intelligent regime detection system for context-aware strategy weighting:
-  - **60-Day Analysis**: Analyzes historical data using MA slope, ADX trend strength, and ATR volatility
-  - **Regime Detection**: Identifies BULLISH, BEARISH, or CORRECTION market conditions with confidence scoring
-  - **Strategy Weighting**: Auto-adjusts strategy weights based on regime (e.g., EMA 1.3x in bullish, RSI 1.4x in correction)
-  - **Integration**: Applied in both historical backtests and real-time execution before signal generation
-  - **Rich Display**: Visual panel showing regime, confidence, key metrics, and top 5 strategy adjustments
-- **Volume Filter Pipeline (NEW - Oct 2025)**: Statistical volume-based signal filtering to improve win rate:
-  - **Z-Score Normalization**: Calculates standardized volume scores for objective filtering
-  - **Signal Rejection**: Automatically rejects signals with low volume (z-score < 0.5)
-  - **Signal Amplification**: Boosts confidence 1.3x for high-volume signals (z-score > 1.5)
-  - **Post-Processing**: Applied after strategy signals but before confluence scoring
-  - **Statistics Display**: Shows rejected/amplified/normal signals with percentages and counts
-- **Strategy Explanations (NEW - Oct 2025)**: Comprehensive documentation system via menu option 9:
-  - **13 Markdown Files**: Complete strategy documentation in `market_manus/explanations/`
-  - **Content**: Logic, trigger conditions, parameters, best practices, example scenarios
-  - **Interactive Menu**: List all strategies, view details, or generate markdown files
-  - **Coverage**: All 8 classic strategies + 5 SMC patterns documented
+The system is a CLI/TUI application built with Python 3.11, structured around modular components for market analysis, strategy execution, and user interaction.
 
 ### UI/UX Decisions
-The system operates as a console-based CLI/TUI application, providing an interactive menu for users to select assets, timeframes, and execute strategies.
-
-**Live Streaming Visualization (UPDATED - Oct 2025)**:
-- **Professional-Grade Real-Time System (v2.1)**: Complete flagship feature with enterprise-level reliability
-- **Robust WebSocket (Oct 6, 2025)**: 
-  - Custom heartbeat (30s ping_timeout, 10s close_timeout)
-  - Exponential backoff with jitter for reconnection
-  - Health metrics tracking (uptime, connection count, total messages)
-  - Automatic reconnection with state preservation
-- **Performance Optimized (<150ms latency)**:
-  - Conditional processing (only on closed candles)
-  - 200-candle processing window (5x faster than 1000)
-  - Centralized strategy mapping (UI → Engine consistency)
-  - All 13 strategies executing correctly (including SMC patterns)
-- **Complete UI with Metrics**:
-  - 5-panel layout: Header, Metrics, Paper Trading (optional), Body, Footer
-  - Performance metrics: Average latency, signal counters (BUY/SELL/Total)
-  - Signal history panel: Last 10 signals with timestamp/action/confidence/price
-  - Individual strategies panel: Real-time status of all 13 strategies
-- **Alert System**:
-  - Visual highlights for strong signals (confidence ≥ 0.8)
-  - Dynamic panel border/title changes (yellow highlight for alerts)
-  - Optional audio alerts (beep) - configurable via enable_audio_alerts flag
-- **Paper Trading Simulator**:
-  - Virtual trade execution (LONG positions only)
-  - Real-time P&L calculation (realized + unrealized)
-  - Automatic Stop Loss (2%) and Take Profit (5%)
-  - Win rate, equity tracking, trade statistics
-  - Dedicated UI panel with position details
+The system features a professional-grade, real-time interactive console-based UI/UX. Key elements include:
+- **Live Streaming Visualization**: A multi-panel layout (Header, Metrics, Optional Paper Trading, Body, Footer) provides real-time updates of market data, strategy signals, and performance metrics.
+- **Alert System**: Visual highlights and optional audio alerts for strong signals, with dynamic UI changes to draw attention to critical events.
+- **Paper Trading Simulator**: A virtual trade execution environment with real-time P&L, automatic Stop Loss/Take Profit, and comprehensive trade statistics.
+- **Narrative UI**: Natural language presentation (in Portuguese) of market sentiment data, transforming technical indicators into contextual storytelling with progressive disclosure and dynamic adaptation to market conditions.
+- **Rich Display**: Utilization of the `rich` library for advanced terminal UI rendering, including tables, panels, and color-coded status indicators.
 
 ### Technical Implementations
-- **Signal Model**: A standardized `Signal` dataclass is used across all detectors, capturing action, confidence, reasons, tags, metadata, and timestamp.
-- **Regime Filters**: Signals are rejected if market conditions (e.g., ADX < 15, ATR < min, BB Width < min) are unfavorable.
-- **Conflict Penalty**: A 50% score reduction is applied when both BUY and SELL signals exist simultaneously to prevent whipsaw trades.
-- **Backtesting & Real-time Execution**: Dedicated modules for backtesting with per-candle logging and real-time execution with data-driven rate-limiting and state-change notifications.
-- **Unlimited Historical Data Fetch (NEW - Oct 2025)**: Intelligent batching system that fetches ALL candles for any date range, automatically chunking requests in 500-1000 candle batches to respect API limits while ensuring complete historical coverage.
-- **Scalping Mode (NEW - Oct 2025)**: Configurable preset optimizing parameters for short timeframes (1m-5m):
-  - MA Ribbon with alignment threshold filtering (rejects flat markets)
-  - Bollinger Bands: 13-period, 3SD (faster, more volatile)
-  - Stochastic: 5-period (faster response)
-  - Adjusted weights favoring momentum and pivot detectors
-  - All scalping detectors based on Investopedia professional strategies
-- **WebSocket Streaming (NEW)**: Binance.US WebSocket integration with automatic reconnection, exponential backoff + jitter, and debouncing (1s micro-batches).
-- **Async Pipeline**: AsyncIO-based runtime with Queue-based message coalescing, preventing rate limit violations while maintaining real-time responsiveness.
-- **Rich UI Live View**: Terminal UI using `rich` library with Live display, updating panels in-place without scrolling, showing latency, message counts, and processing metrics.
-- **Real-Time Strategy Execution (NEW - Oct 2025)**: Complete replacement of simulated data with real WebSocket execution:
-  - **RealtimeStrategyEngine**: New engine (`market_manus/engines/realtime_strategy_engine.py`) integrating WebSocket + parallel strategies + live UI
-  - **Parallel Strategy Application**: All selected strategies execute simultaneously using `asyncio.gather()` for < 200ms latency
-  - **Live Rich UI**: Four-panel layout (header, price, confluence signal, individual strategies) updating in real-time without scroll
-  - **Bootstrap + Stream**: Loads 500 historical candles for indicator initialization, then streams live data
-  - **Robust Error Handling**: Automatic WebSocket reconnection, graceful strategy failures, validated configurations
-  - **Supported Strategies**: 6 classic (RSI, EMA, Bollinger, MACD, Stochastic, ADX) + 5 SMC patterns (BOS, CHoCH, OB, FVG, Liquidity Sweep)
-  - **Confluence Labs**: ALL (unanimous), ANY (first signal), MAJORITY (>50% agreement)
-  - **Integration**: Available in Strategy Lab V6 via "Teste em Tempo Real" menu option
+- **Core Architecture**: Features a modular design with components for market sentiment analysis, a diverse Strategy Lab (13 strategies including 5 Smart Money Concepts), Confluence Lab, Data Provider, and Capital Manager.
+- **Market Sentiment Analysis**: A modular system aggregating data from various sources (Fear & Greed Index, CoinGecko, Bybit, CoinGlass, CryptoPanic, Santiment, Glassnode, Google Trends) to generate a composite "Market Prognosis." It includes dynamic asset resolution and news sentiment analysis.
+- **ICT Framework v2.0**: A professional-grade implementation of Inner Circle Trader methodology, structured into four pillars: Market Structure (BOS, CHoCH, Order Blocks, Liquidity Sweep), Context (Regime Detection, FVG, Strength Scoring), Narrative (Liquidity, Killzones, HTF Context, Judas Swing), and Setup (Entry Models, SL/TP, Setup Scoring). An orchestrator manages sequential analysis and filtering.
+- **Confluence System**: Combines SMC detectors with 10 classic technical strategies (including 3 new scalping-optimized detectors: MA Ribbon, Momentum Combo, Pivot Points). It uses a weighted scoring engine with regime filters and conflict penalties for high-probability signal generation.
+- **Market Context Analyzer**: A regime detection system that analyzes historical data (MA slope, ADX, ATR) to identify BULLISH, BEARISH, or CORRECTION conditions, auto-adjusting strategy weights for context-aware execution.
+- **Volume Filter Pipeline**: Implements statistical volume-based signal filtering using Z-scores to reject low-volume signals and amplify high-volume ones, applied after strategy signals but before confluence scoring.
+- **Data Handling**: Features unlimited historical data fetching via intelligent batching, a Parquet-based caching system for historical data, and robust real-time data streaming via Binance.US WebSocket with automatic reconnection and exponential backoff.
+- **Strategy Execution**: RealtimeStrategyEngine supports parallel execution of all selected strategies (`asyncio.gather()`) for low latency. Signals are standardized using a `Signal` dataclass.
+- **Scalping Mode**: A configurable preset optimizing parameters for short timeframes (1m-5m) with specific indicator settings and adjusted weights.
+- **Strategy Explanations**: Comprehensive documentation (Markdown files) for all 13 strategies covering logic, triggers, parameters, and best practices.
 
-### Supported Timeframes
-The system supports multiple timeframes ranging from 1 minute (scalping) to 1 day (trend analysis).
+### Feature Specifications
+- **Strategy Lab V6**: Offers 13 professional trading strategies (8 classic, 5 SMC) with real-time and historical testing capabilities, including API key validation and detailed metrics display.
+- **Confluence Lab**: Supports combining strategies using ALL, MAJORITY, WEIGHTED, and ANY modes, with real-time execution displaying live confluence signals.
+- **Supported Timeframes**: Ranges from 1 minute to 1 day for flexible analysis and trading.
 
 ## External Dependencies
-The project integrates with the following external services and libraries:
+The project integrates with the following external services and Python libraries:
 
-- **Binance.US API**: For real-time and historical market data.
+- **Binance.US API**: Real-time and historical market data.
 - **OpenAI API**: Optional integration for AI-powered features.
 - **Python Libraries**:
-    - `requests` for HTTP communication.
-    - `pandas`, `numpy` for data manipulation and analysis.
-    - `python-dotenv` for environment variable management.
-    - `semantic-kernel`, `openai` for AI integration.
-    - `ccxt` for cryptocurrency exchange interaction.
-    - `ta-lib` for technical analysis indicators.
-    - `httpx`, `websockets` for async HTTP and WebSocket communication.
-    - `tenacity` for retry logic with exponential backoff.
-    - `cachetools` for in-memory caching.
-    - `pydantic` for data validation.
-    - `rich` for terminal UI rendering.
-    - `pytrends` (optional) for Google Trends data.
+    - `requests`, `httpx`, `websockets`: HTTP and WebSocket communication.
+    - `pandas`, `numpy`: Data manipulation and analysis.
+    - `python-dotenv`: Environment variable management.
+    - `semantic-kernel`, `openai`: AI integration.
+    - `ccxt`: Cryptocurrency exchange interaction.
+    - `ta-lib`: Technical analysis indicators.
+    - `tenacity`: Retry logic with exponential backoff.
+    - `cachetools`: In-memory caching.
+    - `pydantic`: Data validation.
+    - `rich`: Terminal UI rendering.
+    - `pytrends`: Google Trends data (optional).

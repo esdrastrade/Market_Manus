@@ -11,6 +11,16 @@ Market Manus is an automated trading system designed for scalping and swing trad
 - **Real OHLCV Data for SMC**: Removed fake `open=close` workaround, all SMC strategies now receive complete OHLCV data with real open prices.
 - **Type Safety Improvements**: Reduced LSP errors from 21 to 8, with remaining errors being non-critical typing warnings.
 
+### Phase 2 ICT Enhancements & Trading Costs - COMPLETED ✅
+- **OTE (Optimal Trade Entry)**: Implemented fibonacci-based entry zones (62%, 70.5%, 79% retracements) for precision entries in narrative.py. Calculates bullish/bearish OTE zones with optimal entry bands for high-probability setups.
+- **CE (Consequent Encroachment)**: Added midpoint (50%) calculation for ranges as target zones and decision levels. Used for partial profit targets and retest entries in ICT methodology.
+- **Premium/Discount Zones**: Full implementation of value area classification dividing ranges into 5 zones (Premium High 75-100%, Premium Med 50-75%, Equilibrium 45-55%, Discount Med 25-45%, Discount Low 0-25%). Provides directional bias (premium favors SHORT, discount favors LONG) with automatic price classification.
+- **Narrative Enrichment**: `enrich_narrative_with_ote_ce()` helper adds OTE/CE/Premium-Discount data to MarketNarrative.meta with confluence-based strength adjustments (e.g., Discount + OTE Bullish increases signal strength).
+- **FeeModel Class**: Professional trading cost simulator in capital_manager.py with configurable maker/taker fees and slippage. Three presets available: LIVE (Binance 0.1%/0.1% + 0.05% slippage), CONSERVATIVE (0.15%/0.15% + 0.2% slippage), OPTIMISTIC (0.075%/0.075% + 0% slippage). Correctly applies slippage only to taker orders (market orders), not maker orders (limit orders).
+- **Cost Calculation Methods**: `calculate_entry_cost()`, `calculate_exit_cost()`, `calculate_total_trade_cost()`, and `apply_costs_to_pnl()` for accurate net P&L computation with separate maker/taker handling.
+- **ConfluenceEngineAdapter**: Created adapter pattern mapping current strategies to ConfluenceEngine detector interface for future migration (migration deferred to avoid large refactoring).
+- **Bug Fixes**: Corrected Premium/Discount equilibrium classification (45%-55% now properly neutral), fixed slippage application (taker-only), and improved type safety across codebase.
+
 ## User Preferences
 *No specific user preferences recorded yet*
 

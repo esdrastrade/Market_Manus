@@ -18,6 +18,178 @@ import time
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+from dataclasses import dataclass
+from enum import Enum
+
+
+# ==================== FEE MODEL (Fase 2 - Out 2025) ====================
+
+class FeePreset(Enum):
+    """Presets de fees para diferentes cenários"""
+    LIVE = "live"  # Fees reais de exchanges
+    CONSERVATIVE = "conservative"  # Fees maiores para testes conservadores
+    OPTIMISTIC = "optimistic"  # Fees menores (sem slippage)
+
+
+@dataclass
+class FeeModel:
+    """
+    Modelo de custos de trading (fees + slippage).
+    
+    Usado para simular custos realistas em paper trading e backtests.
+    
+    Fees típicas:
+    - Binance: 0.1% taker, 0.1% maker (ou menos com desconto BNB)
+    - Bybit: 0.075% taker, 0.025% maker
+    
+    Slippage:
+    - Low volatility: 0.01%-0.05%
+    - Medium volatility: 0.05%-0.15%
+    - High volatility: 0.15%-0.50%
+    """
+    
+    maker_fee_pct: float = 0.001  # 0.1% (default Binance)
+    taker_fee_pct: float = 0.001  # 0.1% (default Binance)
+    slippage_pct: float = 0.0005  # 0.05% (slippage médio)
+    
+    @classmethod
+    def from_preset(cls, preset: FeePreset) -> 'FeeModel':
+        """
+        Cria FeeModel a partir de preset.
+        
+        Args:
+            preset: FeePreset enum
+        
+        Returns:
+            FeeModel configurado
+        """
+        if preset == FeePreset.LIVE:
+            # Fees reais de Binance/Bybit + slippage médio
+            return cls(
+                maker_fee_pct=0.001,  # 0.1%
+                taker_fee_pct=0.001,  # 0.1%
+                slippage_pct=0.0005   # 0.05%
+            )
+        
+        elif preset == FeePreset.CONSERVATIVE:
+            # Fees maiores + slippage alto para testes conservadores
+            return cls(
+                maker_fee_pct=0.0015,  # 0.15%
+                taker_fee_pct=0.0015,  # 0.15%
+                slippage_pct=0.002     # 0.2%
+            )
+        
+        elif preset == FeePreset.OPTIMISTIC:
+            # Fees menores (assumindo desconto) + sem slippage
+            return cls(
+                maker_fee_pct=0.00075,  # 0.075% (com desconto BNB)
+                taker_fee_pct=0.00075,  # 0.075%
+                slippage_pct=0.0        # Sem slippage
+            )
+        
+        else:
+            return cls()  # Default
+    
+    def calculate_entry_cost(self, position_size: float, is_maker: bool = False) -> float:
+        """
+        Calcula custo total de entrada (fee + slippage).
+        
+        Maker orders (limit) não têm slippage pois você define o preço.
+        Taker orders (market) têm slippage pois você aceita o preço do book.
+        
+        Args:
+            position_size: Tamanho da posição em USD
+            is_maker: True se ordem é maker (limit), False se taker (market)
+        
+        Returns:
+            Custo total em USD
+        """
+        fee_pct = self.maker_fee_pct if is_maker else self.taker_fee_pct
+        
+        # Slippage APENAS para ordens taker (market orders)
+        slippage = 0.0 if is_maker else self.slippage_pct
+        
+        total_cost_pct = fee_pct + slippage
+        
+        return position_size * total_cost_pct
+    
+    def calculate_exit_cost(self, position_size: float, is_maker: bool = False) -> float:
+        """
+        Calcula custo total de saída (fee + slippage).
+        
+        Maker orders (limit) não têm slippage pois você define o preço.
+        Taker orders (market) têm slippage pois você aceita o preço do book.
+        
+        Args:
+            position_size: Tamanho da posição em USD
+            is_maker: True se ordem é maker (limit), False se taker (market)
+        
+        Returns:
+            Custo total em USD
+        """
+        fee_pct = self.maker_fee_pct if is_maker else self.taker_fee_pct
+        
+        # Slippage APENAS para ordens taker (market orders)
+        slippage = 0.0 if is_maker else self.slippage_pct
+        
+        total_cost_pct = fee_pct + slippage
+        
+        return position_size * total_cost_pct
+    
+    def calculate_total_trade_cost(self, position_size: float, 
+                                    entry_is_maker: bool = False,
+                                    exit_is_maker: bool = False) -> float:
+        """
+        Calcula custo total de um trade completo (entry + exit).
+        
+        Args:
+            position_size: Tamanho da posição em USD
+            entry_is_maker: True se entrada é maker
+            exit_is_maker: True se saída é maker
+        
+        Returns:
+            Custo total do trade em USD
+        """
+        entry_cost = self.calculate_entry_cost(position_size, entry_is_maker)
+        exit_cost = self.calculate_exit_cost(position_size, exit_is_maker)
+        
+        return entry_cost + exit_cost
+    
+    def apply_costs_to_pnl(self, gross_pnl: float, position_size: float,
+                          entry_is_maker: bool = False,
+                          exit_is_maker: bool = False) -> Tuple[float, float]:
+        """
+        Aplica custos ao P&L bruto para obter P&L líquido.
+        
+        Args:
+            gross_pnl: P&L bruto (antes de custos)
+            position_size: Tamanho da posição em USD
+            entry_is_maker: True se entrada é maker
+            exit_is_maker: True se saída é maker
+        
+        Returns:
+            Tuple (net_pnl, total_costs)
+        """
+        total_costs = self.calculate_total_trade_cost(
+            position_size, 
+            entry_is_maker, 
+            exit_is_maker
+        )
+        
+        net_pnl = gross_pnl - total_costs
+        
+        return net_pnl, total_costs
+    
+    def get_info_dict(self) -> Dict:
+        """Retorna dicionário com info do modelo de fees"""
+        return {
+            "maker_fee_pct": self.maker_fee_pct,
+            "taker_fee_pct": self.taker_fee_pct,
+            "slippage_pct": self.slippage_pct,
+            "total_round_trip_pct": (self.maker_fee_pct + self.taker_fee_pct + 2 * self.slippage_pct),
+            "description": f"Maker: {self.maker_fee_pct*100:.3f}%, Taker: {self.taker_fee_pct*100:.3f}%, Slippage: {self.slippage_pct*100:.3f}%"
+        }
+
 
 class CapitalManager:
     """Gerenciador de capital com tracking completo"""

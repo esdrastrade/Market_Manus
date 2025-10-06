@@ -1,0 +1,113 @@
+O que está bom
+
+Agregação por índice real + lock de posição: você só abre trade quando o índice do candle está no conjunto de confluência e mantém 1 posição por vez. Isso está coerente com o log e evita “overtrading”.
+
+Pipeline de volume integrado ao backtest: estatísticas de rejeição/amplificação e relatório por estratégia após o filtro são úteis para tuning posterior.
+
+SMC básicos implementados: BOS, CHoCH, FVG e Sweep estão operacionais; o Sweep já carrega contexto de zona (Premium/Discount) e “equal highs/lows”, ótimo para lógica ICT.
+
+Problemas (sem eufemismo)
+
+Direção é perdida na confluência e o simulador só compra (LONG-only): o agregador devolve apenas List[int] (índices) — nada de BUY/SELL — e o simulador abre sempre LONG “assumindo sinais predominantemente long”. Isso distorce todos os SMC (CHoCH/Sweep também são SELL) e contamina o backtest.
+
+Detecção SMC no Confluence usa open=close e janelas deslizantes: você cria um DF “fake open” para chamar os detectores SMC, o que empobrece leitura de velas (corpos vs pavios) e volume; daí o OB quase nunca aparece, e quando aparece pode estar errado.
+
+Você tem um ConfluenceEngine melhor… e não está usando no módulo de confluência: em patterns.py há um engine com pesos, direção, penalidade de conflito e filtros de regime (ADX/ATR/BB width). O Confluence Mode reimplementa (mais simples) e perde o que já está pronto.
+
+OB “FRESH vs MITIGATED” e fatores de volume existem em market_structure.py, mas o Confluence ignora: o módulo avançado marca OB como FRESH/MITIGATED, guarda força, volume e BOS causado. Isso é ouro para entradas ICT — e está fora do fluxo atual.
+
+Backtest subestima SL/TP: o simulador decide SL/TP com preço de fechamento do candle, sem high/low intrabar (stop pode ter sido tocado e fechado verde). Isso infla vitórias/derrotas aleatoriamente.
+
+Risco fixo 0.5%/1.0% genérico: sem relação com volatilidade/estrutura (ATR ou swing) — não é o que ICT pratica (SL sob o OB/nível varrido; TP em PD Array/pontos de liquidez).
+
+MAJORITY/WEIGHTED contam sinais, não “papéis” do modelo ICT: a votação trata BOS, OB, FVG, Sweep como equivalentes; no modelo ICT, BOS/CHoCH definem viés e OB/FVG/Sweep são catalisadores de entrada. Hoje o sistema pode “confluir” sem pré-condição estrutural.
+
+O que falta (estratégias/peças ICT)
+
+Viés HTF (1H/D): direção só é permitida se o LTF estiver alinhado ao BOS/CHoCH do HTF.
+
+Killzones: Londres AM/NY AM/NY PM; abrir trade apenas nestas janelas.
+
+Dealing Range + Equilíbrio (50%): filtrar entradas por Premium/Discount do range atual.
+
+OTE (62–79%) + CE (50% do FVG): entrada preferencial em retração da perna de deslocamento, refinada em CE do FVG.
+
+Displacement filter: medir “impulso” (range vs ATR) para validar BOS.
+
+SMT/divergência (opcional em cripto): BTC x ETH/BTCD; útil para raids de liquidez.
+
+Judas swing / session raid: capturar a varredura inicial antes do movimento do dia.
+
+Recomendações práticas (implementação incremental)
+
+Confluência com direção
+
+Mude _calculate_confluence_signals para acumular votos BUY/SELL por índice (ex.: votes[idx] = {buy_weight, sell_weight}) e retorne tuples (idx, direction, score).
+
+No backtest, abra LONG/SHORT conforme o voto vencedor; não só LONG.
+
+Trocar a lógica do Confluence Mode pelo ConfluenceEngine já pronto
+
+Use patterns.confluence_decision(...) para cada candle/janela e capture action + confidence. Ele já aplica filtros de regime e pesos, com penalidade de conflito — exatamente o que você reimplementou simplificado.
+
+Deixe o VolumeFilter como “pré-filtro” e alimente o Engine apenas com candles aprovados.
+
+Ligar o OB/FVG/Sweep avançados (estrutura + zona)
+
+Substitua chamadas SMC locais por versões de market_structure.py que retornam FRESH/MITIGATED, zona (Premium/Discount) e confidence breakdown. Use apenas OB FRESH e entradas na mitigação do OB + CE do FVG.
+
+Entradas ICT canônicas (regra de combinação)
+
+Viés: exigir BOS/CHoCH no HTF = direção permitida.
+
+Catalisador: no LTF, requerer FVG com CE ou retorno a OB FRESH + Sweep do nível na killzone.
+
+Filtro: apenas em Discount para BUY (Premium para SELL) do dealing range atual.
+
+Backtest realista
+
+Avalie SL/TP com high/low do candle (não o close).
+
+Entrar no próximo candle (ou em ordem limite na CE/OB), não no mesmo.
+
+SL sob/above nível de estrutura (p.ex. fundo do OB ou nível varrido); TP em próximos pools (equal highs/lows, IB highs/lows).
+
+Modele custos e slippage (mesmo que baixos).
+
+Pesos e modos de confluência “por papel”
+
+Estruture buckets: Estrutura (BOS/CHoCH), Catalisador (OB/FVG/Sweep), Condições (ADX/ATR/BB/Volume).
+
+Só gere sinal quando (Estrutura ≥1) e (Catalisador ≥1); “MAJORITY” hoje pode aprovar 3 catalisadores sem estrutura — invalide isso na regra.
+
+Dados SMC no Confluence Mode
+
+Pare de construir open=close no DF SMC; passe OHLCV real sempre.
+
+Para volume, normalize por Z-score por sessão (volume da sessão atual vs sua própria média), não global.
+
+Killzones e período operacional
+
+Gate de tempo: Londres AM (02:00–05:00 NY), NY AM (08:30–11:00 NY), NY PM (13:30–15:00 NY) — ajuste para America/Sao_Paulo no runtime. Só computar confluência dentro dessas janelas.
+
+Melhorias rápidas no simulador
+
+Adicione SHORT simétrico.
+
+Cooldown de N candles após SL (evita revenge trade).
+
+Partial exits: 1R (50%), BE no restante; alvo final em 2R/HTF pool.
+
+Estratégias extras úteis no menu
+
+ICT Bias HTF (D/1H), Killzone Gate, OTE+CE, Displacement BOS, SMT, Dealing Range PD Array.
+
+Isso te dá “Confluence Lab” realmente ICT, não só um voto de indicadores.
+
+Nota de qualidade (definições atuais)
+
+Arquitetura: 6/10 — estrutura sólida, mas reimplementa algo melhor que já existe no projeto (ConfluenceEngine) e ainda perde direção.
+
+SMC/ICT fidelidade: 5/10 — há sinais SMC, porém sem killzones, viés HTF, OTE/CE e sem uso correto de OB FRESH/mitigação.
+
+Backtest: 4/10 — LONG-only, SL/TP pelo close e sem intrabar; precisa de revisão para ser crível.

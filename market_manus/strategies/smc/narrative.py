@@ -385,3 +385,294 @@ def get_judas_swing_narrative(df: pd.DataFrame) -> Optional[Dict]:
             }
     
     return None
+
+
+# ==================== OTE & CE UTILITIES (Fase 2 - Out 2025) ====================
+
+def calculate_ote_zones(range_high: float, range_low: float) -> Dict:
+    """
+    OTE (Optimal Trade Entry): Zonas ótimas de entrada baseadas em Fibonacci.
+    
+    ICT ensina que as melhores entradas ocorrem nos retracements:
+    - 62% (0.618 Fibonacci): Zona primária
+    - 70.5% (0.705): Zona sweet spot
+    - 79% (0.79): Zona deep retracement
+    
+    Args:
+        range_high: Topo do range (swing high)
+        range_low: Fundo do range (swing low)
+    
+    Returns:
+        Dict com níveis OTE para entries bullish e bearish
+    """
+    range_size = range_high - range_low
+    
+    if range_size == 0:
+        return {
+            "valid": False,
+            "reason": "Range zero"
+        }
+    
+    # OTE Bullish (retracement de movimento de alta)
+    # Preço sobe e retrace para OTE antes de continuar
+    ote_62_bull = range_high - (range_size * 0.618)
+    ote_705_bull = range_high - (range_size * 0.705)
+    ote_79_bull = range_high - (range_size * 0.79)
+    
+    # OTE Bearish (retracement de movimento de baixa)
+    # Preço desce e retrace para OTE antes de continuar
+    ote_62_bear = range_low + (range_size * 0.618)
+    ote_705_bear = range_low + (range_size * 0.705)
+    ote_79_bear = range_low + (range_size * 0.79)
+    
+    return {
+        "valid": True,
+        "range": {
+            "high": range_high,
+            "low": range_low,
+            "size": range_size
+        },
+        "bullish": {
+            "ote_62": ote_62_bull,
+            "ote_705": ote_705_bull,  # Sweet spot
+            "ote_79": ote_79_bull,
+            "optimal_zone": (ote_79_bull, ote_62_bull)  # Entre 62% e 79%
+        },
+        "bearish": {
+            "ote_62": ote_62_bear,
+            "ote_705": ote_705_bear,  # Sweet spot
+            "ote_79": ote_79_bear,
+            "optimal_zone": (ote_62_bear, ote_79_bear)  # Entre 62% e 79%
+        }
+    }
+
+
+def calculate_consequent_encroachment(range_high: float, range_low: float) -> Dict:
+    """
+    CE (Consequent Encroachment): Midpoint (50%) de um range.
+    
+    ICT usa CE como:
+    - Target parcial (50% do movimento)
+    - Zona de decisão (acima = bullish, abaixo = bearish)
+    - Entry em retests do midpoint
+    
+    Args:
+        range_high: Topo do range
+        range_low: Fundo do range
+    
+    Returns:
+        Dict com nível CE e zonas relacionadas
+    """
+    range_size = range_high - range_low
+    
+    if range_size == 0:
+        return {
+            "valid": False,
+            "reason": "Range zero"
+        }
+    
+    ce_level = (range_high + range_low) / 2.0
+    
+    # Zona de tolerância ao redor do CE (±2%)
+    ce_tolerance = range_size * 0.02
+    ce_zone_high = ce_level + ce_tolerance
+    ce_zone_low = ce_level - ce_tolerance
+    
+    return {
+        "valid": True,
+        "ce_level": ce_level,
+        "ce_zone": (ce_zone_low, ce_zone_high),
+        "range": {
+            "high": range_high,
+            "low": range_low,
+            "size": range_size
+        },
+        "interpretation": {
+            "above_ce_bullish": ce_level,  # Preço acima = bullish bias
+            "below_ce_bearish": ce_level,  # Preço abaixo = bearish bias
+            "target_50pct": ce_level  # Target parcial em 50%
+        }
+    }
+
+
+def calculate_premium_discount_zones(range_high: float, range_low: float, 
+                                     current_price: Optional[float] = None) -> Dict:
+    """
+    Premium/Discount Zones: Divide range em zonas de valor.
+    
+    ICT classifica preço como:
+    - Premium (acima de 50%): Zona para SHORT entries
+    - Discount (abaixo de 50%): Zona para LONG entries
+    - Equilibrium (±5% do 50%): Zona neutra
+    
+    Subdivisões:
+    - Premium Alto: 75%-100%
+    - Premium Médio: 50%-75%
+    - Equilibrium: 45%-55%
+    - Discount Médio: 25%-50%
+    - Discount Baixo: 0%-25%
+    
+    Args:
+        range_high: Topo do range
+        range_low: Fundo do range
+        current_price: Preço atual (opcional) para classificação
+    
+    Returns:
+        Dict com zonas e classificação do preço atual
+    """
+    range_size = range_high - range_low
+    
+    if range_size == 0:
+        return {
+            "valid": False,
+            "reason": "Range zero"
+        }
+    
+    # Calcula níveis chave
+    level_100 = range_high  # 100%
+    level_75 = range_low + (range_size * 0.75)
+    level_50 = range_low + (range_size * 0.50)  # CE
+    level_25 = range_low + (range_size * 0.25)
+    level_0 = range_low  # 0%
+    
+    # Zona de equilibrium (±5%)
+    equilibrium_high = range_low + (range_size * 0.55)
+    equilibrium_low = range_low + (range_size * 0.45)
+    
+    zones = {
+        "valid": True,
+        "range": {
+            "high": range_high,
+            "low": range_low,
+            "size": range_size
+        },
+        "premium": {
+            "high": (level_75, level_100),  # 75-100%
+            "medium": (level_50, level_75),  # 50-75%
+            "full_zone": (level_50, level_100),
+            "bias": "BEARISH",  # Premium favorece SHORT
+            "description": "Zona cara - Considerar vendas"
+        },
+        "discount": {
+            "low": (level_0, level_25),  # 0-25%
+            "medium": (level_25, level_50),  # 25-50%
+            "full_zone": (level_0, level_50),
+            "bias": "BULLISH",  # Discount favorece LONG
+            "description": "Zona barata - Considerar compras"
+        },
+        "equilibrium": {
+            "zone": (equilibrium_low, equilibrium_high),  # 45-55%
+            "ce_level": level_50,
+            "bias": "NEUTRAL",
+            "description": "Zona neutra - Aguardar confirmação"
+        },
+        "levels": {
+            "100%": level_100,
+            "75%": level_75,
+            "50%_CE": level_50,
+            "25%": level_25,
+            "0%": level_0
+        }
+    }
+    
+    # Classifica preço atual se fornecido
+    # IMPORTANTE: Verificar equilibrium PRIMEIRO para evitar mislabeling
+    if current_price is not None:
+        if current_price >= equilibrium_low and current_price <= equilibrium_high:
+            # Equilibrium zone (45%-55%) - Neutral
+            classification = "EQUILIBRIUM"
+            bias = "NEUTRAL"
+            action_bias = "Aguardar breakout ou confirmação"
+        elif current_price >= level_75:
+            # Premium High (75%-100%) - Strong Bearish
+            classification = "PREMIUM_HIGH"
+            bias = "BEARISH"
+            action_bias = "Zona de SHORT entry ou profit taking"
+        elif current_price > equilibrium_high:
+            # Premium Medium (55%-75%) - Moderate Bearish
+            classification = "PREMIUM_MEDIUM"
+            bias = "BEARISH"
+            action_bias = "Considerar SHORT se confirmação"
+        elif current_price >= level_25:
+            # Discount Medium (25%-45%) - Moderate Bullish
+            classification = "DISCOUNT_MEDIUM"
+            bias = "BULLISH"
+            action_bias = "Considerar LONG se confirmação"
+        else:
+            # Discount Low (0%-25%) - Strong Bullish
+            classification = "DISCOUNT_LOW"
+            bias = "BULLISH"
+            action_bias = "Zona de LONG entry ou profit taking"
+        
+        zones["current_price_analysis"] = {
+            "price": current_price,
+            "classification": classification,
+            "bias": bias,
+            "action_bias": action_bias,
+            "distance_from_ce": current_price - level_50,
+            "distance_pct": ((current_price - level_50) / range_size) * 100
+        }
+    
+    return zones
+
+
+def enrich_narrative_with_ote_ce(narrative: MarketNarrative, df: pd.DataFrame, 
+                                  lookback: int = 20) -> MarketNarrative:
+    """
+    Enriquece narrativa com OTE, CE e Premium/Discount zones.
+    
+    Args:
+        narrative: MarketNarrative existente
+        df: DataFrame OHLCV
+        lookback: Período para calcular range
+    
+    Returns:
+        MarketNarrative atualizado com OTE/CE/Premium-Discount info
+    """
+    if df is None or len(df) < lookback:
+        return narrative
+    
+    # Calcula range recente
+    recent_high = df['high'].iloc[-lookback:].max()
+    recent_low = df['low'].iloc[-lookback:].min()
+    current_price = df['close'].iloc[-1]
+    
+    # Calcula OTE zones
+    ote = calculate_ote_zones(recent_high, recent_low)
+    
+    # Calcula CE
+    ce = calculate_consequent_encroachment(recent_high, recent_low)
+    
+    # Calcula Premium/Discount
+    pd_zones = calculate_premium_discount_zones(recent_high, recent_low, current_price)
+    
+    # Adiciona ao meta
+    narrative.meta['ote_zones'] = ote
+    narrative.meta['ce'] = ce
+    narrative.meta['premium_discount'] = pd_zones
+    
+    # Atualiza strength baseado em confluência com OTE/CE
+    if ote['valid'] and pd_zones['valid']:
+        # Se preço está em discount + OTE, aumenta strength bullish
+        if pd_zones.get('current_price_analysis'):
+            classification = pd_zones['current_price_analysis']['classification']
+            
+            if classification in ["DISCOUNT_LOW", "DISCOUNT_MEDIUM"]:
+                # Verifica se está próximo de OTE bullish
+                ote_62 = ote['bullish']['ote_62']
+                ote_79 = ote['bullish']['ote_79']
+                
+                if ote_79 <= current_price <= ote_62:
+                    narrative.strength = min(narrative.strength + 0.2, 1.0)
+                    narrative.meta['confluence_note'] = "Preço em DISCOUNT + OTE Bullish = Alta probabilidade LONG"
+            
+            elif classification in ["PREMIUM_HIGH", "PREMIUM_MEDIUM"]:
+                # Verifica se está próximo de OTE bearish
+                ote_62 = ote['bearish']['ote_62']
+                ote_79 = ote['bearish']['ote_79']
+                
+                if ote_62 <= current_price <= ote_79:
+                    narrative.strength = min(narrative.strength + 0.2, 1.0)
+                    narrative.meta['confluence_note'] = "Preço em PREMIUM + OTE Bearish = Alta probabilidade SHORT"
+    
+    return narrative

@@ -213,9 +213,33 @@ class VolumeFilter:
         print("📊 ANÁLISE DE VOLUME - FILTRO CONFIGURADO")
         print("=" * 60)
         
+        # Formatar volume com detecção automática de escala
+        mean_vol = stats['mean_volume']
+        std_vol = stats['std_volume']
+        
+        # Escolher formato baseado na magnitude (corrigido para volumes fracionários)
+        if mean_vol >= 1000:
+            vol_format = f"{mean_vol:,.2f}"
+        elif mean_vol >= 1:
+            vol_format = f"{mean_vol:.2f}"
+        elif mean_vol >= 0.000001:  # Mostrar até 6 decimais para volumes pequenos
+            vol_format = f"{mean_vol:.6f}"
+        else:  # Apenas valores extremamente pequenos usam notação científica
+            vol_format = f"{mean_vol:.2e}"
+        
+        # Formato do desvio padrão baseado em sua própria magnitude
+        if std_vol >= 1000:
+            std_format = f"{std_vol:,.2f}"
+        elif std_vol >= 1:
+            std_format = f"{std_vol:.2f}"
+        elif std_vol >= 0.000001:
+            std_format = f"{std_vol:.6f}"
+        else:
+            std_format = f"{std_vol:.2e}"
+        
         print(f"\n📈 Distribuição de Volume:")
-        print(f"   Média: {stats['mean_volume']:,.0f}")
-        print(f"   Desvio Padrão: {stats['std_volume']:,.0f}")
+        print(f"   Média: {vol_format}")
+        print(f"   Desvio Padrão: {std_format}")
         
         print(f"\n📉 Distribuição de Z-Score:")
         print(f"   Média: {stats['mean_zscore']:.2f}")

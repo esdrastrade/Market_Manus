@@ -79,6 +79,7 @@ The project integrates with the following external services and Python libraries
 - **Python Libraries**:
     - `requests`, `httpx`, `websockets`: HTTP and WebSocket communication.
     - `pandas`, `numpy`: Data manipulation and analysis.
+    - `pyarrow`: Parquet file support for historical data caching.
     - `python-dotenv`: Environment variable management.
     - `semantic-kernel`, `openai`: AI integration.
     - `ccxt`: Cryptocurrency exchange interaction.

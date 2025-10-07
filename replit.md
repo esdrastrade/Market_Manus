@@ -21,6 +21,13 @@ Market Manus is an automated trading system designed for scalping and swing trad
 - **ConfluenceEngineAdapter**: Created adapter pattern mapping current strategies to ConfluenceEngine detector interface for future migration (migration deferred to avoid large refactoring).
 - **Bug Fixes**: Corrected Premium/Discount equilibrium classification (45%-55% now properly neutral), fixed slippage application (taker-only), and improved type safety across codebase.
 
+### Phase 2 Visual Transparency Features - COMPLETED ✅
+- **ICT Market Context Panel**: Real-time visual display showing Premium/Discount classification (color-coded: red for Premium, green for Discount, yellow for Equilibrium), current price zone, active OTE status (BULLISH/BEARISH), and CE level (50% midpoint). Integrated into live streaming UI for immediate market context awareness.
+- **Trading Costs Panel**: Transparent breakdown of paper trading performance displaying current equity, position status (open/closed), unrealized P&L, and detailed last trade analysis showing Gross P&L → Trading Costs (fees+slippage) → Net P&L. Win rate with total trades count provides confidence metrics.
+- **Enhanced StreamState**: Expanded state tracking to include ICT narrative data (ict_premium_discount, ict_ote_active, ict_ote_type, ict_ce_level, ict_price_in_zone) and paper trading metrics (paper_equity, paper_position_open, paper_unrealized_pnl, paper_last_trade_gross/costs/net, paper_win_rate, paper_total_trades).
+- **Live Data Integration**: Automatic extraction of ICT data from signal.meta['narrative'] and paper trading metrics from engine.state, ensuring real-time accuracy with safe attribute checking and fallback values.
+- **Color-Coded Transparency**: Intuitive visual feedback using green for profitable/bullish conditions, red for losses/bearish, and yellow for neutral/equilibrium states across all panels.
+
 ## User Preferences
 *No specific user preferences recorded yet*
 

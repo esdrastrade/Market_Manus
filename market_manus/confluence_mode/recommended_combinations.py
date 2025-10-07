@@ -56,12 +56,12 @@ class RecommendedCombinations:
             {
                 "id": 3,
                 "name": "⚡ Momentum Master",
-                "strategies": ["macd", "rsi_mean_reversion", "parabolic_sar", "volume"],
+                "strategies": ["macd", "rsi_mean_reversion", "parabolic_sar", "vwap_volume"],
                 "mode": "WEIGHTED",
                 "description": "Captura explosões de momentum com volume forte",
                 "target_win_rate": "72-78%",
                 "best_timeframes": ["5m", "15m", "30m"],
-                "why_it_works": "MACD crossover + RSI saindo de extremos + PSAR confirmando + volume spike = momentum explosivo"
+                "why_it_works": "MACD crossover + RSI saindo de extremos + PSAR confirmando + VWAP+Vol detecta smart money = momentum explosivo"
             }
         ]
     
@@ -108,12 +108,12 @@ class RecommendedCombinations:
             {
                 "id": 7,
                 "name": "⚡ Lightning Scalper",
-                "strategies": ["cpr", "parabolic_sar", "vwap", "volume"],
+                "strategies": ["cpr", "parabolic_sar", "vwap_volume"],
                 "mode": "WEIGHTED",
                 "description": "Scalping de alta frequência em zonas-chave",
                 "target_win_rate": "70-76%",
                 "best_timeframes": ["1m", "5m"],
-                "why_it_works": "CPR define zonas intraday, PSAR trailing rápido, VWAP valor justo, volume confirma"
+                "why_it_works": "CPR define zonas intraday, PSAR trailing rápido, VWAP+Vol detecta smart money em tempo real"
             },
             {
                 "id": 8,
@@ -180,12 +180,12 @@ class RecommendedCombinations:
             {
                 "id": 13,
                 "name": "💥 Breakout Blaster",
-                "strategies": ["smc_bos", "bollinger_breakout", "adx", "volume"],
+                "strategies": ["smc_bos", "bollinger_breakout", "adx", "vwap_volume"],
                 "mode": "WEIGHTED",
                 "description": "Rompimentos estruturais com volume explosivo",
                 "target_win_rate": "77-85%",
                 "best_timeframes": ["5m", "15m", "1h"],
-                "why_it_works": "BOS rompe estrutura, Bollinger confirma volatilidade, ADX>25 força, volume spike valida"
+                "why_it_works": "BOS rompe estrutura, Bollinger confirma volatilidade, ADX>25 força, VWAP+Vol valida smart money"
             },
             {
                 "id": 14,
@@ -200,12 +200,12 @@ class RecommendedCombinations:
             {
                 "id": 15,
                 "name": "⚡ Volatility Breakout",
-                "strategies": ["bollinger_breakout", "parabolic_sar", "macd", "volume"],
+                "strategies": ["bollinger_breakout", "parabolic_sar", "macd", "vwap_volume"],
                 "mode": "WEIGHTED",
                 "description": "Captura expansões de volatilidade com momentum",
                 "target_win_rate": "71-77%",
                 "best_timeframes": ["5m", "15m", "1h"],
-                "why_it_works": "Bollinger squeeze → breakout, PSAR reverte, MACD acelera, volume confirma"
+                "why_it_works": "Bollinger squeeze → breakout, PSAR reverte, MACD acelera, VWAP+Vol confirma institucionais"
             }
         ]
     
@@ -236,12 +236,12 @@ class RecommendedCombinations:
             {
                 "id": 18,
                 "name": "🎯 Order Block Hunter",
-                "strategies": ["smc_order_blocks", "fibonacci", "vwap", "volume"],
+                "strategies": ["smc_order_blocks", "fibonacci", "vwap_volume"],
                 "mode": "WEIGHTED",
                 "description": "Opera order blocks em zonas de valor justo",
                 "target_win_rate": "75-82%",
                 "best_timeframes": ["5m", "15m", "1h"],
-                "why_it_works": "OB + Fib overlap = zona premium, VWAP confirma valor, volume valida rejeição/aceitação"
+                "why_it_works": "OB + Fib overlap = zona premium, VWAP+Vol confirma valor institucional e valida rejeição/aceitação"
             }
         ]
     

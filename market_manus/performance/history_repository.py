@@ -176,6 +176,44 @@ class PerformanceHistoryRepository:
         finally:
             conn.close()
     
+    def get_all_backtests(self, limit: Optional[int] = None) -> List[Dict]:
+        """Busca todos os backtests ordenados por data"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        query = "SELECT * FROM backtests ORDER BY timestamp DESC"
+        if limit:
+            query += f" LIMIT {limit}"
+        
+        cursor.execute(query)
+        results = []
+        for row in cursor.fetchall():
+            results.append({
+                'backtest_id': row[0],
+                'timestamp': row[1],
+                'combination_id': row[2],
+                'combination_name': row[3],
+                'strategies': json.loads(row[4]),
+                'timeframe': row[5],
+                'asset': row[6],
+                'start_date': row[7],
+                'end_date': row[8],
+                'confluence_mode': row[9],
+                'win_rate': row[10],
+                'total_trades': row[11],
+                'winning_trades': row[12],
+                'losing_trades': row[13],
+                'initial_capital': row[14],
+                'final_capital': row[15],
+                'roi': row[16],
+                'total_signals': row[17],
+                'manus_ai_enabled': bool(row[18]),
+                'semantic_kernel_enabled': bool(row[19])
+            })
+        
+        conn.close()
+        return results
+    
     def get_combination_history(self, combination_id: str, timeframe: str, days: Optional[int] = None) -> List[Dict]:
         """Busca histórico de uma combinação específica"""
         conn = sqlite3.connect(self.db_path)

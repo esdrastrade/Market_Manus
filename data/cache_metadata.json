@@ -8,5 +8,15 @@
     "columns": 6,
     "cached_at": "2025-10-07T15:56:53.604231",
     "file_size_kb": 1034.89
+  },
+  "BTCUSDT_1_011124_until_071025": {
+    "symbol": "BTCUSDT",
+    "interval": "1",
+    "start_date": "2024-11-01",
+    "end_date": "2025-10-07",
+    "candles": 489600,
+    "columns": 6,
+    "cached_at": "2025-10-07T16:09:30.887927",
+    "file_size_kb": 11150.46
   }
 }

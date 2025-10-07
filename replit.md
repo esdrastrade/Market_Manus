@@ -56,10 +56,10 @@ The system features a professional-grade, real-time interactive console-based UI
 - **Rich Display**: Utilization of the `rich` library for advanced terminal UI rendering, including tables, panels, and color-coded status indicators.
 
 ### Technical Implementations
-- **Core Architecture**: Features a modular design with components for market sentiment analysis, a diverse Strategy Lab (13 strategies including 5 Smart Money Concepts), Confluence Lab, Data Provider, and Capital Manager.
+- **Core Architecture**: Features a modular design with components for market sentiment analysis, a diverse Strategy Lab (17 strategies including 5 Smart Money Concepts), Confluence Lab with 22 Recommended Combinations, Data Provider, and Capital Manager.
 - **Market Sentiment Analysis**: A modular system aggregating data from various sources (Fear & Greed Index, CoinGecko, Bybit, CoinGlass, CryptoPanic, Santiment, Glassnode, Google Trends) to generate a composite "Market Prognosis." It includes dynamic asset resolution and news sentiment analysis.
 - **ICT Framework v2.0**: A professional-grade implementation of Inner Circle Trader methodology, structured into four pillars: Market Structure (BOS, CHoCH, Order Blocks, Liquidity Sweep), Context (Regime Detection, FVG, Strength Scoring), Narrative (Liquidity, Killzones, HTF Context, Judas Swing), and Setup (Entry Models, SL/TP, Setup Scoring). An orchestrator manages sequential analysis and filtering.
-- **Confluence System**: Combines SMC detectors with 10 classic technical strategies (including 3 new scalping-optimized detectors: MA Ribbon, Momentum Combo, Pivot Points). It uses a weighted scoring engine with regime filters and conflict penalties for high-probability signal generation.
+- **Confluence System**: Combines SMC detectors with 12 classic technical strategies (RSI, EMA, Bollinger, MACD, Stochastic, Williams %R, ADX, Fibonacci, Parabolic SAR, VWAP, VWAP+Volume Combo, CPR). Features 22 Professional Recommended Combinations organized by market condition (Trending, Ranging, Scalping, Reversal, Breakout, Institutional, High Confidence) targeting 70-80%+ win rate. Uses weighted scoring engine with regime filters and conflict penalties.
 - **Market Context Analyzer**: A regime detection system that analyzes historical data (MA slope, ADX, ATR) to identify BULLISH, BEARISH, or CORRECTION conditions, auto-adjusting strategy weights for context-aware execution.
 - **Volume Filter Pipeline**: Implements statistical volume-based signal filtering using Z-scores to reject low-volume signals and amplify high-volume ones, applied after strategy signals but before confluence scoring.
 - **Data Handling**: Features unlimited historical data fetching via intelligent batching, a Parquet-based caching system for historical data, and robust real-time data streaming via Binance.US WebSocket with automatic reconnection and exponential backoff.
@@ -68,8 +68,9 @@ The system features a professional-grade, real-time interactive console-based UI
 - **Strategy Explanations**: Comprehensive documentation (Markdown files) for all 13 strategies covering logic, triggers, parameters, and best practices.
 
 ### Feature Specifications
-- **Strategy Lab V6**: Offers 13 professional trading strategies (8 classic, 5 SMC) with real-time and historical testing capabilities, including API key validation and detailed metrics display.
-- **Confluence Lab**: Supports combining strategies using ALL, MAJORITY, WEIGHTED, and ANY modes, with real-time execution displaying live confluence signals.
+- **Strategy Lab V6**: Offers 17 professional trading strategies (12 classic, 5 SMC) with real-time and historical testing capabilities, including API key validation and detailed metrics display.
+- **Confluence Lab**: Supports combining strategies using ALL, MAJORITY, WEIGHTED, and ANY modes. Features **22 Recommended Combinations** system with pre-configured professional setups organized by category: Trending Markets (3), Ranging Markets (3), Scalping (3), Reversal (3), Breakout (3), Institutional/Smart Money (3), High Confidence Ultra (4). Each combination targets 70-80%+ win rate with specific timeframe recommendations and detailed rationale.
+- **New Strategies Added**: Parabolic SAR (trend following with reversals), VWAP (institutional value detection), VWAP+Volume Combo (smart money tracking), CPR - Central Pivot Range (intraday support/resistance zones for scalping).
 - **Supported Timeframes**: Ranges from 1 minute to 1 day for flexible analysis and trading.
 
 ## External Dependencies

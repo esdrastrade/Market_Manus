@@ -27,11 +27,20 @@ from market_manus.strategies.smc.patterns import (
     detect_liquidity_sweep
 )
 
+# Importar novas estratégias clássicas
+from market_manus.strategies.parabolic_sar import parabolic_sar_signal
+from market_manus.strategies.vwap import vwap_signal, vwap_volume_combo_signal
+from market_manus.strategies.cpr import cpr_signal
+
 # Importar filtro de volume
 from market_manus.analysis.volume_filter import VolumeFilterPipeline
 
 # Importar cache de dados históricos
 from market_manus.data_providers.historical_cache import HistoricalDataCache
+
+# Importar sistema de combinações recomendadas
+from market_manus.confluence_mode.recommended_combinations import RecommendedCombinations
+from market_manus.confluence_mode.recommended_combinations_menu import display_recommended_combinations_menu
 
 class ConfluenceModeModule:
     """
@@ -70,6 +79,10 @@ class ConfluenceModeModule:
             "williams_r",
             "adx",
             "fibonacci",
+            "parabolic_sar",
+            "vwap",
+            "vwap_volume",
+            "cpr",
             "smc_bos",
             "smc_choch",
             "smc_order_blocks",
@@ -77,7 +90,7 @@ class ConfluenceModeModule:
             "smc_liquidity_sweep"
         ]
         
-        # Estratégias disponíveis para confluência (13 estratégias: 8 clássicas + 5 SMC)
+        # Estratégias disponíveis para confluência (17 estratégias: 12 clássicas + 5 SMC)
         self.available_strategies = {
             "rsi_mean_reversion": {
                 "name": "RSI Mean Reversion",
@@ -125,6 +138,30 @@ class ConfluenceModeModule:
                 "name": "Fibonacci Retracement",
                 "description": "Níveis de Fibonacci",
                 "emoji": "🔢",
+                "weight": 1.0
+            },
+            "parabolic_sar": {
+                "name": "Parabolic SAR",
+                "description": "Seguidor de tendência com reversões",
+                "emoji": "🎯",
+                "weight": 1.0
+            },
+            "vwap": {
+                "name": "VWAP",
+                "description": "Volume Weighted Average Price",
+                "emoji": "💹",
+                "weight": 1.0
+            },
+            "vwap_volume": {
+                "name": "VWAP + Volume Combo",
+                "description": "Desequilíbrio institucional",
+                "emoji": "🏦",
+                "weight": 1.0
+            },
+            "cpr": {
+                "name": "CPR (Central Pivot Range)",
+                "description": "Zonas de suporte/resistência intraday",
+                "emoji": "📍",
                 "weight": 1.0
             },
             "smc_bos": {
@@ -389,9 +426,48 @@ class ConfluenceModeModule:
         input("\n📖 Pressione ENTER para continuar...")
     
     def _strategy_selection_menu(self):
-        """Menu de seleção de estratégias"""
-        print("\n📈 SELEÇÃO DE ESTRATÉGIAS")
-        print("="*50)
+        """Menu de seleção de estratégias com Combinações Recomendadas"""
+        while True:
+            print("\n📈 SELEÇÃO DE ESTRATÉGIAS")
+            print("="*80)
+            
+            # Mostrar estratégias selecionadas atualmente
+            if self.selected_strategies:
+                print(f"\n✅ Estratégias atuais ({len(self.selected_strategies)}):")
+                for strategy_key in self.selected_strategies:
+                    if strategy_key in self.available_strategies:
+                        strategy = self.available_strategies[strategy_key]
+                        print(f"   {strategy['emoji']} {strategy['name']}")
+            else:
+                print("\n⚠️  Nenhuma estratégia selecionada")
+            
+            print(f"\n{'='*80}")
+            print("📋 OPÇÕES:")
+            print("   1️⃣  ✨ Combinações Recomendadas (22 presets profissionais)")
+            print("   2️⃣  🔧 Seleção Manual de Estratégias (17 disponíveis)")
+            print("   0️⃣  Voltar")
+            
+            choice = input("\n🔢 Escolha uma opção (0-2): ").strip()
+            
+            if choice == '0':
+                return
+            elif choice == '1':
+                # Abrir menu de combinações recomendadas
+                if display_recommended_combinations_menu(self):
+                    # Combinação foi aplicada, voltar ao menu principal
+                    return
+            elif choice == '2':
+                # Seleção manual tradicional
+                self._manual_strategy_selection()
+                return
+            else:
+                print("❌ Opção inválida")
+                input("\n📖 Pressione ENTER para continuar...")
+    
+    def _manual_strategy_selection(self):
+        """Seleção manual de estratégias individuais"""
+        print("\n📈 SELEÇÃO MANUAL DE ESTRATÉGIAS")
+        print("="*80)
         print("💡 Selecione múltiplas estratégias para confluência")
         print("   Digite os números separados por vírgula (ex: 1,3,5)")
         
@@ -399,10 +475,10 @@ class ConfluenceModeModule:
         for i, strategy_key in enumerate(strategies_list, 1):
             strategy = self.available_strategies[strategy_key]
             selected = "✅" if strategy_key in self.selected_strategies else "  "
-            print(f"   {i}️⃣  {selected} {strategy['emoji']} {strategy['name']}")
-            print(f"       📝 {strategy['description']}")
+            print(f"   {i:2d}️⃣  {selected} {strategy['emoji']} {strategy['name']}")
+            print(f"        📝 {strategy['description']}")
         
-        print(f"\n   0️⃣  Voltar")
+        print(f"\n   0️⃣  Cancelar")
         
         choice = input("\n🔢 Escolha estratégias (ex: 1,3,5 ou 0): ").strip()
         
@@ -1326,6 +1402,69 @@ class ConfluenceModeModule:
                 signal_indices.append((i, "BUY"))
             for i in range(40, len(closes), 40):
                 signal_indices.append((i, "SELL"))
+        
+        # Parabolic SAR
+        elif strategy_key == "parabolic_sar":
+            df = pd.DataFrame({
+                'open': opens,
+                'high': highs,
+                'low': lows,
+                'close': closes,
+                'volume': [1.0] * len(closes)  # Volume não usado pelo PSAR
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = parabolic_sar_signal(window_df)
+                if signal.action != "HOLD":
+                    signal_indices.append((i, signal.action))
+        
+        # VWAP
+        elif strategy_key == "vwap":
+            # Usar volume dummy se não disponível
+            volumes = [1.0] * len(closes)  # Será substituído por volume real se disponível
+            df = pd.DataFrame({
+                'open': opens,
+                'high': highs,
+                'low': lows,
+                'close': closes,
+                'volume': volumes
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = vwap_signal(window_df)
+                if signal.action != "HOLD":
+                    signal_indices.append((i, signal.action))
+        
+        # VWAP + Volume Combo
+        elif strategy_key == "vwap_volume":
+            volumes = [1.0] * len(closes)
+            df = pd.DataFrame({
+                'open': opens,
+                'high': highs,
+                'low': lows,
+                'close': closes,
+                'volume': volumes
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = vwap_volume_combo_signal(window_df)
+                if signal.action != "HOLD":
+                    signal_indices.append((i, signal.action))
+        
+        # CPR (Central Pivot Range)
+        elif strategy_key == "cpr":
+            df = pd.DataFrame({
+                'open': opens,
+                'high': highs,
+                'low': lows,
+                'close': closes,
+                'volume': [1.0] * len(closes)
+            })
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                signal = cpr_signal(window_df)
+                if signal.action != "HOLD":
+                    signal_indices.append((i, signal.action))
         
         # SMC: Break of Structure
         elif strategy_key == "smc_bos":

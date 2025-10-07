@@ -79,8 +79,19 @@ def _select_from_category(confluence_module, combinations, category_name, consol
         print("="*80)
         
         for combo in combinations:
+            # Buscar win rate histórico se timeframe selecionado
+            historical_info = ""
+            if hasattr(confluence_module, 'selected_timeframe') and confluence_module.selected_timeframe:
+                timeframe = confluence_module.selected_timeframe
+                combo_id = str(combo['id'])
+                win_rate_data = confluence_module.performance_analytics.get_combination_win_rate(
+                    combo_id, timeframe, days=30
+                )
+                if win_rate_data['has_data']:
+                    historical_info = f"\n       📈 Histórico (30d): {win_rate_data['win_rate']:.1f}% ({win_rate_data['total_trades']} trades)"
+            
             print(f"\n   {combo['id']:2d}. {combo['name']}")
-            print(f"       📊 Win Rate: {combo['target_win_rate']}")
+            print(f"       📊 Win Rate Target: {combo['target_win_rate']}{historical_info}")
             print(f"       ⏰ Timeframes: {', '.join(combo['best_timeframes'])}")
             print(f"       🎯 Modo: {combo['mode']}")
             print(f"       📝 {combo['description']}")
@@ -163,6 +174,12 @@ def _apply_combination(confluence_module, combination):
     
     # Aplicar modo de confluência
     confluence_module.selected_confluence_mode = combination['mode']
+    
+    # Armazenar combinação selecionada para tracking no repositório
+    confluence_module.selected_combination = {
+        'id': str(combination['id']),
+        'name': combination['name']
+    }
     
     print(f"\n✅ Estratégias configuradas ({len(combination['strategies'])}):")
     for strategy_key in combination['strategies']:

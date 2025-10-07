@@ -1344,6 +1344,14 @@ class ConfluenceModeModule:
         }
         self.test_history.append(test_result)
         
+        # 📊 SALVAR NO REPOSITÓRIO DE PERFORMANCE
+        self._save_backtest_to_performance_repo(
+            test_result, filtered_strategy_signals, total_trades, winning_trades, losing_trades
+        )
+        
+        # 🧠 EXIBIR RECOMENDAÇÕES DE PESOS E INSIGHTS IA
+        self._display_recommendations(test_result, filtered_strategy_signals)
+        
         input("\n📖 Pressione ENTER para continuar...")
     
     def _execute_strategy_on_data(self, strategy_key: str, closes: List[float], highs: List[float], lows: List[float], opens: List[float]) -> List[Tuple[int, str]]:
@@ -2320,3 +2328,168 @@ class ConfluenceModeModule:
             }
         
         return enhanced
+    
+    def _save_backtest_to_performance_repo(self, test_result: Dict, filtered_strategy_signals: Dict, total_trades: int, winning_trades: int, losing_trades: int):
+        """Salva resultados do backtest no repositório de performance"""
+        try:
+            import uuid
+            
+            backtest_id = str(uuid.uuid4())
+            timestamp = test_result['timestamp']
+            
+            # Detectar se é uma combinação recomendada
+            combination_id = None
+            combination_name = None
+            if hasattr(self, 'selected_combination'):
+                combination_id = self.selected_combination.get('id')
+                combination_name = self.selected_combination.get('name')
+            
+            # Criar BacktestResult
+            backtest_result = BacktestResult(
+                backtest_id=backtest_id,
+                timestamp=timestamp,
+                combination_id=combination_id,
+                combination_name=combination_name,
+                strategies=test_result['strategies'],
+                timeframe=test_result['timeframe'],
+                asset=test_result['asset'],
+                start_date=self.custom_start_date or "default",
+                end_date=self.custom_end_date or "default",
+                confluence_mode=test_result['confluence_mode'],
+                win_rate=test_result['results']['win_rate'],
+                total_trades=total_trades,
+                winning_trades=winning_trades,
+                losing_trades=losing_trades,
+                initial_capital=test_result['results']['initial_capital'],
+                final_capital=test_result['results']['final_capital'],
+                roi=test_result['results']['roi'],
+                total_signals=test_result['results']['confluence_signals'],
+                manus_ai_enabled=self.ai_premium_enabled,
+                semantic_kernel_enabled=self.semantic_kernel_enabled
+            )
+            
+            # Criar StrategyContribution para cada estratégia
+            strategy_contributions = []
+            for strategy_key, data in filtered_strategy_signals.items():
+                # Estimar winning/losing signals (simplificado - divide proporcionalmente ao win rate)
+                filtered_count = data.get('filtered_count', len(data['signal_indices']))
+                original_count = data.get('original_count', len(data['signal_indices']))
+                
+                estimated_win_rate = (winning_trades / total_trades * 100) if total_trades > 0 else 0
+                estimated_winning = int(filtered_count * estimated_win_rate / 100)
+                estimated_losing = filtered_count - estimated_winning
+                
+                contrib = StrategyContribution(
+                    backtest_id=backtest_id,
+                    strategy_key=strategy_key,
+                    strategy_name=data.get('name', strategy_key),
+                    total_signals=original_count,
+                    signals_after_volume_filter=filtered_count,
+                    winning_signals=estimated_winning,
+                    losing_signals=estimated_losing,
+                    win_rate=estimated_win_rate,
+                    weight=data.get('weight', 1.0)
+                )
+                strategy_contributions.append(contrib)
+            
+            # Salvar no repositório
+            self.performance_repo.save_backtest_result(backtest_result, strategy_contributions)
+            
+            # Armazenar ID para uso posterior nas recomendações
+            self.last_backtest_id = backtest_id
+            
+        except Exception as e:
+            print(f"\n⚠️  Erro ao salvar histórico de performance: {e}")
+    
+    def _display_recommendations(self, test_result: Dict, filtered_strategy_signals: Dict):
+        """Exibe recomendações de pesos e insights IA"""
+        
+        if not hasattr(self, 'last_backtest_id'):
+            return
+        
+        print("\n" + "="*80)
+        print("🎯 RECOMENDAÇÕES DE OTIMIZAÇÃO")
+        print("="*80)
+        
+        # Calcular recomendações de peso
+        current_weights = {k: v.get('weight', 1.0) for k, v in filtered_strategy_signals.items()}
+        weight_recommendations = self.performance_analytics.calculate_weight_recommendations(
+            self.last_backtest_id,
+            current_weights
+        )
+        
+        if weight_recommendations:
+            print("\n📊 RECOMENDAÇÕES DE AJUSTE DE PESOS:")
+            print("="*80)
+            
+            for rec in weight_recommendations[:5]:  # Top 5
+                arrow = "↑" if rec.recommended_weight > rec.current_weight else "↓"
+                change_pct = ((rec.recommended_weight - rec.current_weight) / rec.current_weight * 100)
+                
+                print(f"\n   {rec.strategy_name}:")
+                print(f"   • Peso atual: {rec.current_weight:.2f} → Recomendado: {rec.recommended_weight:.2f} {arrow}")
+                print(f"   • Mudança: {change_pct:+.1f}%")
+                print(f"   • Razão: {rec.reason}")
+                print(f"   • Confiança: {rec.confidence*100:.0f}%")
+        else:
+            print("\n✅ Pesos atuais estão bem balanceados!")
+        
+        # Insights do Semantic Kernel (se ativado)
+        if self.semantic_kernel_enabled and self.sk_advisor.is_available():
+            print("\n🧠 INSIGHTS DO SEMANTIC KERNEL ADVISOR:")
+            print("="*80)
+            print("\n🔄 Gerando recomendações inteligentes com IA...")
+            
+            try:
+                # Preparar dados para o SK Advisor
+                backtest_summary = {
+                    'asset': test_result['asset'],
+                    'timeframe': test_result['timeframe'],
+                    'start_date': self.custom_start_date or "últimos 30 dias",
+                    'end_date': self.custom_end_date or "hoje",
+                    'confluence_mode': test_result['confluence_mode'],
+                    'win_rate': test_result['results']['win_rate'],
+                    'total_trades': test_result['results']['total_trades'],
+                    'roi': test_result['results']['roi'],
+                    'initial_capital': test_result['results']['initial_capital'],
+                    'final_capital': test_result['results']['final_capital']
+                }
+                
+                strategy_contributions_data = [
+                    {
+                        'strategy_name': data.get('name', key),
+                        'signals_after_volume_filter': data.get('filtered_count', len(data['signal_indices'])),
+                        'win_rate': test_result['results']['win_rate'],  # Simplificado
+                        'weight': data.get('weight', 1.0),
+                        'winning_signals': int(data.get('filtered_count', 0) * test_result['results']['win_rate'] / 100),
+                        'losing_signals': int(data.get('filtered_count', 0) * (100 - test_result['results']['win_rate']) / 100)
+                    }
+                    for key, data in filtered_strategy_signals.items()
+                ]
+                
+                weight_recommendations_data = [
+                    {
+                        'strategy_name': rec.strategy_name,
+                        'current_weight': rec.current_weight,
+                        'recommended_weight': rec.recommended_weight,
+                        'reason': rec.reason,
+                        'confidence': rec.confidence
+                    }
+                    for rec in weight_recommendations
+                ]
+                
+                # Gerar insights IA
+                sk_insights = self.sk_advisor.generate_recommendations(
+                    backtest_summary,
+                    strategy_contributions_data,
+                    weight_recommendations_data
+                )
+                
+                print(f"\n{sk_insights}")
+                
+            except Exception as e:
+                print(f"\n⚠️  Erro ao gerar insights IA: {e}")
+        elif self.semantic_kernel_enabled:
+            print("\n⚠️  Semantic Kernel Advisor não disponível (OPENAI_API_KEY não configurada)")
+        
+        print("\n" + "="*80)

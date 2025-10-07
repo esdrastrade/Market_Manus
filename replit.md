@@ -28,6 +28,18 @@ Market Manus is an automated trading system designed for scalping and swing trad
 - **Live Data Integration**: Automatic extraction of ICT data from signal.meta['narrative'] and paper trading metrics from engine.state, ensuring real-time accuracy with safe attribute checking and fallback values.
 - **Color-Coded Transparency**: Intuitive visual feedback using green for profitable/bullish conditions, red for losses/bearish, and yellow for neutral/equilibrium states across all panels.
 
+### Phase 2 Historical Data Caching System - COMPLETED ✅
+- **HistoricalDataCache Integration**: Fully integrated Parquet-based caching system in both Confluence Lab and Strategy Lab V6, drastically reducing API calls by storing historical data locally in `data/` directory (C:\Users\Esdras\scalping-trading-system\data).
+- **Cache-First Architecture**: Modified `_fetch_historical_klines()` in both modules to check cache BEFORE making API calls. Cache HIT returns stored data instantly with visual feedback ("✅ Cache HIT: {cache_key}"), while Cache MISS triggers API fetch followed by automatic cache save ("📥 Cache MISS: buscando API...").
+- **Session Statistics Tracking**: Added `cache_stats` dictionary tracking hits, misses, and API calls saved per session, providing transparency on cache efficiency.
+- **CLI Cache Management Menu**: New "📁 Dados Históricos Salvos" menu option (option 6️⃣ in Confluence Lab, option 9️⃣ in Strategy Lab) with 4 submenu options:
+  * 📊 Ver dados salvos (Rich Table: símbolo, interval, período, candles, tamanho, data)
+  * 🗑️ Limpar cache específico (select by number)
+  * 🧹 Limpar todo cache (with confirmation)
+  * 📈 Estatísticas de uso (files, space, hits/misses)
+- **Metadata Management**: Automatic cache metadata tracking in `cache_metadata.json` including symbol, interval, date range, candle count, file size, and cache timestamp.
+- **Smart Key Generation**: Unique cache keys based on symbol+interval+start_date+end_date ensuring precise cache matching and avoiding stale data issues.
+
 ## User Preferences
 *No specific user preferences recorded yet*
 

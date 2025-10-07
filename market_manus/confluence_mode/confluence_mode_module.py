@@ -42,6 +42,9 @@ from market_manus.data_providers.historical_cache import HistoricalDataCache
 from market_manus.confluence_mode.recommended_combinations import RecommendedCombinations
 from market_manus.confluence_mode.recommended_combinations_menu import display_recommended_combinations_menu
 
+# Importar integração Premium Manus AI
+from market_manus.ai.manus_ai_integration import ManusAIAnalyzer
+
 class ConfluenceModeModule:
     """
     Módulo de Confluência - Sistema de múltiplas estratégias
@@ -67,6 +70,10 @@ class ConfluenceModeModule:
             "misses": 0,
             "api_calls_saved": 0
         }
+        
+        # 🤖 PREMIUM AI LAYER - Manus AI Integration
+        self.ai_analyzer = ManusAIAnalyzer()
+        self.ai_premium_enabled = False  # Toggle on/off
         
         # ORDEM FIXA de estratégias para garantir mapeamento consistente UI → Engine
         # Esta lista DEVE corresponder exatamente à ordem exibida no menu
@@ -285,7 +292,7 @@ class ConfluenceModeModule:
         """Executa o modo interativo do Confluence Lab"""
         while True:
             self._show_main_menu()
-            choice = input("\n🔢 Escolha uma opção (0-10): ").strip()
+            choice = input("\n🔢 Escolha uma opção (0-11): ").strip()
             
             if choice == '0':
                 print("\n👋 Saindo do Confluence Lab...")
@@ -310,6 +317,8 @@ class ConfluenceModeModule:
                 self._view_test_results()
             elif choice == '10':
                 self._export_results()
+            elif choice == '11':
+                self._toggle_ai_premium()
             else:
                 print("❌ Opção inválida")
                 input("\n📖 Pressione ENTER para continuar...")
@@ -342,6 +351,11 @@ class ConfluenceModeModule:
             print(f"   💰 Capital: ${self.capital_manager.current_capital:.2f}")
             print(f"   💼 Position Size: ${self.capital_manager.get_position_size():.2f}")
         
+        # AI Premium Status
+        ai_status = "🤖 AI Premium: ✅ ATIVO" if self.ai_premium_enabled else "🤖 AI Premium: ⏸️ DESATIVADO"
+        ai_available = " (Disponível)" if self.ai_analyzer.is_enabled() else " (Configure MANUS_AI_API_KEY)"
+        print(f"   {ai_status}{ai_available if not self.ai_premium_enabled else ''}")
+        
         print(f"\n🔧 CONFIGURAÇÃO:")
         print("   1️⃣  Seleção de Ativo")
         print("   2️⃣  Seleção de Timeframe")
@@ -359,6 +373,10 @@ class ConfluenceModeModule:
         print(f"\n📊 RESULTADOS:")
         print("   9️⃣  Visualizar Resultados")
         print("   🔟 Exportar Relatórios")
+        
+        print(f"\n🤖 AI PREMIUM:")
+        ai_toggle_text = "Desativar" if self.ai_premium_enabled else "Ativar"
+        print(f"   1️⃣1️⃣  {ai_toggle_text} Manus AI (Análise Premium)")
         
         print(f"\n   0️⃣  Voltar ao Menu Principal")
     
@@ -2089,3 +2107,149 @@ class ConfluenceModeModule:
                 print(f"❌ Erro ao exportar: {e}")
         
         input("\n📖 Pressione ENTER para continuar...")
+    
+    def _toggle_ai_premium(self):
+        """Toggle Manus AI Premium on/off"""
+        print("\n🤖 MANUS AI PREMIUM - ANÁLISE INTELIGENTE DE MERCADO")
+        print("="*60)
+        
+        if not self.ai_analyzer.is_enabled():
+            print("❌ Manus AI não disponível!")
+            print("   Configure MANUS_AI_API_KEY no arquivo .env")
+            print("   Obtenha sua chave em: https://manus.im")
+            print("   1,000 créditos grátis + 300 diários disponíveis!")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        current_status = "ATIVO" if self.ai_premium_enabled else "DESATIVADO"
+        new_status = "DESATIVAR" if self.ai_premium_enabled else "ATIVAR"
+        
+        print(f"Status atual: {current_status}")
+        print(f"\n📋 O que o Manus AI Premium faz:")
+        print("   ✅ Análise inteligente do contexto de mercado")
+        print("   ✅ Avaliação da qualidade dos sinais das estratégias")
+        print("   ✅ Classificação de regime (trending/ranging/volátil)")
+        print("   ✅ Ajuste de confiança baseado em AI")
+        print("   ✅ Identificação de riscos e oportunidades")
+        print("   ✅ Insights contextuais sobre o mercado")
+        
+        confirm = input(f"\n❓ Deseja {new_status} o Manus AI Premium? (s/n): ").strip().lower()
+        
+        if confirm == 's':
+            self.ai_premium_enabled = not self.ai_premium_enabled
+            new_status_display = "✅ ATIVADO" if self.ai_premium_enabled else "⏸️ DESATIVADO"
+            print(f"\n🤖 Manus AI Premium: {new_status_display}")
+            
+            if self.ai_premium_enabled:
+                print("   🚀 A AI irá analisar e aprimorar todos os sinais das estratégias!")
+                print("   💡 Os resultados terão maior precisão e insights contextuais")
+            else:
+                print("   📊 Modo padrão: análise apenas com estratégias técnicas")
+        else:
+            print("\n❌ Operação cancelada")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    async def _apply_ai_analysis_to_signals(self, strategy_signals: dict, df: pd.DataFrame, symbol: str) -> dict:
+        """
+        Apply Manus AI analysis to enhance strategy signals
+        
+        Args:
+            strategy_signals: Dict with strategy signals
+            df: DataFrame with OHLCV data
+            symbol: Trading symbol
+            
+        Returns:
+            Enhanced signals with AI insights
+        """
+        if not self.ai_premium_enabled or not self.ai_analyzer.is_enabled():
+            return strategy_signals
+        
+        print("\n🤖 Aplicando análise Premium Manus AI...")
+        
+        try:
+            strategies_votes = {}
+            for strategy_key, signal_data in strategy_signals.items():
+                signal_indices = signal_data.get('signal_indices', [])
+                buy_count = sum(1 for idx, direction in signal_indices if direction == "BUY")
+                sell_count = sum(1 for idx, direction in signal_indices if direction == "SELL")
+                
+                if buy_count > sell_count:
+                    action = "BUY"
+                    confidence = buy_count / len(signal_indices) if signal_indices else 0.5
+                elif sell_count > buy_count:
+                    action = "SELL"
+                    confidence = sell_count / len(signal_indices) if signal_indices else 0.5
+                else:
+                    action = "NEUTRAL"
+                    confidence = 0.5
+                
+                strategies_votes[strategy_key] = {
+                    "action": action,
+                    "confidence": confidence
+                }
+            
+            ai_analysis = await self.ai_analyzer.analyze_market_context(
+                df=df,
+                symbol=symbol,
+                strategies_votes=strategies_votes
+            )
+            
+            if ai_analysis.get('ai_enabled', False):
+                print(f"   📊 Regime de Mercado: {ai_analysis['regime']}")
+                print(f"   🎯 Qualidade dos Sinais: {ai_analysis['signal_quality']}")
+                print(f"   ⚠️  Nível de Risco: {ai_analysis['risk_level']}")
+                print(f"   💡 Recomendação AI: {ai_analysis['action']}")
+                print(f"   📈 Confiança AI: {ai_analysis['confidence']:.1f}%")
+                print(f"\n   🧠 Insights AI:")
+                for insight in ai_analysis.get('insights', []):
+                    print(f"      • {insight}")
+                
+                enhanced_signals = self._enhance_signals_with_ai(strategy_signals, ai_analysis)
+                
+                print(f"\n   ✅ Sinais aprimorados pela AI Premium!")
+                return enhanced_signals
+            else:
+                print("   ⚠️  AI analysis não disponível, usando sinais padrão")
+                return strategy_signals
+                
+        except Exception as e:
+            print(f"   ⚠️  Erro na análise AI: {e}")
+            print("   📊 Continuando com sinais padrão...")
+            return strategy_signals
+    
+    def _enhance_signals_with_ai(self, strategy_signals: dict, ai_analysis: dict) -> dict:
+        """
+        Enhance strategy signals based on AI analysis
+        
+        Args:
+            strategy_signals: Original strategy signals
+            ai_analysis: AI analysis results
+            
+        Returns:
+            Enhanced signals with adjusted weights
+        """
+        enhanced = strategy_signals.copy()
+        
+        ai_confidence = ai_analysis.get('confidence', 50.0) / 100.0
+        ai_action = ai_analysis.get('action', 'CONTINUE')
+        
+        if ai_confidence > 0.7 and ai_action != 'WAIT':
+            for strategy_key in enhanced:
+                enhanced[strategy_key]['weight'] = enhanced[strategy_key].get('weight', 1.0) * 1.2
+                enhanced[strategy_key]['ai_boost'] = True
+        
+        elif ai_confidence < 0.4 or ai_action == 'WAIT':
+            for strategy_key in enhanced:
+                enhanced[strategy_key]['weight'] = enhanced[strategy_key].get('weight', 1.0) * 0.7
+                enhanced[strategy_key]['ai_warning'] = True
+        
+        for strategy_key in enhanced:
+            enhanced[strategy_key]['ai_analysis'] = {
+                'regime': ai_analysis.get('regime', 'UNKNOWN'),
+                'quality': ai_analysis.get('signal_quality', 'STANDARD'),
+                'risk': ai_analysis.get('risk_level', 'MEDIUM'),
+                'ai_confidence': ai_confidence
+            }
+        
+        return enhanced

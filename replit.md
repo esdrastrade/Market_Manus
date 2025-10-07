@@ -48,3 +48,31 @@ The project integrates with the following external services and Python libraries
     - `pydantic`: Data validation.
     - `rich`: Terminal UI rendering.
     - `pytrends`: Google Trends data (optional).
+### Phase 4 Manus AI Premium Integration - COMPLETED ✅
+- **Manus AI Integration Module** (market_manus/ai/manus_ai_integration.py): Full integration of Manus AI autonomous agent for premium market analysis:
+  * **ManusAIAnalyzer Class**: Core AI analyzer with market context analysis, signal enhancement, and intelligent insights
+  * **API Integration**: Secure connection to Manus AI API (https://api.manus.im) with token-based authentication
+  * **Market Context Analysis**: AI-powered regime detection (trending/ranging/volatile), signal quality assessment, and risk level evaluation
+  * **Signal Enhancement**: Automatic adjustment of strategy weights based on AI confidence (1.2x boost for high confidence, 0.7x reduction for low confidence/warnings)
+  * **Intelligent Insights**: Natural language explanations of market conditions and AI recommendations
+- **Premium AI Toggle in Confluence Lab**: New option 11 in main menu for on/off control:
+  * **Status Display**: Shows AI Premium status (ATIVO/DESATIVADO) and availability (checks MANUS_AI_API_KEY)
+  * **Interactive Toggle**: User-friendly activation/deactivation with confirmation prompt
+  * **Feature Explanation**: Clear description of AI capabilities (regime analysis, signal quality, risk identification, weight adjustment, contextual insights)
+  * **Fallback System**: Graceful degradation when AI is disabled or unavailable
+- **AI Layer Permeating All Processing**: AI analysis integrated into every stage of strategy execution:
+  * **Pre-Processing**: Market context analysis before strategy signals
+  * **Signal Processing**: AI evaluation of strategy votes and confluence
+  * **Post-Processing**: Weight adjustment and confidence boosting based on AI recommendations
+  * **Metadata Enrichment**: Every signal tagged with AI analysis (regime, quality, risk, confidence)
+- **Environment Configuration**: 
+  * **.env.example Updated**: Added MANUS_AI_API_KEY with instructions (https://manus.im, 1,000 free credits + 300 daily)
+  * **Secret Management**: Integrated with Replit Secrets for secure API key storage
+  * **Auto-Detection**: System automatically detects and enables AI when key is present
+- **User Benefits**:
+  * **Higher Accuracy**: AI-enhanced signal quality and reduced false positives
+  * **Context Awareness**: Market regime understanding improves strategy selection
+  * **Risk Management**: AI identifies high-risk conditions and adjusts accordingly
+  * **Educational Value**: Natural language insights explain market dynamics
+  * **Free to Use**: 1,000 credits + 300 daily credits available at no cost
+

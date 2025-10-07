@@ -7,10 +7,35 @@ Market Manus is an automated trading system for scalping and swing trading, util
 I prefer to receive comprehensive and detailed explanations, ensuring a thorough understanding of all concepts and decisions. Please do not make changes to the `data/` folder, as it is reserved for historical data caching. Additionally, refrain from modifying files within the `config/` directory without explicit instructions, as these contain sensitive configuration settings.
 
 ## System Architecture
-The system is a CLI/TUI application built with Python 3.11, structured around modular components for market analysis, strategy execution, and user interaction.
+The system offers dual interfaces (CLI/Web) built with Python 3.11, structured around modular components for market analysis, strategy execution, and user interaction. Users can choose their preferred interface at startup via `python main.py`.
+
+### Dual Interface System
+- **CLI Mode**: Professional-grade terminal interface with real-time visualization using the `rich` library
+- **Web Interface**: Modern browser-based dashboard with responsive design and real-time updates
+- **Startup Selection**: Interactive menu allows choosing between CLI or Web interface at launch
+- **Shared Backend**: Both interfaces utilize the same core trading engine and modules
 
 ### UI/UX Decisions
-The system features a professional-grade, real-time interactive console-based UI/UX with a multi-panel layout for live streaming visualization, including a Header, Metrics, optional Paper Trading panel, Body, and Footer. It incorporates an alert system with visual highlights and optional audio for strong signals. A paper trading simulator offers a virtual execution environment with real-time P&L, automatic Stop Loss/Take Profit, and trade statistics. The Narrative UI presents market sentiment data in natural language (Portuguese) using progressive disclosure. The `rich` library is utilized for advanced terminal UI rendering, including tables, panels, and color-coded status indicators.
+
+#### CLI/TUI Interface
+The CLI features a professional-grade, real-time interactive console-based UI/UX with a multi-panel layout for live streaming visualization, including a Header, Metrics, optional Paper Trading panel, Body, and Footer. It incorporates an alert system with visual highlights and optional audio for strong signals. A paper trading simulator offers a virtual execution environment with real-time P&L, automatic Stop Loss/Take Profit, and trade statistics. The Narrative UI presents market sentiment data in natural language (Portuguese) using progressive disclosure. The `rich` library is utilized for advanced terminal UI rendering, including tables, panels, and color-coded status indicators.
+
+#### Web Interface (NEW)
+- **Framework**: Flask + Flask-SocketIO for real-time WebSocket communication
+- **Frontend**: Bootstrap 5, responsive design, modern UI/UX
+- **Pages**:
+  * **Dashboard**: Real-time metrics, capital status, market overview, sentiment analysis
+  * **Strategy Lab**: Visual selection of 17 strategies (12 classic + 5 SMC) with interactive cards
+  * **Confluence Lab**: Browse and filter 22 recommended combinations by category/mode/timeframe
+  * **Backtest**: Configure and run backtests with real-time results visualization
+  * **Performance**: Historical performance tracking with Chart.js graphs
+- **Features**:
+  * Real-time updates via WebSocket
+  * REST API endpoints for system status, strategies, combinations
+  * AI toggles (Manus AI Premium + Semantic Kernel Advisor)
+  * Responsive design for desktop and mobile
+  * Dark theme with professional color scheme
+- **Access**: http://localhost:5000 when Web mode is selected
 
 ### Technical Implementations
 The core architecture is modular, featuring components for market sentiment analysis, a diverse Strategy Lab (17 strategies including 5 Smart Money Concepts), a Confluence Lab with 22 Recommended Combinations, a Data Provider, and a Capital Manager.
@@ -48,6 +73,7 @@ The project integrates with the following external services and Python libraries
     - `pydantic`: Data validation.
     - `rich`: Terminal UI rendering.
     - `pytrends`: Google Trends data (optional).
+    - `flask`, `flask-socketio`, `flask-cors`: Web interface framework and real-time communication.
 ### Phase 4 Manus AI Premium Integration - COMPLETED ✅
 - **Manus AI Integration Module** (market_manus/ai/manus_ai_integration.py): Full integration of Manus AI autonomous agent for premium market analysis:
   * **ManusAIAnalyzer Class**: Core AI analyzer with market context analysis, signal enhancement, and intelligent insights

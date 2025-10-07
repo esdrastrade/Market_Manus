@@ -30,7 +30,8 @@ from market_manus.strategies.smc.context import (
 
 from market_manus.strategies.smc.narrative import (
     MarketNarrative,
-    get_market_narrative
+    get_market_narrative,
+    enrich_narrative_with_ote_ce
 )
 
 from market_manus.strategies.smc.setup import (
@@ -86,6 +87,9 @@ class ICTFramework:
         context = get_market_context(df)
         
         narrative = get_market_narrative(df, timestamp=timestamp, df_htf=df_htf)
+        
+        # FASE 2: Enriquece narrativa com OTE, CE e Premium/Discount zones
+        narrative = enrich_narrative_with_ote_ce(narrative, df, lookback=20)
         
         if context.regime == "CONSOLIDATION" and context.strength > 0.7:
             return Signal(

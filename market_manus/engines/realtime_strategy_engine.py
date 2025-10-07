@@ -33,6 +33,7 @@ from market_manus.strategies.smc.patterns import (
 )
 from market_manus.core.signal import Signal
 from market_manus.analysis.market_context_analyzer import MarketContextAnalyzer
+from market_manus.core.capital_manager import FeeModel, FeePreset
 
 
 class RealtimeStrategyEngine:
@@ -69,6 +70,9 @@ class RealtimeStrategyEngine:
         self.initial_capital = initial_capital
         self.paper_trades = []
         self.current_position = None
+        
+        # FASE 2: FeeModel para custos realistas
+        self.fee_model = FeeModel.from_preset(FeePreset.LIVE) if enable_paper_trading else None
         
         self.ws_provider = None
         self.candles_deque = deque(maxlen=1000)
@@ -551,14 +555,29 @@ class RealtimeStrategyEngine:
             exit_price = price
             entry_price = self.current_position['entry_price']
             size = self.current_position['size']
+            position_value = entry_price * size
             
-            pnl = (exit_price - entry_price) * size
+            # P&L bruto (sem custos)
+            gross_pnl = (exit_price - entry_price) * size
             
-            self.state['paper_realized_pnl'] += pnl
-            self.state['paper_equity'] += pnl
+            # FASE 2: Aplicar custos realistas (fees + slippage)
+            if self.fee_model:
+                # Market orders (taker) para entry e exit - mais realista para paper trading
+                net_pnl, total_costs = self.fee_model.apply_costs_to_pnl(
+                    gross_pnl=gross_pnl,
+                    position_size=position_value,
+                    entry_is_maker=False,  # Market order
+                    exit_is_maker=False    # Market order
+                )
+            else:
+                net_pnl = gross_pnl
+                total_costs = 0.0
+            
+            self.state['paper_realized_pnl'] += net_pnl
+            self.state['paper_equity'] += net_pnl
             self.state['paper_total_trades'] += 1
             
-            if pnl > 0:
+            if net_pnl > 0:
                 self.state['paper_winning_trades'] += 1
             else:
                 self.state['paper_losing_trades'] += 1
@@ -567,8 +586,10 @@ class RealtimeStrategyEngine:
                 **self.current_position,
                 'exit_price': exit_price,
                 'exit_time': datetime.now(),
-                'pnl': pnl,
-                'pnl_pct': (pnl / (entry_price * size)) * 100
+                'gross_pnl': gross_pnl,
+                'trading_costs': total_costs,
+                'net_pnl': net_pnl,
+                'pnl_pct': (net_pnl / position_value) * 100 if position_value > 0 else 0
             })
             
             self.current_position = None

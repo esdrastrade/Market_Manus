@@ -705,6 +705,55 @@ def clear_cache():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/performance/export')
+def export_performance():
+    """Exporta resultados em JSON ou CSV"""
+    try:
+        from io import StringIO
+        import csv
+        
+        format_type = request.args.get('format', 'json')
+        
+        # Obter dados do banco
+        summary = get_performance_summary()
+        
+        if format_type == 'csv':
+            # Criar CSV
+            output = StringIO()
+            writer = csv.writer(output)
+            
+            # Cabeçalho
+            writer.writerow(['Data', 'Ativo', 'Timeframe', 'Combinação', 'Trades', 'Win Rate (%)', 'ROI (%)', 'Manus AI', 'Semantic Kernel'])
+            
+            # Dados
+            for b in summary.get('recent_backtests', []):
+                writer.writerow([
+                    b.get('timestamp', ''),
+                    b.get('asset', ''),
+                    b.get('timeframe', ''),
+                    b.get('combination_name', ''),
+                    b.get('total_trades', 0),
+                    round(b.get('win_rate', 0), 2),
+                    round(b.get('roi', 0), 2),
+                    'Sim' if b.get('manus_ai_enabled') else 'Não',
+                    'Sim' if b.get('semantic_kernel_enabled') else 'Não'
+                ])
+            
+            response = Response(output.getvalue(), mimetype='text/csv')
+            response.headers['Content-Disposition'] = 'attachment; filename=market_manus_performance.csv'
+            return response
+        
+        else:  # JSON
+            response = Response(
+                json.dumps(summary, indent=2, ensure_ascii=False),
+                mimetype='application/json'
+            )
+            response.headers['Content-Disposition'] = 'attachment; filename=market_manus_performance.json'
+            return response
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @socketio.on('connect')
 def handle_connect():
     """Cliente conectado via WebSocket"""

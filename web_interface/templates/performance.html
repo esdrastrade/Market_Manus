@@ -52,8 +52,16 @@
 <div class="row g-3">
     <div class="col-12">
         <div class="card bg-dark text-white border-secondary">
-            <div class="card-header bg-dark text-white border-bottom border-secondary">
+            <div class="card-header bg-dark text-white border-bottom border-secondary d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Backtests</h5>
+                <div class="btn-group">
+                    <button class="btn btn-success btn-sm" onclick="exportResults('json')">
+                        <i class="bi bi-download"></i> JSON
+                    </button>
+                    <button class="btn btn-success btn-sm" onclick="exportResults('csv')">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> CSV
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -207,5 +215,32 @@ new Chart(modeCtx, {
 });
 
 loadPerformanceData();
+
+// Função de Exportação
+async function exportResults(format) {
+    try {
+        const response = await fetch(`/api/performance/export?format=${format}`);
+        
+        if (!response.ok) {
+            alert('❌ Erro ao exportar resultados');
+            return;
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `market_manus_performance_${new Date().toISOString().slice(0,10)}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        alert(`✅ Relatório exportado em ${format.toUpperCase()}!`);
+    } catch (error) {
+        console.error('Erro ao exportar:', error);
+        alert('❌ Erro ao exportar resultados');
+    }
+}
 </script>
 {% endblock %}

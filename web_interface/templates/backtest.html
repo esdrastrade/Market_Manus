@@ -79,10 +79,36 @@
                     </label>
                 </div>
                 
-                <div class="d-grid">
+                <div class="d-grid mb-2">
                     <button class="btn btn-primary btn-lg" onclick="executeBacktest()">
                         <i class="bi bi-play-fill"></i> Executar Backtest
                     </button>
+                </div>
+                
+                <div class="d-grid">
+                    <button class="btn btn-secondary" onclick="manageCacheModal()">
+                        <i class="bi bi-hdd"></i> Gerenciar Cache Histórico
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cache Management Modal -->
+        <div class="modal fade" id="cacheModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-hdd"></i> Cache de Dados Históricos</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="cache-list" class="mb-3">
+                            <p class="text-muted">Carregando cache...</p>
+                        </div>
+                        <button class="btn btn-danger" onclick="clearAllCache()">
+                            <i class="bi bi-trash"></i> Limpar Todo Cache
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -307,6 +333,87 @@ function displayResults(result) {
                 </ul>
             </div>
         `;
+    }
+}
+
+// Cache Management Functions
+function manageCacheModal() {
+    const modal = new bootstrap.Modal(document.getElementById('cacheModal'));
+    modal.show();
+    loadCacheList();
+}
+
+async function loadCacheList() {
+    try {
+        const response = await fetch('/api/cache/list');
+        const data = await response.json();
+        
+        const cacheListDiv = document.getElementById('cache-list');
+        
+        if (data.cache_files && data.cache_files.length > 0) {
+            let html = '<div class="table-responsive"><table class="table table-dark table-sm"><thead><tr><th>Arquivo</th><th>Tamanho</th><th>Ações</th></tr></thead><tbody>';
+            
+            data.cache_files.forEach(file => {
+                html += `
+                    <tr>
+                        <td><small>${file.name}</small></td>
+                        <td><small>${file.size}</small></td>
+                        <td><button class="btn btn-danger btn-sm" onclick="deleteCache('${file.name}')"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            html += `<p class="text-muted mt-2">Total: ${data.cache_files.length} arquivo(s) | Tamanho total: ${data.total_size}</p>`;
+            cacheListDiv.innerHTML = html;
+        } else {
+            cacheListDiv.innerHTML = '<p class="text-muted">Nenhum arquivo em cache</p>';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar cache:', error);
+        document.getElementById('cache-list').innerHTML = '<p class="text-danger">Erro ao carregar cache</p>';
+    }
+}
+
+async function deleteCache(filename) {
+    if (!confirm(`Deletar ${filename}?`)) return;
+    
+    try {
+        const response = await fetch('/api/cache/delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({filename: filename})
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('✅ Cache deletado!');
+            loadCacheList();
+        } else {
+            alert('❌ Erro ao deletar cache');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('❌ Erro ao deletar cache');
+    }
+}
+
+async function clearAllCache() {
+    if (!confirm('⚠️ Limpar TODO o cache?\n\nIsto irá deletar todos os dados históricos salvos.')) return;
+    
+    try {
+        const response = await fetch('/api/cache/clear', {method: 'POST'});
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ Todo cache foi limpo!');
+            loadCacheList();
+        } else {
+            alert('❌ Erro ao limpar cache');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('❌ Erro ao limpar cache');
     }
 }
 </script>

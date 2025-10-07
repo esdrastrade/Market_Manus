@@ -107,6 +107,11 @@ def sentiment():
     """Página de Market Sentiment"""
     return render_template('sentiment.html')
 
+@app.route('/livetest')
+def livetest():
+    """Página de Live Test (Tempo Real)"""
+    return render_template('livetest.html')
+
 @app.route('/api/system/status')
 def system_status():
     """Retorna status do sistema"""
@@ -625,6 +630,80 @@ def get_sentiment(asset):
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/cache/list')
+def list_cache():
+    """Lista arquivos em cache"""
+    try:
+        import os
+        from pathlib import Path
+        
+        cache_dir = Path('data')
+        if not cache_dir.exists():
+            return jsonify({'cache_files': [], 'total_size': '0 B'})
+        
+        files = []
+        total_size = 0
+        
+        for file in cache_dir.glob('*.parquet'):
+            size = file.stat().st_size
+            total_size += size
+            files.append({
+                'name': file.name,
+                'size': f'{size / 1024:.1f} KB' if size < 1024*1024 else f'{size / (1024*1024):.1f} MB'
+            })
+        
+        total_size_str = f'{total_size / 1024:.1f} KB' if total_size < 1024*1024 else f'{total_size / (1024*1024):.1f} MB'
+        
+        return jsonify({
+            'cache_files': files,
+            'total_size': total_size_str
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/cache/delete', methods=['POST'])
+def delete_cache():
+    """Deleta arquivo de cache específico"""
+    try:
+        from pathlib import Path
+        
+        data = request.get_json()
+        filename = data.get('filename')
+        
+        if not filename:
+            return jsonify({'success': False, 'error': 'Filename não fornecido'}), 400
+        
+        cache_file = Path('data') / filename
+        
+        if cache_file.exists() and cache_file.suffix == '.parquet':
+            cache_file.unlink()
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Arquivo não encontrado'}), 404
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/cache/clear', methods=['POST'])
+def clear_cache():
+    """Limpa todo o cache"""
+    try:
+        from pathlib import Path
+        import shutil
+        
+        cache_dir = Path('data')
+        
+        if cache_dir.exists():
+            for file in cache_dir.glob('*.parquet'):
+                file.unlink()
+            
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @socketio.on('connect')
 def handle_connect():

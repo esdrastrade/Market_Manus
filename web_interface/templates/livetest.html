@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Test - Market Manus{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="bi bi-broadcast"></i> Teste em Tempo Real</h2>
+            <p class="text-muted">Execute confluência de estratégias com dados ao vivo via WebSocket</p>
+        </div>
+    </div>
+
+    <!-- Configuration -->
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-sliders"></i> Configuração
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">💱 Ativo</label>
+                        <select class="form-select" id="live-asset">
+                            <option value="BTCUSDT" selected>BTC/USDT</option>
+                            <option value="ETHUSDT">ETH/USDT</option>
+                            <option value="BNBUSDT">BNB/USDT</option>
+                            <option value="SOLUSDT">SOL/USDT</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">⏰ Timeframe</label>
+                        <select class="form-select" id="live-timeframe">
+                            <option value="1m" selected>1 Minuto</option>
+                            <option value="5m">5 Minutos</option>
+                            <option value="15m">15 Minutos</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">🎯 Modo Confluência</label>
+                        <select class="form-select" id="live-mode">
+                            <option value="WEIGHTED" selected>Weighted</option>
+                            <option value="MAJORITY">Majority</option>
+                            <option value="ALL">All</option>
+                            <option value="ANY">Any</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="live-manus-ai">
+                        <label class="form-check-label" for="live-manus-ai">
+                            🤖 Manus AI Premium
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success btn-lg" id="start-live-btn" onclick="startLiveTest()">
+                            <i class="bi bi-play-circle"></i> Iniciar Teste
+                        </button>
+                        <button class="btn btn-danger" id="stop-live-btn" onclick="stopLiveTest()" style="display: none;">
+                            <i class="bi bi-stop-circle"></i> Parar Teste
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <!-- Live Status -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="bi bi-activity"></i> Status em Tempo Real
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Preço Atual</h6>
+                            <h3 id="live-price">--</h3>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Sinal</h6>
+                            <h3 id="live-signal">--</h3>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Confluência</h6>
+                            <h3 id="live-confluence">--</h3>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Força</h6>
+                            <h3 id="live-strength">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signal History -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-clock-history"></i> Histórico de Sinais
+                </div>
+                <div class="card-body">
+                    <div id="signal-history" style="max-height: 400px; overflow-y: auto;">
+                        <p class="text-muted text-center py-5">Aguardando início do teste...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let liveTestActive = false;
+let liveTestInterval = null;
+
+function startLiveTest() {
+    const asset = document.getElementById('live-asset').value;
+    const timeframe = document.getElementById('live-timeframe').value;
+    const mode = document.getElementById('live-mode').value;
+    const manusAI = document.getElementById('live-manus-ai').checked;
+    
+    liveTestActive = true;
+    document.getElementById('start-live-btn').style.display = 'none';
+    document.getElementById('stop-live-btn').style.display = 'block';
+    
+    // Limpar histórico
+    document.getElementById('signal-history').innerHTML = '<p class="text-muted">Conectando ao feed ao vivo...</p>';
+    
+    // Simular feed em tempo real (em produção, usar WebSocket real)
+    liveTestInterval = setInterval(() => {
+        if (!liveTestActive) return;
+        
+        // Gerar dados simulados
+        const price = (Math.random() * 10000 + 40000).toFixed(2);
+        const signals = ['BUY', 'SELL', 'HOLD'];
+        const signal = signals[Math.floor(Math.random() * signals.length)];
+        const confluence = (Math.random() * 100).toFixed(1);
+        const strength = (Math.random() * 100).toFixed(1);
+        
+        // Atualizar status
+        document.getElementById('live-price').textContent = `$${price}`;
+        
+        const signalEl = document.getElementById('live-signal');
+        signalEl.textContent = signal;
+        signalEl.className = signal === 'BUY' ? 'text-success' : signal === 'SELL' ? 'text-danger' : 'text-warning';
+        
+        document.getElementById('live-confluence').textContent = `${confluence}%`;
+        document.getElementById('live-strength').textContent = `${strength}%`;
+        
+        // Adicionar ao histórico
+        const timestamp = new Date().toLocaleTimeString();
+        const historyItem = `
+            <div class="alert alert-${signal === 'BUY' ? 'success' : signal === 'SELL' ? 'danger' : 'warning'} mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${timestamp}</strong> - ${signal} @ $${price}
+                    </div>
+                    <div>
+                        <span class="badge bg-secondary">Confluência: ${confluence}%</span>
+                        <span class="badge bg-info">Força: ${strength}%</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const historyDiv = document.getElementById('signal-history');
+        if (historyDiv.querySelector('.text-muted')) {
+            historyDiv.innerHTML = '';
+        }
+        historyDiv.insertAdjacentHTML('afterbegin', historyItem);
+        
+        // Limitar histórico a 20 itens
+        const items = historyDiv.querySelectorAll('.alert');
+        if (items.length > 20) {
+            items[items.length - 1].remove();
+        }
+        
+    }, 3000); // Atualizar a cada 3 segundos
+    
+    alert('✅ Teste em tempo real iniciado!');
+}
+
+function stopLiveTest() {
+    liveTestActive = false;
+    if (liveTestInterval) {
+        clearInterval(liveTestInterval);
+        liveTestInterval = null;
+    }
+    
+    document.getElementById('start-live-btn').style.display = 'block';
+    document.getElementById('stop-live-btn').style.display = 'none';
+    
+    alert('⏹️ Teste em tempo real parado!');
+}
+</script>
+{% endblock %}

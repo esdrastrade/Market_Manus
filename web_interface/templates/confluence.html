@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Confluence Lab - Market Manus{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-4"><i class="bi bi-layers"></i> Confluence Lab</h1>
+        <p class="lead">22 Combinações Recomendadas - Win Rate 70-80%+</p>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <select class="form-select" id="category-filter">
+            <option value="all">Todas as Categorias</option>
+            <option value="trending">Trending Markets</option>
+            <option value="ranging">Ranging Markets</option>
+            <option value="scalping">Scalping</option>
+            <option value="reversal">Reversal</option>
+            <option value="breakout">Breakout</option>
+            <option value="institutional">Institutional/Smart Money</option>
+            <option value="high_confidence">High Confidence Ultra</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <input type="text" class="form-control" id="search-combo" placeholder="Buscar combinação...">
+    </div>
+    <div class="col-md-4">
+        <select class="form-select" id="mode-filter">
+            <option value="all">Todos os Modos</option>
+            <option value="WEIGHTED">Weighted</option>
+            <option value="MAJORITY">Majority</option>
+            <option value="ALL">All</option>
+            <option value="ANY">Any</option>
+        </select>
+    </div>
+</div>
+
+<div class="row g-3" id="combinations-container">
+    <div class="col-12 text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let allCombinations = [];
+
+async function loadAllCombinations() {
+    allCombinations = await loadCombinations();
+    renderCombinations(allCombinations);
+}
+
+function renderCombinations(combinations) {
+    const container = document.getElementById('combinations-container');
+    container.innerHTML = '';
+    
+    if (combinations.length === 0) {
+        container.innerHTML = '<div class="col-12"><div class="alert alert-warning">Nenhuma combinação encontrada</div></div>';
+        return;
+    }
+    
+    combinations.forEach(combo => {
+        const categoryBadge = getCategoryBadge(combo.category);
+        const modeBadge = getModeBadge(combo.mode);
+        
+        const card = `
+            <div class="col-lg-4 col-md-6">
+                <div class="card combination-card h-100" onclick="selectCombination(${combo.id})">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <strong>#${combo.id} - ${combo.name}</strong>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            ${categoryBadge}
+                            ${modeBadge}
+                        </div>
+                        <p class="card-text small">${combo.description}</p>
+                        <div class="mb-2">
+                            <strong>🎯 Win Rate:</strong> ${combo.target_win_rate}
+                        </div>
+                        <div class="mb-2">
+                            <strong>⏰ Timeframes:</strong> ${combo.best_timeframes.join(', ')}
+                        </div>
+                        <div class="mb-2">
+                            <strong>📊 Estratégias:</strong> ${combo.strategies.length}
+                            <br><small class="text-muted">${combo.strategies.slice(0, 3).join(', ')}${combo.strategies.length > 3 ? '...' : ''}</small>
+                        </div>
+                        <div class="alert alert-info py-1 px-2 mb-0">
+                            <small><strong>💡</strong> ${combo.why_it_works}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML += card;
+    });
+}
+
+function getCategoryBadge(category) {
+    const badges = {
+        'trending': '<span class="badge bg-success">Trending</span>',
+        'ranging': '<span class="badge bg-primary">Ranging</span>',
+        'scalping': '<span class="badge bg-warning text-dark">Scalping</span>',
+        'reversal': '<span class="badge bg-danger">Reversal</span>',
+        'breakout': '<span class="badge bg-info">Breakout</span>',
+        'institutional': '<span class="badge bg-dark">Institutional</span>',
+        'high_confidence': '<span class="badge bg-purple">High Confidence</span>'
+    };
+    return badges[category] || '<span class="badge bg-secondary">Other</span>';
+}
+
+function getModeBadge(mode) {
+    return `<span class="badge bg-secondary">${mode}</span>`;
+}
+
+function selectCombination(id) {
+    const combo = allCombinations.find(c => c.id === id);
+    if (!combo) return;
+    
+    window.location.href = `/backtest?combination=${id}`;
+}
+
+// Filtros
+document.getElementById('category-filter').addEventListener('change', filterCombinations);
+document.getElementById('search-combo').addEventListener('input', debounce(filterCombinations, 300));
+document.getElementById('mode-filter').addEventListener('change', filterCombinations);
+
+function filterCombinations() {
+    const category = document.getElementById('category-filter').value;
+    const search = document.getElementById('search-combo').value.toLowerCase();
+    const mode = document.getElementById('mode-filter').value;
+    
+    let filtered = allCombinations;
+    
+    if (category !== 'all') {
+        filtered = filtered.filter(c => c.category === category);
+    }
+    
+    if (search) {
+        filtered = filtered.filter(c => 
+            c.name.toLowerCase().includes(search) || 
+            c.description.toLowerCase().includes(search)
+        );
+    }
+    
+    if (mode !== 'all') {
+        filtered = filtered.filter(c => c.mode === mode);
+    }
+    
+    renderCombinations(filtered);
+}
+
+loadAllCombinations();
+</script>
+
+<style>
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+</style>
+{% endblock %}

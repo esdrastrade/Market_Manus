@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Performance - Market Manus{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-4"><i class="bi bi-trophy"></i> Performance History</h1>
+        <p class="lead">Histórico e análise de resultados</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-success">
+            <div class="card-body text-center">
+                <h6>Win Rate Geral</h6>
+                <h3>---%</h3>
+                <small>Todos os backtests</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body text-center">
+                <h6>Total de Backtests</h6>
+                <h3>---</h3>
+                <small>Registrados</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning text-dark">
+            <div class="card-body text-center">
+                <h6>Melhor Combinação</h6>
+                <h3>---</h3>
+                <small>Win rate mais alto</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-info">
+            <div class="card-body text-center">
+                <h6>ROI Médio</h6>
+                <h3>---</h3>
+                <small>Todos os backtests</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Backtests</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Ativo</th>
+                                <th>Timeframe</th>
+                                <th>Combinação</th>
+                                <th>Trades</th>
+                                <th>Win Rate</th>
+                                <th>ROI</th>
+                                <th>IA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="backtest-history">
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">
+                                    Nenhum backtest registrado ainda
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Win Rate por Timeframe</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="timeframe-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Distribuição de Modos</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="mode-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+async function loadPerformanceData() {
+    // TODO: Carregar dados reais do backend
+    console.log('Carregando dados de performance...');
+}
+
+// Gráfico de Win Rate por Timeframe
+const timeframeCtx = document.getElementById('timeframe-chart');
+new Chart(timeframeCtx, {
+    type: 'bar',
+    data: {
+        labels: ['1m', '5m', '15m', '1h', '4h', '1d'],
+        datasets: [{
+            label: 'Win Rate (%)',
+            data: [0, 0, 0, 0, 0, 0],
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+
+// Gráfico de Distribuição de Modos
+const modeCtx = document.getElementById('mode-chart');
+new Chart(modeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Weighted', 'Majority', 'All', 'Any'],
+        datasets: [{
+            data: [0, 0, 0, 0],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 206, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true
+    }
+});
+
+loadPerformanceData();
+</script>
+{% endblock %}

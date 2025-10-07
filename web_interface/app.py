@@ -55,6 +55,26 @@ def index():
     """Dashboard principal"""
     return render_template('dashboard.html')
 
+@app.route('/strategies')
+def strategies():
+    """Página Strategy Lab"""
+    return render_template('strategies.html')
+
+@app.route('/confluence')
+def confluence():
+    """Página Confluence Lab"""
+    return render_template('confluence.html')
+
+@app.route('/backtest')
+def backtest():
+    """Página de Backtest"""
+    return render_template('backtest.html')
+
+@app.route('/performance')
+def performance():
+    """Página de Performance"""
+    return render_template('performance.html')
+
 @app.route('/api/system/status')
 def system_status():
     """Retorna status do sistema"""

@@ -54,3 +54,7 @@ pytz
 rich
 tenacity
 websockets
+flask
+flask-cors
+flask-socketio
+python-socketio

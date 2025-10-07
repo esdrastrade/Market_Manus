@@ -10,9 +10,11 @@ from datetime import datetime
 def render_live_ui(state) -> Layout:
     layout = Layout()
     
+    # Expandido para incluir painéis ICT e Costs
     layout.split_column(
         Layout(name="header", size=3),
         Layout(name="body"),
+        Layout(name="ict_costs", size=6),
         Layout(name="footer", size=8)
     )
     
@@ -92,6 +94,113 @@ def render_live_ui(state) -> Layout:
     
     layout["footer"].update(
         Panel(events_table, title="📊 Últimas Mudanças de Estado", border_style="blue")
+    )
+    
+    # FASE 2: Painéis de Transparência (ICT + Trading Costs)
+    layout["ict_costs"].split_row(
+        Layout(name="ict_context", ratio=1),
+        Layout(name="trading_costs", ratio=1)
+    )
+    
+    # Painel ICT Market Context
+    ict_table = Table(show_header=True, expand=True, box=None)
+    ict_table.add_column("Métrica ICT", style="cyan", width=20)
+    ict_table.add_column("Valor", justify="left")
+    
+    # Premium/Discount Classification
+    pd_class = state.ict_premium_discount or "N/A"
+    pd_color = "red" if "Premium" in pd_class else ("green" if "Discount" in pd_class else "yellow")
+    ict_table.add_row(
+        "Premium/Discount",
+        f"[{pd_color}]{pd_class}[/{pd_color}]"
+    )
+    
+    # Price Zone
+    price_zone = state.ict_price_in_zone or "N/A"
+    ict_table.add_row(
+        "Zona de Preço",
+        f"[bold]{price_zone}[/bold]"
+    )
+    
+    # OTE (Optimal Trade Entry)
+    if state.ict_ote_active:
+        ote_style = "green bold" if state.ict_ote_type == "BULLISH" else "red bold"
+        ict_table.add_row(
+            "🎯 OTE Ativo",
+            f"[{ote_style}]{state.ict_ote_type}[/{ote_style}]"
+        )
+    else:
+        ict_table.add_row("🎯 OTE Ativo", "[dim]Não[/dim]")
+    
+    # CE (Consequent Encroachment)
+    if state.ict_ce_level:
+        ict_table.add_row(
+            "CE Level (50%)",
+            f"[yellow]${state.ict_ce_level:,.2f}[/yellow]"
+        )
+    else:
+        ict_table.add_row("CE Level (50%)", "[dim]N/A[/dim]")
+    
+    layout["ict_context"].update(
+        Panel(ict_table, title="🎯 ICT Market Context", border_style="cyan")
+    )
+    
+    # Painel Trading Costs
+    costs_table = Table(show_header=True, expand=True, box=None)
+    costs_table.add_column("Métrica", style="yellow", width=20)
+    costs_table.add_column("Valor", justify="right")
+    
+    # Paper Trading Stats
+    costs_table.add_row(
+        "💰 Equity",
+        f"[bold green]${state.paper_equity:,.2f}[/bold green]"
+    )
+    
+    # Position Status
+    pos_status = "🟢 ABERTA" if state.paper_position_open else "⚪ Fechada"
+    pos_color = "green" if state.paper_position_open else "dim"
+    costs_table.add_row(
+        "Posição",
+        f"[{pos_color}]{pos_status}[/{pos_color}]"
+    )
+    
+    # Unrealized P&L
+    if state.paper_position_open:
+        upnl_color = "green" if state.paper_unrealized_pnl >= 0 else "red"
+        upnl_sign = "+" if state.paper_unrealized_pnl >= 0 else ""
+        costs_table.add_row(
+            "P&L Não Realizado",
+            f"[{upnl_color}]{upnl_sign}${state.paper_unrealized_pnl:,.2f}[/{upnl_color}]"
+        )
+    
+    # Last Trade Breakdown (se disponível)
+    if state.paper_last_trade_net is not None:
+        costs_table.add_row("[dim]─[/dim]" * 20, "[dim]─[/dim]" * 10)
+        costs_table.add_row(
+            "Último Trade (Bruto)",
+            f"${state.paper_last_trade_gross:,.2f}" if state.paper_last_trade_gross else "N/A"
+        )
+        costs_table.add_row(
+            "Custos (Fees+Slip)",
+            f"[red]-${state.paper_last_trade_costs:,.2f}[/red]" if state.paper_last_trade_costs else "N/A"
+        )
+        net_color = "green" if state.paper_last_trade_net >= 0 else "red"
+        net_sign = "+" if state.paper_last_trade_net >= 0 else ""
+        costs_table.add_row(
+            "Líquido (Net)",
+            f"[{net_color} bold]{net_sign}${state.paper_last_trade_net:,.2f}[/{net_color} bold]"
+        )
+    
+    # Win Rate
+    if state.paper_total_trades > 0:
+        wr_color = "green" if state.paper_win_rate >= 50 else "red"
+        costs_table.add_row(
+            f"Win Rate ({state.paper_total_trades} trades)",
+            f"[{wr_color}]{state.paper_win_rate:.1f}%[/{wr_color}]"
+        )
+    
+    layout["trading_costs"].update(
+        Panel(costs_table, title="💰 Trading Costs & P&L", border_style="yellow")
     )
     
     return layout

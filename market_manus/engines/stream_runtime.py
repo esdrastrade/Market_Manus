@@ -35,6 +35,23 @@ class StreamState:
     msgs_processed: int = 0
     reconnections: int = 0
     last_state_price: float = 0.0
+    
+    # FASE 2: ICT Market Context (OTE/CE/Premium-Discount)
+    ict_premium_discount: Optional[str] = None
+    ict_ote_active: bool = False
+    ict_ote_type: Optional[str] = None
+    ict_ce_level: Optional[float] = None
+    ict_price_in_zone: Optional[str] = None
+    
+    # FASE 2: Paper Trading Costs
+    paper_equity: float = 0.0
+    paper_position_open: bool = False
+    paper_unrealized_pnl: float = 0.0
+    paper_last_trade_gross: Optional[float] = None
+    paper_last_trade_costs: Optional[float] = None
+    paper_last_trade_net: Optional[float] = None
+    paper_win_rate: float = 0.0
+    paper_total_trades: int = 0
 
 
 class StreamRuntime:
@@ -178,6 +195,41 @@ class StreamRuntime:
                 self.state.label_emoji = "↓ SELL"
             else:
                 self.state.label_emoji = "• HOLD"
+            
+            # FASE 2: Extrair dados ICT (OTE/CE/Premium-Discount) do signal.meta
+            narrative = signal.meta.get('narrative')
+            if narrative and hasattr(narrative, 'meta'):
+                nar_meta = narrative.meta
+                self.state.ict_premium_discount = nar_meta.get('premium_discount_classification')
+                self.state.ict_price_in_zone = nar_meta.get('price_in_zone')
+                self.state.ict_ce_level = nar_meta.get('ce_level')
+                
+                ote_data = nar_meta.get('ote_zones')
+                if ote_data:
+                    self.state.ict_ote_active = ote_data.get('active', False)
+                    self.state.ict_ote_type = ote_data.get('type')
+            
+            # FASE 2: Extrair dados de Paper Trading do engine
+            if hasattr(self.engine, 'state'):
+                eng_state = self.engine.state
+                self.state.paper_equity = eng_state.get('paper_equity', 0.0)
+                self.state.paper_unrealized_pnl = eng_state.get('paper_unrealized_pnl', 0.0)
+                total_trades = eng_state.get('paper_total_trades', 0)
+                self.state.paper_total_trades = total_trades
+                
+                if total_trades > 0:
+                    wins = eng_state.get('paper_winning_trades', 0)
+                    self.state.paper_win_rate = (wins / total_trades) * 100
+                
+                if hasattr(self.engine, 'current_position'):
+                    self.state.paper_position_open = self.engine.current_position is not None
+                
+                # Último trade (se disponível)
+                if hasattr(self.engine, 'paper_trades') and len(self.engine.paper_trades) > 0:
+                    last_trade = self.engine.paper_trades[-1]
+                    self.state.paper_last_trade_gross = last_trade.get('gross_pnl')
+                    self.state.paper_last_trade_costs = last_trade.get('trading_costs')
+                    self.state.paper_last_trade_net = last_trade.get('net_pnl')
             
             self.state.last_state_price = self.state.price
             self.state.delta_since = 0.0

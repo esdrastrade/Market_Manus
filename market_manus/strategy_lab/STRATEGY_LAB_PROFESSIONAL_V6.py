@@ -14,6 +14,10 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Any
 from pathlib import Path
+from rich.table import Table
+from rich.console import Console
+
+from market_manus.data_providers.historical_cache import HistoricalDataCache
 
 class StrategyLabProfessionalV6:
     """Strategy Lab Professional V6 - Versão completa com todas as estratégias"""
@@ -21,6 +25,16 @@ class StrategyLabProfessionalV6:
     def __init__(self, data_provider=None, capital_manager=None):
         self.data_provider = data_provider
         self.capital_manager = capital_manager
+        
+        # Cache de dados históricos
+        self.cache = HistoricalDataCache(cache_dir="data")
+        
+        # Estatísticas de cache para tracking
+        self.cache_stats = {
+            "hits": 0,
+            "misses": 0,
+            "api_calls_saved": 0
+        }
         
         # Estratégias disponíveis (8 estratégias completas)
         self.strategies = {
@@ -149,7 +163,7 @@ class StrategyLabProfessionalV6:
         """Executa o modo interativo do Strategy Lab"""
         while True:
             self._show_main_menu()
-            choice = input("\n🔢 Escolha uma opção (0-8): ").strip()
+            choice = input("\n🔢 Escolha uma opção (0-9): ").strip()
             
             if choice == '0':
                 print("\n👋 Saindo do Strategy Lab Professional V6...")
@@ -170,6 +184,8 @@ class StrategyLabProfessionalV6:
                 self._view_test_results()
             elif choice == '8':
                 self._export_results()
+            elif choice == '9':
+                self._manage_historical_cache()
             else:
                 print("❌ Opção inválida")
                 input("\n📖 Pressione ENTER para continuar...")
@@ -213,6 +229,9 @@ class StrategyLabProfessionalV6:
         print(f"\n📊 RESULTADOS:")
         print("   7️⃣  Visualizar Resultados")
         print("   8️⃣  Exportar Relatórios")
+        
+        print(f"\n💾 CACHE:")
+        print("   9️⃣  Dados Históricos Salvos")
         
         print(f"\n   0️⃣  Voltar ao Menu Principal")
     
@@ -569,3 +588,397 @@ class StrategyLabProfessionalV6:
                 print(f"❌ Erro ao exportar: {e}")
         
         input("\n📖 Pressione ENTER para continuar...")
+    
+    def _manage_historical_cache(self):
+        """Menu de gerenciamento de cache de dados históricos"""
+        console = Console()
+        
+        while True:
+            print("\n" + "="*80)
+            print("📁 GERENCIAMENTO DE CACHE DE DADOS HISTÓRICOS")
+            print("="*80)
+            
+            print("\n💡 Gerencie os dados históricos salvos em cache")
+            print("\n📋 OPÇÕES:")
+            print("   1️⃣  Ver dados salvos")
+            print("   2️⃣  Limpar cache específico")
+            print("   3️⃣  Limpar todo cache")
+            print("   4️⃣  Estatísticas de uso")
+            print("   0️⃣  Voltar")
+            
+            choice = input("\n🔢 Escolha uma opção (0-4): ").strip()
+            
+            if choice == '0':
+                break
+            elif choice == '1':
+                self._view_cached_data(console)
+            elif choice == '2':
+                self._delete_specific_cache(console)
+            elif choice == '3':
+                self._clear_all_cache()
+            elif choice == '4':
+                self._show_cache_statistics()
+            else:
+                print("❌ Opção inválida")
+                input("\n📖 Pressione ENTER para continuar...")
+    
+    def _view_cached_data(self, console: Console):
+        """Visualiza todos os dados em cache usando Rich Table"""
+        print("\n📊 DADOS SALVOS EM CACHE")
+        print("="*80)
+        
+        cached_datasets = self.cache.list_cached_datasets()
+        
+        if not cached_datasets:
+            print("\n⚠️  Nenhum dado em cache encontrado")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        table = Table(title=f"Cache de Dados Históricos ({len(cached_datasets)} datasets)")
+        
+        table.add_column("#", justify="right", style="cyan", no_wrap=True)
+        table.add_column("Símbolo", style="yellow", no_wrap=True)
+        table.add_column("Interval", style="green", no_wrap=True)
+        table.add_column("Período", style="blue")
+        table.add_column("Candles", justify="right", style="magenta")
+        table.add_column("Tamanho", justify="right", style="cyan")
+        table.add_column("Data Cache", style="white")
+        
+        for i, dataset in enumerate(cached_datasets, 1):
+            symbol = dataset.get("symbol", "N/A")
+            interval = dataset.get("interval", "N/A")
+            start_date = dataset.get("start_date", "N/A")
+            end_date = dataset.get("end_date", "N/A")
+            candles = dataset.get("candles", 0)
+            file_size = dataset.get("file_size_kb", 0)
+            cached_at = dataset.get("cached_at", "N/A")
+            
+            period = f"{start_date} → {end_date}"
+            
+            if cached_at != "N/A":
+                try:
+                    cached_dt = datetime.fromisoformat(cached_at)
+                    cached_at_str = cached_dt.strftime("%Y-%m-%d %H:%M")
+                except:
+                    cached_at_str = cached_at
+            else:
+                cached_at_str = "N/A"
+            
+            table.add_row(
+                str(i),
+                symbol,
+                interval,
+                period,
+                f"{candles:,}",
+                f"{file_size:.2f} KB",
+                cached_at_str
+            )
+        
+        console.print(table)
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _delete_specific_cache(self, console: Console):
+        """Remove um cache específico selecionado pelo usuário"""
+        print("\n🗑️  LIMPAR CACHE ESPECÍFICO")
+        print("="*80)
+        
+        cached_datasets = self.cache.list_cached_datasets()
+        
+        if not cached_datasets:
+            print("\n⚠️  Nenhum dado em cache encontrado")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        table = Table(title="Selecione o cache para remover")
+        
+        table.add_column("#", justify="right", style="cyan", no_wrap=True)
+        table.add_column("Símbolo", style="yellow", no_wrap=True)
+        table.add_column("Interval", style="green", no_wrap=True)
+        table.add_column("Período", style="blue")
+        table.add_column("Tamanho", justify="right", style="cyan")
+        
+        for i, dataset in enumerate(cached_datasets, 1):
+            symbol = dataset.get("symbol", "N/A")
+            interval = dataset.get("interval", "N/A")
+            start_date = dataset.get("start_date", "N/A")
+            end_date = dataset.get("end_date", "N/A")
+            file_size = dataset.get("file_size_kb", 0)
+            
+            period = f"{start_date} → {end_date}"
+            
+            table.add_row(
+                str(i),
+                symbol,
+                interval,
+                period,
+                f"{file_size:.2f} KB"
+            )
+        
+        console.print(table)
+        
+        choice = input(f"\n🔢 Escolha o número do cache para remover (1-{len(cached_datasets)}) ou 0 para cancelar: ").strip()
+        
+        if choice == '0':
+            print("\n❌ Operação cancelada")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        try:
+            index = int(choice) - 1
+            if 0 <= index < len(cached_datasets):
+                dataset = cached_datasets[index]
+                cache_key = dataset.get("key")
+                
+                if not cache_key:
+                    print("\n❌ Chave de cache inválida")
+                    input("\n📖 Pressione ENTER para continuar...")
+                    return
+                
+                confirm = input(f"\n⚠️  Tem certeza que deseja remover o cache '{cache_key}'? (s/n): ").strip().lower()
+                
+                if confirm == 's':
+                    if self.cache.delete(cache_key):
+                        print(f"\n✅ Cache '{cache_key}' removido com sucesso")
+                    else:
+                        print(f"\n❌ Erro ao remover cache '{cache_key}'")
+                else:
+                    print("\n❌ Operação cancelada")
+            else:
+                print("\n❌ Número inválido")
+        except ValueError:
+            print("\n❌ Digite um número válido")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _clear_all_cache(self):
+        """Remove todos os caches"""
+        print("\n🧹 LIMPAR TODO CACHE")
+        print("="*80)
+        
+        cached_datasets = self.cache.list_cached_datasets()
+        
+        if not cached_datasets:
+            print("\n⚠️  Nenhum dado em cache encontrado")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        print(f"\n⚠️  Você está prestes a remover TODOS os {len(cached_datasets)} datasets em cache")
+        
+        total_size = sum(dataset.get("file_size_kb", 0) for dataset in cached_datasets)
+        print(f"   📦 Total de espaço a ser liberado: {total_size:.2f} KB ({total_size/1024:.2f} MB)")
+        
+        confirm = input("\n⚠️  Tem certeza que deseja limpar TODO o cache? (s/n): ").strip().lower()
+        
+        if confirm == 's':
+            self.cache.clear_all()
+            print("\n✅ Todo o cache foi limpo com sucesso")
+        else:
+            print("\n❌ Operação cancelada")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _show_cache_statistics(self):
+        """Mostra estatísticas de uso do cache"""
+        print("\n📈 ESTATÍSTICAS DE USO DO CACHE")
+        print("="*80)
+        
+        cached_datasets = self.cache.list_cached_datasets()
+        
+        total_files = len(cached_datasets)
+        total_size_kb = sum(dataset.get("file_size_kb", 0) for dataset in cached_datasets)
+        total_size_mb = total_size_kb / 1024
+        total_candles = sum(dataset.get("candles", 0) for dataset in cached_datasets)
+        
+        print(f"\n📦 ARMAZENAMENTO:")
+        print(f"   📁 Total de arquivos: {total_files}")
+        print(f"   💾 Espaço total usado: {total_size_kb:.2f} KB ({total_size_mb:.2f} MB)")
+        print(f"   📊 Total de candles: {total_candles:,}")
+        
+        if total_files > 0:
+            avg_size = total_size_kb / total_files
+            avg_candles = total_candles / total_files
+            print(f"   📏 Tamanho médio por arquivo: {avg_size:.2f} KB")
+            print(f"   📊 Média de candles por arquivo: {avg_candles:.0f}")
+        
+        print(f"\n🎯 ESTATÍSTICAS DA SESSÃO:")
+        print(f"   ✅ Cache Hits: {self.cache_stats['hits']}")
+        print(f"   ❌ Cache Misses: {self.cache_stats['misses']}")
+        print(f"   💰 Chamadas API economizadas: {self.cache_stats['api_calls_saved']}")
+        
+        total_requests = self.cache_stats['hits'] + self.cache_stats['misses']
+        if total_requests > 0:
+            hit_rate = (self.cache_stats['hits'] / total_requests) * 100
+            print(f"   📈 Taxa de acerto: {hit_rate:.1f}%")
+        
+        if cached_datasets:
+            print(f"\n📋 DATASETS POR SÍMBOLO:")
+            symbols = {}
+            for dataset in cached_datasets:
+                symbol = dataset.get("symbol", "N/A")
+                if symbol not in symbols:
+                    symbols[symbol] = 0
+                symbols[symbol] += 1
+            
+            for symbol, count in sorted(symbols.items()):
+                print(f"   🪙 {symbol}: {count} dataset(s)")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _fetch_historical_klines(self, symbol: str, interval: str, start_date: Optional[str] = None, end_date: Optional[str] = None) -> Tuple[List, Dict]:
+        """
+        Busca TODOS os candles do período especificado, fazendo múltiplas chamadas se necessário.
+        Utiliza cache para evitar chamadas desnecessárias à API.
+        
+        Args:
+            symbol: Par de trading (ex: BTCUSDT)
+            interval: Timeframe (1, 5, 15, 60, 240, D)
+            start_date: Data inicial no formato YYYY-MM-DD (opcional)
+            end_date: Data final no formato YYYY-MM-DD (opcional)
+        
+        Returns:
+            Tuple[List, Dict]: (Lista com todos os candles, Dicionário com métricas da API)
+        """
+        # Calcular timestamps
+        if start_date and end_date:
+            start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+            end_ts = int(datetime.strptime(end_date, "%Y-%m-%d").timestamp() * 1000)
+            cache_start_date = start_date
+            cache_end_date = end_date
+        else:
+            # Período padrão: últimos 30 dias
+            end_ts = int(datetime.now().timestamp() * 1000)
+            start_ts = end_ts - (30 * 24 * 60 * 60 * 1000)
+            # Converter timestamps para formato YYYY-MM-DD para cache
+            cache_start_date = datetime.fromtimestamp(start_ts / 1000).strftime("%Y-%m-%d")
+            cache_end_date = datetime.fromtimestamp(end_ts / 1000).strftime("%Y-%m-%d")
+        
+        # Calcular duração de um candle em milissegundos
+        timeframe_ms = {
+            "1": 60 * 1000,
+            "5": 5 * 60 * 1000,
+            "15": 15 * 60 * 1000,
+            "60": 60 * 60 * 1000,
+            "240": 4 * 60 * 60 * 1000,
+            "D": 24 * 60 * 60 * 1000
+        }
+        
+        candle_duration = timeframe_ms.get(interval, 60 * 1000)
+        
+        # Calcular quantos candles são necessários
+        total_candles_needed = int((end_ts - start_ts) / candle_duration)
+        
+        print(f"   📊 Período requer ~{total_candles_needed} candles")
+        
+        # TENTAR BUSCAR DO CACHE PRIMEIRO
+        cache_key = self.cache._generate_cache_key(symbol, interval, cache_start_date, cache_end_date)
+        cached_data = self.cache.get(symbol, interval, cache_start_date, cache_end_date)
+        
+        if cached_data:
+            # CACHE HIT
+            self.cache_stats["hits"] += 1
+            self.cache_stats["api_calls_saved"] += 1
+            print(f"   ✅ Cache HIT: {cache_key} ({len(cached_data)} candles)")
+            
+            # Determinar período exato dos dados
+            first_candle_time = datetime.fromtimestamp(int(cached_data[0][0]) / 1000)
+            last_candle_time = datetime.fromtimestamp(int(cached_data[-1][0]) / 1000)
+            
+            metrics = {
+                "total_candles": len(cached_data),
+                "successful_batches": 0,
+                "failed_batches": 0,
+                "total_batches": 0,
+                "success_rate": 100.0,
+                "first_candle_time": first_candle_time,
+                "last_candle_time": last_candle_time,
+                "data_source": "Cache (dados reais armazenados)",
+                "cache_hit": True
+            }
+            
+            return cached_data, metrics
+        
+        # CACHE MISS - Buscar da API
+        self.cache_stats["misses"] += 1
+        print(f"   📥 Cache MISS: buscando API...")
+        
+        # Buscar dados em lotes de 500 (limite da API)
+        all_klines = []
+        current_start = start_ts
+        batch_num = 1
+        
+        # Métricas da API
+        successful_batches = 0
+        failed_batches = 0
+        
+        while current_start < end_ts:
+            # Calcular quantos candles faltam
+            remaining_ms = end_ts - current_start
+            remaining_candles = int(remaining_ms / candle_duration)
+            limit = min(500, remaining_candles)
+            
+            if limit <= 0:
+                break
+            
+            print(f"   📡 Batch {batch_num}: Buscando {limit} candles a partir de {datetime.fromtimestamp(current_start/1000).strftime('%Y-%m-%d %H:%M')}...")
+            
+            # Buscar dados com startTime
+            try:
+                klines = self.data_provider.get_kline(
+                    category='spot',
+                    symbol=symbol,
+                    interval=interval,
+                    limit=limit,
+                    start=current_start,
+                    end=end_ts
+                )
+                
+                if not klines:
+                    print(f"   ⚠️  Nenhum dado retornado para este batch")
+                    failed_batches += 1
+                    break
+                
+                all_klines.extend(klines)
+                successful_batches += 1
+                print(f"   ✅ Recebidos {len(klines)} candles (total acumulado: {len(all_klines)})")
+                
+                # Próximo batch começa após o último candle recebido
+                last_candle_time = int(klines[-1][0])
+                current_start = last_candle_time + candle_duration
+                batch_num += 1
+                
+                # Evitar rate limit
+                time.sleep(0.1)
+            except Exception as e:
+                print(f"   ❌ Erro no batch {batch_num}: {str(e)}")
+                failed_batches += 1
+                break
+        
+        # Salvar dados no cache para futuros usos
+        if all_klines:
+            print(f"   💾 Salvando dados no cache...")
+            self.cache.save(symbol, interval, cache_start_date, cache_end_date, all_klines)
+        
+        # Calcular métricas
+        total_batches = successful_batches + failed_batches
+        success_rate = (successful_batches / total_batches * 100) if total_batches > 0 else 0
+        
+        # Determinar período exato dos dados
+        first_candle_time = None
+        last_candle_time = None
+        if all_klines:
+            first_candle_time = datetime.fromtimestamp(int(all_klines[0][0]) / 1000)
+            last_candle_time = datetime.fromtimestamp(int(all_klines[-1][0]) / 1000)
+        
+        metrics = {
+            "total_candles": len(all_klines),
+            "successful_batches": successful_batches,
+            "failed_batches": failed_batches,
+            "total_batches": total_batches,
+            "success_rate": success_rate,
+            "first_candle_time": first_candle_time,
+            "last_candle_time": last_candle_time,
+            "data_source": self.data_provider.__class__.__name__ if self.data_provider else "Unknown",
+            "cache_hit": False
+        }
+        
+        return all_klines, metrics

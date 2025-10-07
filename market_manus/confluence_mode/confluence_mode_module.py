@@ -44,6 +44,15 @@ from market_manus.confluence_mode.recommended_combinations_menu import display_r
 
 # Importar integração Premium Manus AI
 from market_manus.ai.manus_ai_integration import ManusAIAnalyzer
+from market_manus.ai.semantic_kernel_advisor import SemanticKernelAdvisor
+
+# Importar sistema de rastreamento de performance
+from market_manus.performance.history_repository import (
+    PerformanceHistoryRepository, 
+    BacktestResult, 
+    StrategyContribution
+)
+from market_manus.performance.analytics_service import PerformanceAnalyticsService
 
 class ConfluenceModeModule:
     """
@@ -74,6 +83,14 @@ class ConfluenceModeModule:
         # 🤖 PREMIUM AI LAYER - Manus AI Integration
         self.ai_analyzer = ManusAIAnalyzer()
         self.ai_premium_enabled = False  # Toggle on/off
+        
+        # 🧠 SEMANTIC KERNEL AI ADVISOR - Recomendações IA
+        self.sk_advisor = SemanticKernelAdvisor()
+        self.semantic_kernel_enabled = False  # Toggle on/off
+        
+        # 📊 PERFORMANCE TRACKING SYSTEM
+        self.performance_repo = PerformanceHistoryRepository()
+        self.performance_analytics = PerformanceAnalyticsService(self.performance_repo)
         
         # ORDEM FIXA de estratégias para garantir mapeamento consistente UI → Engine
         # Esta lista DEVE corresponder exatamente à ordem exibida no menu
@@ -319,6 +336,8 @@ class ConfluenceModeModule:
                 self._export_results()
             elif choice == '11':
                 self._toggle_ai_premium()
+            elif choice == '12':
+                self._toggle_semantic_kernel()
             else:
                 print("❌ Opção inválida")
                 input("\n📖 Pressione ENTER para continuar...")
@@ -356,6 +375,11 @@ class ConfluenceModeModule:
         ai_available = " (Disponível)" if self.ai_analyzer.is_enabled() else " (Configure MANUS_AI_API_KEY)"
         print(f"   {ai_status}{ai_available if not self.ai_premium_enabled else ''}")
         
+        # Semantic Kernel Status
+        sk_status = "🧠 SK Advisor: ✅ ATIVO" if self.semantic_kernel_enabled else "🧠 SK Advisor: ⏸️ DESATIVADO"
+        sk_available = " (Disponível)" if self.sk_advisor.is_available() else " (Configure OPENAI_API_KEY)"
+        print(f"   {sk_status}{sk_available if not self.semantic_kernel_enabled else ''}")
+        
         print(f"\n🔧 CONFIGURAÇÃO:")
         print("   1️⃣  Seleção de Ativo")
         print("   2️⃣  Seleção de Timeframe")
@@ -374,9 +398,11 @@ class ConfluenceModeModule:
         print("   9️⃣  Visualizar Resultados")
         print("   🔟 Exportar Relatórios")
         
-        print(f"\n🤖 AI PREMIUM:")
+        print(f"\n🤖 AI & RECOMENDAÇÕES:")
         ai_toggle_text = "Desativar" if self.ai_premium_enabled else "Ativar"
         print(f"   1️⃣1️⃣  {ai_toggle_text} Manus AI (Análise Premium)")
+        sk_toggle_text = "Desativar" if self.semantic_kernel_enabled else "Ativar"
+        print(f"   1️⃣2️⃣  {sk_toggle_text} SK Advisor (Recomendações IA)")
         
         print(f"\n   0️⃣  Voltar ao Menu Principal")
     
@@ -2145,6 +2171,47 @@ class ConfluenceModeModule:
                 print("   💡 Os resultados terão maior precisão e insights contextuais")
             else:
                 print("   📊 Modo padrão: análise apenas com estratégias técnicas")
+        else:
+            print("\n❌ Operação cancelada")
+        
+        input("\n📖 Pressione ENTER para continuar...")
+    
+    def _toggle_semantic_kernel(self):
+        """Toggle Semantic Kernel Advisor on/off"""
+        print("\n🧠 SEMANTIC KERNEL ADVISOR - RECOMENDAÇÕES IA")
+        print("="*60)
+        
+        if not self.sk_advisor.is_available():
+            print("❌ Semantic Kernel Advisor não disponível!")
+            print("   Configure OPENAI_API_KEY no arquivo .env")
+            print("   Use a mesma chave da OpenAI API")
+            input("\n📖 Pressione ENTER para continuar...")
+            return
+        
+        current_status = "ATIVO" if self.semantic_kernel_enabled else "DESATIVADO"
+        new_status = "DESATIVAR" if self.semantic_kernel_enabled else "ATIVAR"
+        
+        print(f"Status atual: {current_status}")
+        print(f"\n📋 O que o Semantic Kernel Advisor faz:")
+        print("   ✅ Análise inteligente dos resultados de backtest")
+        print("   ✅ Recomendações de ajuste de pesos das estratégias")
+        print("   ✅ Diagnóstico de performance e pontos de melhoria")
+        print("   ✅ Sugestões de otimizações (timeframe, modo, etc)")
+        print("   ✅ Insights textuais detalhados pós-backtest")
+        print("   ✅ Próximos passos e ações concretas")
+        
+        confirm = input(f"\n❓ Deseja {new_status} o SK Advisor? (s/n): ").strip().lower()
+        
+        if confirm == 's':
+            self.semantic_kernel_enabled = not self.semantic_kernel_enabled
+            new_status_display = "✅ ATIVADO" if self.semantic_kernel_enabled else "⏸️ DESATIVADO"
+            print(f"\n🧠 Semantic Kernel Advisor: {new_status_display}")
+            
+            if self.semantic_kernel_enabled:
+                print("   🚀 Você receberá recomendações IA após cada backtest!")
+                print("   💡 Ajuste de pesos e otimizações sugeridas automaticamente")
+            else:
+                print("   📊 Modo padrão: apenas resultados numéricos básicos")
         else:
             print("\n❌ Operação cancelada")
         

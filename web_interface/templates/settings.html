@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - Market Manus{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="bi bi-gear-fill"></i> Settings - Capital Dashboard</h2>
+            <p class="text-muted">Gerencie configurações de capital e trading</p>
+        </div>
+    </div>
+
+    <!-- Capital Status -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-cash-stack"></i> Status do Capital
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted">Capital Inicial:</label>
+                        <h3 class="text-success" id="initial-capital">$10,000.00</h3>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Capital Atual:</label>
+                        <h3 class="text-primary" id="current-capital">$10,000.00</h3>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Position Size:</label>
+                        <h4 id="position-size">$200.00 (2.0%)</h4>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">P&L Total:</label>
+                        <h4 id="total-pnl" class="text-success">$0.00</h4>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Win Rate:</label>
+                        <h4 id="win-rate">0.0%</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-sliders"></i> Configurações
+                </div>
+                <div class="card-body">
+                    <!-- Alterar Capital Inicial -->
+                    <div class="mb-4">
+                        <label class="form-label"><i class="bi bi-wallet2"></i> Capital Inicial</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="new-initial-capital" 
+                                   placeholder="10000" step="100" min="100">
+                            <button class="btn btn-primary" onclick="updateInitialCapital()">
+                                <i class="bi bi-check-circle"></i> Atualizar
+                            </button>
+                        </div>
+                        <small class="text-muted">Define o capital base para backtests</small>
+                    </div>
+
+                    <!-- Alterar Position Size -->
+                    <div class="mb-4">
+                        <label class="form-label"><i class="bi bi-percent"></i> Position Size (%)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="new-position-size" 
+                                   placeholder="2.0" step="0.1" min="0.1" max="10">
+                            <span class="input-group-text">%</span>
+                            <button class="btn btn-primary" onclick="updatePositionSize()">
+                                <i class="bi bi-check-circle"></i> Atualizar
+                            </button>
+                        </div>
+                        <small class="text-muted">Percentual do capital usado por trade</small>
+                    </div>
+
+                    <!-- Reset Capital -->
+                    <div class="mb-3">
+                        <button class="btn btn-warning w-100" onclick="resetCapital()">
+                            <i class="bi bi-arrow-clockwise"></i> Resetar Capital para Inicial
+                        </button>
+                        <small class="text-muted d-block mt-1">Limpa histórico e reseta para capital inicial</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Info -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i> Informações do Sistema
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Versão:</strong> Market Manus v2.1</p>
+                            <p><strong>Estratégias:</strong> 17 (12 Clássicas + 5 SMC)</p>
+                            <p><strong>Combinações:</strong> 22 Recomendadas</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Data Provider:</strong> Binance.US API</p>
+                            <p><strong>Framework:</strong> Flask + SocketIO</p>
+                            <p><strong>Interface:</strong> Web GUI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Carregar status do capital ao carregar página
+async function loadCapitalStatus() {
+    try {
+        const response = await fetch('/api/capital/status');
+        const data = await response.json();
+        
+        document.getElementById('initial-capital').textContent = 
+            `$${data.initial_capital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('current-capital').textContent = 
+            `$${data.current_capital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('position-size').textContent = 
+            `$${data.position_size.toLocaleString('en-US', {minimumFractionDigits: 2})} (${data.position_size_pct}%)`;
+        
+        const pnl = data.total_pnl;
+        const pnlEl = document.getElementById('total-pnl');
+        pnlEl.textContent = `${pnl >= 0 ? '+' : ''}$${pnl.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        pnlEl.className = pnl >= 0 ? 'text-success' : 'text-danger';
+        
+        document.getElementById('win-rate').textContent = `${data.win_rate.toFixed(1)}%`;
+    } catch (error) {
+        console.error('Erro ao carregar status:', error);
+    }
+}
+
+async function updateInitialCapital() {
+    const newCapital = parseFloat(document.getElementById('new-initial-capital').value);
+    
+    if (!newCapital || newCapital < 100) {
+        alert('Digite um valor válido (mínimo $100)');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/capital/update', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                initial_capital: newCapital
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`✅ Capital inicial atualizado para $${newCapital.toLocaleString()}`);
+            loadCapitalStatus();
+            document.getElementById('new-initial-capital').value = '';
+        } else {
+            alert('❌ Erro ao atualizar capital');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('❌ Erro ao atualizar capital');
+    }
+}
+
+async function updatePositionSize() {
+    const newSize = parseFloat(document.getElementById('new-position-size').value);
+    
+    if (!newSize || newSize < 0.1 || newSize > 10) {
+        alert('Digite um valor válido (0.1% - 10%)');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/capital/update', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                position_size_pct: newSize
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`✅ Position size atualizado para ${newSize}%`);
+            loadCapitalStatus();
+            document.getElementById('new-position-size').value = '';
+        } else {
+            alert('❌ Erro ao atualizar position size');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('❌ Erro ao atualizar position size');
+    }
+}
+
+async function resetCapital() {
+    if (!confirm('⚠️ Resetar capital para o valor inicial?\n\nIsto irá limpar todo o histórico de trades e estatísticas.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/capital/reset', {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ Capital resetado com sucesso!');
+            loadCapitalStatus();
+        } else {
+            alert('❌ Erro ao resetar capital');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('❌ Erro ao resetar capital');
+    }
+}
+
+// Carregar status ao iniciar
+document.addEventListener('DOMContentLoaded', loadCapitalStatus);
+</script>
+{% endblock %}

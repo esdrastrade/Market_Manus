@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Connectivity - Market Manus{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="bi bi-wifi"></i> Connectivity Status</h2>
+            <p class="text-muted">Verificar status das conexões e APIs</p>
+        </div>
+    </div>
+
+    <!-- Binance API Status -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-coin"></i> Binance API
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div id="binance-indicator" class="spinner-border text-warning me-3" role="status">
+                            <span class="visually-hidden">Testando...</span>
+                        </div>
+                        <div>
+                            <h4 id="binance-status" class="mb-1">Testando conexão...</h4>
+                            <p id="binance-message" class="text-muted mb-0">Aguarde...</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="mb-2"><strong>Endpoint:</strong> <code id="binance-endpoint">-</code></p>
+                    <p class="mb-2"><strong>API Key:</strong> <code id="binance-key">-</code></p>
+                    <p class="mb-0"><strong>Pares disponíveis:</strong> <span id="binance-pairs">-</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-robot"></i> OpenAI API
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div id="openai-indicator" class="spinner-border text-warning me-3" role="status">
+                            <span class="visually-hidden">Testando...</span>
+                        </div>
+                        <div>
+                            <h4 id="openai-status" class="mb-1">Verificando...</h4>
+                            <p id="openai-message" class="text-muted mb-0">Aguarde...</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="mb-2"><strong>Serviço:</strong> OpenAI GPT</p>
+                    <p class="mb-2"><strong>API Key:</strong> <code id="openai-key">-</code></p>
+                    <p class="mb-0"><strong>Uso:</strong> Semantic Kernel Advisor</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manus AI Status -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-stars"></i> Manus AI Premium
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div id="manus-indicator" class="spinner-border text-warning me-3" role="status">
+                            <span class="visually-hidden">Testando...</span>
+                        </div>
+                        <div>
+                            <h4 id="manus-status" class="mb-1">Verificando...</h4>
+                            <p id="manus-message" class="text-muted mb-0">Aguarde...</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="mb-2"><strong>Endpoint:</strong> https://api.manus.im</p>
+                    <p class="mb-2"><strong>API Key:</strong> <code id="manus-key">-</code></p>
+                    <p class="mb-0"><strong>Créditos:</strong> 1,000 grátis + 300 diários</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-arrow-clockwise"></i> Ações
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary w-100 mb-3" onclick="testAllConnections()">
+                        <i class="bi bi-wifi"></i> Testar Todas as Conexões
+                    </button>
+                    <button class="btn btn-secondary w-100" onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise"></i> Recarregar Página
+                    </button>
+                    
+                    <hr class="my-3">
+                    
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> <strong>Dica:</strong>
+                        <p class="mb-0 mt-2">Configure as API keys no arquivo .env ou nas variáveis de ambiente do Replit para habilitar todas as funcionalidades.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function testBinanceAPI() {
+    const indicator = document.getElementById('binance-indicator');
+    const status = document.getElementById('binance-status');
+    const message = document.getElementById('binance-message');
+    
+    try {
+        const response = await fetch('/api/connectivity/binance');
+        const data = await response.json();
+        
+        if (data.connected) {
+            indicator.className = 'bi bi-check-circle-fill text-success fs-1';
+            status.textContent = '🟢 Conectado';
+            status.className = 'text-success mb-1';
+            message.textContent = 'Conexão estabelecida com sucesso';
+            
+            document.getElementById('binance-endpoint').textContent = data.endpoint || 'https://api.binance.us';
+            document.getElementById('binance-key').textContent = data.api_key || 'Não configurado';
+            document.getElementById('binance-pairs').textContent = data.pairs_count || '0';
+        } else {
+            indicator.className = 'bi bi-x-circle-fill text-danger fs-1';
+            status.textContent = '🔴 Desconectado';
+            status.className = 'text-danger mb-1';
+            message.textContent = data.error || 'Erro na conexão';
+            
+            document.getElementById('binance-endpoint').textContent = 'Não disponível';
+            document.getElementById('binance-key').textContent = 'Não configurado';
+            document.getElementById('binance-pairs').textContent = '0';
+        }
+    } catch (error) {
+        indicator.className = 'bi bi-exclamation-triangle-fill text-warning fs-1';
+        status.textContent = '⚠️ Erro';
+        status.className = 'text-warning mb-1';
+        message.textContent = 'Falha ao testar conexão';
+        console.error('Erro:', error);
+    }
+}
+
+async function testOpenAIAPI() {
+    const indicator = document.getElementById('openai-indicator');
+    const status = document.getElementById('openai-status');
+    const message = document.getElementById('openai-message');
+    
+    try {
+        const response = await fetch('/api/connectivity/openai');
+        const data = await response.json();
+        
+        if (data.configured) {
+            indicator.className = 'bi bi-check-circle-fill text-success fs-1';
+            status.textContent = '🟢 Configurado';
+            status.className = 'text-success mb-1';
+            message.textContent = 'API key configurada';
+            document.getElementById('openai-key').textContent = data.api_key || 'Configurado';
+        } else {
+            indicator.className = 'bi bi-dash-circle-fill text-secondary fs-1';
+            status.textContent = '⚫ Não configurado';
+            status.className = 'text-secondary mb-1';
+            message.textContent = 'Configure OPENAI_API_KEY para habilitar';
+            document.getElementById('openai-key').textContent = 'Não configurado';
+        }
+    } catch (error) {
+        indicator.className = 'bi bi-exclamation-triangle-fill text-warning fs-1';
+        status.textContent = '⚠️ Erro';
+        status.className = 'text-warning mb-1';
+        message.textContent = 'Falha ao verificar';
+        console.error('Erro:', error);
+    }
+}
+
+async function testManusAI() {
+    const indicator = document.getElementById('manus-indicator');
+    const status = document.getElementById('manus-status');
+    const message = document.getElementById('manus-message');
+    
+    try {
+        const response = await fetch('/api/connectivity/manus');
+        const data = await response.json();
+        
+        if (data.configured) {
+            indicator.className = 'bi bi-check-circle-fill text-success fs-1';
+            status.textContent = '🟢 Disponível';
+            status.className = 'text-success mb-1';
+            message.textContent = 'Manus AI Premium ativo';
+            document.getElementById('manus-key').textContent = data.api_key || 'Configurado';
+        } else {
+            indicator.className = 'bi bi-dash-circle-fill text-secondary fs-1';
+            status.textContent = '⚫ Não configurado';
+            status.className = 'text-secondary mb-1';
+            message.textContent = 'Configure MANUS_AI_API_KEY para habilitar';
+            document.getElementById('manus-key').textContent = 'Não configurado';
+        }
+    } catch (error) {
+        indicator.className = 'bi bi-exclamation-triangle-fill text-warning fs-1';
+        status.textContent = '⚠️ Erro';
+        status.className = 'text-warning mb-1';
+        message.textContent = 'Falha ao verificar';
+        console.error('Erro:', error);
+    }
+}
+
+function testAllConnections() {
+    testBinanceAPI();
+    testOpenAIAPI();
+    testManusAI();
+}
+
+// Testar conexões ao carregar página
+document.addEventListener('DOMContentLoaded', testAllConnections);
+</script>
+{% endblock %}

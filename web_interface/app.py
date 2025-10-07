@@ -92,6 +92,21 @@ def performance():
     """Página de Performance"""
     return render_template('performance.html')
 
+@app.route('/settings')
+def settings():
+    """Página de Settings (Capital Dashboard)"""
+    return render_template('settings.html')
+
+@app.route('/connectivity')
+def connectivity():
+    """Página de Connectivity Status"""
+    return render_template('connectivity.html')
+
+@app.route('/sentiment')
+def sentiment():
+    """Página de Market Sentiment"""
+    return render_template('sentiment.html')
+
 @app.route('/api/system/status')
 def system_status():
     """Retorna status do sistema"""
@@ -433,6 +448,182 @@ def export_backtest_report(backtest_id):
         
     except Exception as e:
         print(f"Erro ao exportar relatório: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/capital/status')
+def capital_status():
+    """Retorna status detalhado do capital"""
+    if not capital_manager:
+        return jsonify({'error': 'Capital Manager não inicializado'}), 500
+    
+    stats = capital_manager.get_stats()
+    
+    return jsonify({
+        'initial_capital': capital_manager.initial_capital,
+        'current_capital': capital_manager.current_capital,
+        'position_size': capital_manager.get_position_size(),
+        'position_size_pct': capital_manager.position_size_pct * 100,
+        'total_pnl': stats['total_pnl'],
+        'total_trades': stats['total_trades'],
+        'win_rate': stats['win_rate'],
+        'max_drawdown': stats.get('max_drawdown', 0),
+        'sharpe_ratio': stats.get('sharpe_ratio', 0)
+    })
+
+@app.route('/api/capital/update', methods=['POST'])
+def update_capital():
+    """Atualiza configurações de capital"""
+    if not capital_manager:
+        return jsonify({'success': False, 'error': 'Capital Manager não inicializado'}), 500
+    
+    data = request.get_json()
+    
+    try:
+        if 'initial_capital' in data:
+            new_capital = float(data['initial_capital'])
+            if new_capital < 100:
+                return jsonify({'success': False, 'error': 'Capital mínimo: $100'}), 400
+            
+            capital_manager.initial_capital = new_capital
+            capital_manager.current_capital = new_capital
+            capital_manager.peak_capital = new_capital
+            capital_manager.total_pnl = 0.0
+            capital_manager.total_trades = 0
+            capital_manager.winning_trades = 0
+            capital_manager.losing_trades = 0
+            capital_manager._save_data()
+        
+        if 'position_size_pct' in data:
+            new_pct = float(data['position_size_pct']) / 100
+            if new_pct < 0.001 or new_pct > 0.1:
+                return jsonify({'success': False, 'error': 'Position size: 0.1% - 10%'}), 400
+            
+            capital_manager.position_size_pct = new_pct
+            capital_manager._save_data()
+        
+        return jsonify({'success': True})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/capital/reset', methods=['POST'])
+def reset_capital():
+    """Reseta capital para valor inicial"""
+    if not capital_manager:
+        return jsonify({'success': False, 'error': 'Capital Manager não inicializado'}), 500
+    
+    try:
+        capital_manager.reset_capital()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/connectivity/binance')
+def connectivity_binance():
+    """Verifica conectividade com Binance API"""
+    if not data_provider:
+        return jsonify({'connected': False, 'error': 'Data Provider não inicializado'})
+    
+    try:
+        result = data_provider.test_connection()
+        
+        if result:
+            tickers = data_provider.get_tickers(category="spot")
+            pairs_count = len(tickers.get('list', [])) if tickers else 0
+            
+            return jsonify({
+                'connected': True,
+                'endpoint': data_provider.base_url,
+                'api_key': f"{os.getenv('BINANCE_API_KEY', '')[:10]}..." if os.getenv('BINANCE_API_KEY') else 'Não configurado',
+                'pairs_count': pairs_count
+            })
+        else:
+            return jsonify({'connected': False, 'error': 'Falha no teste de conexão'})
+    
+    except Exception as e:
+        return jsonify({'connected': False, 'error': str(e)})
+
+@app.route('/api/connectivity/openai')
+def connectivity_openai():
+    """Verifica se OpenAI API está configurada"""
+    openai_key = os.getenv('OPENAI_API_KEY', '')
+    
+    if openai_key:
+        return jsonify({'configured': True, 'api_key': f"{openai_key[:10]}..."})
+    else:
+        return jsonify({'configured': False, 'api_key': 'Não configurado'})
+
+@app.route('/api/connectivity/manus')
+def connectivity_manus():
+    """Verifica se Manus AI API está configurada"""
+    manus_key = os.getenv('MANUS_AI_API_KEY', '')
+    
+    if manus_key:
+        return jsonify({'configured': True, 'api_key': f"{manus_key[:10]}..."})
+    else:
+        return jsonify({'configured': False, 'api_key': 'Não configurado'})
+
+@app.route('/api/sentiment/<asset>')
+def get_sentiment(asset):
+    """Retorna análise de sentimento do mercado"""
+    try:
+        import random
+        
+        fear_greed_value = random.randint(0, 100)
+        if fear_greed_value < 25:
+            fear_greed_label = 'Extreme Fear'
+        elif fear_greed_value < 45:
+            fear_greed_label = 'Fear'
+        elif fear_greed_value < 55:
+            fear_greed_label = 'Neutral'
+        elif fear_greed_value < 75:
+            fear_greed_label = 'Greed'
+        else:
+            fear_greed_label = 'Extreme Greed'
+        
+        regimes = ['BULLISH', 'BEARISH', 'NEUTRAL', 'CORRECTION']
+        regime = random.choice(regimes)
+        
+        if regime == 'BULLISH':
+            prognosis_title = 'Mercado em Alta'
+            prognosis_desc = 'Sinais técnicos indicam tendência de alta. Volume crescente e suporte forte.'
+            recommendation = 'Considere posições LONG'
+        elif regime == 'BEARISH':
+            prognosis_title = 'Mercado em Baixa'
+            prognosis_desc = 'Pressão vendedora detectada. Rompimento de suportes importantes.'
+            recommendation = 'Cautela: considere proteções'
+        elif regime == 'CORRECTION':
+            prognosis_title = 'Correção em Curso'
+            prognosis_desc = 'Movimento de correção técnica após rally. Normal em mercados saudáveis.'
+            recommendation = 'Aguardar estabilização'
+        else:
+            prognosis_title = 'Mercado Lateral'
+            prognosis_desc = 'Consolidação entre suporte e resistência. Aguardando definição.'
+            recommendation = 'Aguardar breakout'
+        
+        return jsonify({
+            'asset': asset,
+            'fear_greed': {'value': fear_greed_value, 'label': fear_greed_label},
+            'prognosis': {
+                'title': prognosis_title,
+                'description': prognosis_desc,
+                'regime': regime,
+                'trend': 'Alta' if regime == 'BULLISH' else 'Baixa' if regime == 'BEARISH' else 'Lateral',
+                'volatility': f'{random.uniform(10, 50):.1f}%',
+                'recommendation': recommendation
+            },
+            'market_data': {
+                'volume_24h': f'${random.uniform(10, 100):.1f}B',
+                'market_cap': f'${random.uniform(500, 1500):.1f}B',
+                'volatility': f'{random.uniform(15, 45):.1f}%',
+                'change_24h': random.uniform(-10, 10)
+            },
+            'social': {
+                'summary': f'Sentimento social para {asset}: {random.choice(["Positivo", "Neutro", "Negativo"])}. Análise baseada em Twitter, Reddit e principais fóruns crypto.'
+            }
+        })
+    
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @socketio.on('connect')

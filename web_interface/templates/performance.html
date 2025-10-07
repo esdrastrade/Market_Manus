@@ -12,38 +12,38 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-3">
-        <div class="card text-bg-success">
+        <div class="card bg-dark border-success text-white">
             <div class="card-body text-center">
-                <h6>Win Rate Geral</h6>
-                <h3>---%</h3>
-                <small>Todos os backtests</small>
+                <h6 class="text-muted">Win Rate Geral</h6>
+                <h3 class="text-success">---%</h3>
+                <small class="text-muted">Todos os backtests</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-bg-primary">
+        <div class="card bg-dark border-primary text-white">
             <div class="card-body text-center">
-                <h6>Total de Backtests</h6>
-                <h3>---</h3>
-                <small>Registrados</small>
+                <h6 class="text-muted">Total de Backtests</h6>
+                <h3 class="text-primary">---</h3>
+                <small class="text-muted">Registrados</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-bg-warning text-dark">
+        <div class="card bg-dark border-warning text-white">
             <div class="card-body text-center">
-                <h6>Melhor Combinação</h6>
-                <h3>---</h3>
-                <small>Win rate mais alto</small>
+                <h6 class="text-muted">Melhor Combinação</h6>
+                <h3 class="text-warning">---</h3>
+                <small class="text-muted">Win rate mais alto</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-bg-info">
+        <div class="card bg-dark border-info text-white">
             <div class="card-body text-center">
-                <h6>ROI Médio</h6>
-                <h3>---</h3>
-                <small>Todos os backtests</small>
+                <h6 class="text-muted">ROI Médio</h6>
+                <h3 class="text-info">---</h3>
+                <small class="text-muted">Todos os backtests</small>
             </div>
         </div>
     </div>
@@ -51,13 +51,13 @@
 
 <div class="row g-3">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-header bg-dark text-white border-bottom border-secondary">
                 <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Backtests</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-dark table-hover">
                         <thead>
                             <tr>
                                 <th>Data</th>
@@ -84,8 +84,8 @@
     </div>
     
     <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-header bg-dark text-white border-bottom border-secondary">
                 <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Win Rate por Timeframe</h5>
             </div>
             <div class="card-body">
@@ -95,8 +95,8 @@
     </div>
     
     <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-header bg-dark text-white border-bottom border-secondary">
                 <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Distribuição de Modos</h5>
             </div>
             <div class="card-body">
@@ -111,9 +111,53 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 async function loadPerformanceData() {
-    // TODO: Carregar dados reais do backend
-    console.log('Carregando dados de performance...');
+    try {
+        const response = await fetch('/api/performance/summary');
+        const data = await response.json();
+        
+        if (data.error) {
+            console.error('Erro ao carregar performance:', data.error);
+            return;
+        }
+        
+        // Atualizar cards de métricas
+        document.querySelector('.col-md-3:nth-child(1) h3').textContent = 
+            data.avg_win_rate ? `${data.avg_win_rate.toFixed(1)}%` : '0%';
+        document.querySelector('.col-md-3:nth-child(2) h3').textContent = data.total_backtests || '0';
+        document.querySelector('.col-md-3:nth-child(3) h3').textContent = 
+            data.best_combination ? data.best_combination.name : 'N/A';
+        document.querySelector('.col-md-3:nth-child(4) h3').textContent = 
+            data.avg_roi ? `${data.avg_roi >= 0 ? '+' : ''}${data.avg_roi.toFixed(2)}%` : '0%';
+        
+        // Atualizar tabela de histórico
+        const tbody = document.getElementById('backtest-history');
+        if (data.recent_backtests && data.recent_backtests.length > 0) {
+            tbody.innerHTML = data.recent_backtests.map(b => `
+                <tr>
+                    <td>${new Date(b.timestamp).toLocaleString('pt-BR')}</td>
+                    <td>${b.asset}</td>
+                    <td>${b.timeframe}</td>
+                    <td>${b.combination_name}</td>
+                    <td>${b.total_trades}</td>
+                    <td class="${b.win_rate >= 70 ? 'text-success' : b.win_rate >= 50 ? 'text-warning' : 'text-danger'}">${b.win_rate.toFixed(1)}%</td>
+                    <td class="${b.roi >= 0 ? 'text-success' : 'text-danger'}">${b.roi >= 0 ? '+' : ''}${b.roi.toFixed(2)}%</td>
+                    <td>
+                        ${b.manus_ai_enabled ? '<span class="badge bg-primary">AI</span> ' : ''}
+                        ${b.semantic_kernel_enabled ? '<span class="badge bg-info">SK</span>' : ''}
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nenhum backtest registrado ainda</td></tr>';
+        }
+        
+    } catch (error) {
+        console.error('Erro ao carregar dados de performance:', error);
+    }
 }
+
+// Carregar dados ao iniciar
+loadPerformanceData();
 
 // Gráfico de Win Rate por Timeframe
 const timeframeCtx = document.getElementById('timeframe-chart');

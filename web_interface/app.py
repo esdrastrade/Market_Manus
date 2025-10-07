@@ -146,14 +146,294 @@ def get_combinations():
 @app.route('/api/backtest', methods=['POST'])
 def run_backtest():
     """Executa backtest com configurações fornecidas"""
-    data = request.json
-    
-    # TODO: Implementar execução de backtest assíncrono
-    
-    return jsonify({
-        'status': 'queued',
-        'message': 'Backtest adicionado à fila de execução'
-    })
+    try:
+        data = request.json
+        
+        # Extrair parâmetros
+        asset = data.get('asset', 'BTCUSDT')
+        timeframe = data.get('timeframe', '15')
+        strategies = data.get('strategies', [])
+        confluence_mode = data.get('mode', 'weighted')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        initial_capital = float(data.get('capital', 10000))
+        manus_ai_enabled = data.get('manus_ai', False)
+        sk_enabled = data.get('semantic_kernel', False)
+        
+        # Validar parâmetros
+        if not strategies or len(strategies) == 0:
+            return jsonify({
+                'status': 'error',
+                'message': 'Selecione pelo menos uma estratégia'
+            }), 400
+        
+        # Importar módulos necessários
+        from market_manus.confluence_mode.confluence_mode_module import ConfluenceModeModule
+        from market_manus.data_providers.binance_data_provider import BinanceDataProvider
+        from datetime import datetime
+        import uuid
+        
+        # Criar data provider
+        data_provider = BinanceDataProvider()
+        
+        # Criar módulo de confluência
+        confluence_module = ConfluenceModeModule(
+            data_provider=data_provider,
+            capital_manager=None
+        )
+        
+        # Configurar parâmetros
+        confluence_module.selected_asset = asset
+        confluence_module.selected_timeframe = timeframe
+        confluence_module.selected_strategies = strategies
+        confluence_module.selected_confluence_mode = confluence_mode
+        confluence_module.custom_start_date = start_date
+        confluence_module.custom_end_date = end_date
+        confluence_module.manus_ai_enabled = manus_ai_enabled
+        confluence_module.sk_advisor_enabled = sk_enabled
+        
+        # Executar backtest programaticamente
+        print(f"\n🧪 Executando backtest via Web API...")
+        print(f"   Asset: {asset}, Timeframe: {timeframe}")
+        print(f"   Strategies: {len(strategies)}, Mode: {confluence_mode}")
+        
+        # Buscar dados históricos
+        klines, metrics = confluence_module._fetch_historical_klines(
+            symbol=asset,
+            interval=timeframe,
+            start_date=start_date,
+            end_date=end_date
+        )
+        
+        if not klines or len(klines) < 50:
+            return jsonify({
+                'status': 'error',
+                'message': f'Dados insuficientes: {len(klines) if klines else 0} candles recebidos'
+            }), 400
+        
+        # Converter dados OHLCV
+        opens = [float(k[1]) for k in klines]
+        highs = [float(k[2]) for k in klines]
+        lows = [float(k[3]) for k in klines]
+        closes = [float(k[4]) for k in klines]
+        volumes_raw = [float(k[5]) if len(k) > 5 else 0.0 for k in klines]
+        
+        import pandas as pd
+        volumes = pd.Series(volumes_raw)
+        
+        # Executar estratégias
+        strategy_signals = {}
+        for strategy_key in strategies:
+            if strategy_key in confluence_module.available_strategies:
+                strategy = confluence_module.available_strategies[strategy_key]
+                signal_indices = confluence_module._execute_strategy_on_data(
+                    strategy_key, closes, highs, lows, opens
+                )
+                strategy_signals[strategy_key] = {
+                    "name": strategy['name'],
+                    "signal_indices": signal_indices,
+                    "weight": strategy.get('weight', 1.0)
+                }
+        
+        # Aplicar filtro de volume
+        if volumes.sum() > 0:
+            confluence_module.volume_pipeline.reset_stats()
+            filtered_strategy_signals = confluence_module.volume_pipeline.apply_to_strategy_signals(
+                strategy_signals, volumes
+            )
+        else:
+            filtered_strategy_signals = strategy_signals
+        
+        # Calcular confluência
+        confluence_signals = confluence_module._calculate_confluence_signals(filtered_strategy_signals)
+        
+        # Simular trades
+        final_capital, total_trades, winning_trades = confluence_module._simulate_trades_from_signals(
+            confluence_signals, closes, initial_capital, highs, lows
+        )
+        
+        losing_trades = total_trades - winning_trades
+        pnl = final_capital - initial_capital
+        roi = (pnl / initial_capital) * 100
+        win_rate = (winning_trades / total_trades) * 100 if total_trades > 0 else 0
+        
+        # Contar sinais por direção
+        buy_signals = sum(1 for _, direction in confluence_signals if direction == "BUY")
+        sell_signals = sum(1 for _, direction in confluence_signals if direction == "SELL")
+        
+        # Salvar no repositório de performance
+        from market_manus.performance.history_repository import (
+            PerformanceHistoryRepository, BacktestResult, StrategyContribution
+        )
+        
+        repo = PerformanceHistoryRepository()
+        backtest_id = str(uuid.uuid4())[:8]
+        
+        # Preparar resultado
+        backtest_result = BacktestResult(
+            backtest_id=backtest_id,
+            timestamp=datetime.now().isoformat(),
+            combination_id=data.get('combination_id'),
+            combination_name=data.get('combination_name'),
+            strategies=strategies,
+            timeframe=timeframe,
+            asset=asset,
+            start_date=start_date or "auto",
+            end_date=end_date or "auto",
+            confluence_mode=confluence_mode,
+            win_rate=win_rate,
+            total_trades=total_trades,
+            winning_trades=winning_trades,
+            losing_trades=losing_trades,
+            initial_capital=initial_capital,
+            final_capital=final_capital,
+            roi=roi,
+            total_signals=len(confluence_signals),
+            manus_ai_enabled=manus_ai_enabled,
+            semantic_kernel_enabled=sk_enabled
+        )
+        
+        # Preparar contribuições das estratégias
+        contributions = []
+        for strategy_key, data in filtered_strategy_signals.items():
+            contrib = StrategyContribution(
+                backtest_id=backtest_id,
+                strategy_key=strategy_key,
+                strategy_name=data['name'],
+                total_signals=data.get('original_count', len(data['signal_indices'])),
+                signals_after_volume_filter=len(data['signal_indices']),
+                winning_signals=0,  # Não temos dados granulares por estratégia
+                losing_signals=0,
+                win_rate=0.0,
+                weight=data['weight']
+            )
+            contributions.append(contrib)
+        
+        # Salvar no repositório
+        repo.save_backtest_result(backtest_result, contributions)
+        
+        print(f"✅ Backtest concluído: {win_rate:.1f}% win rate, {roi:+.2f}% ROI")
+        
+        # Retornar resultados
+        return jsonify({
+            'status': 'success',
+            'backtest_id': backtest_id,
+            'results': {
+                'initial_capital': initial_capital,
+                'final_capital': final_capital,
+                'pnl': pnl,
+                'roi': roi,
+                'total_trades': total_trades,
+                'winning_trades': winning_trades,
+                'losing_trades': losing_trades,
+                'win_rate': win_rate,
+                'total_signals': len(confluence_signals),
+                'buy_signals': buy_signals,
+                'sell_signals': sell_signals,
+                'candles_analyzed': len(closes),
+                'strategies_used': len(strategies)
+            },
+            'strategy_details': [
+                {
+                    'name': data['name'],
+                    'signals': len(data['signal_indices']),
+                    'weight': data['weight']
+                }
+                for data in filtered_strategy_signals.values()
+            ]
+        })
+        
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"❌ Erro no backtest: {str(e)}")
+        print(error_trace)
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'details': error_trace
+        }), 500
+
+@app.route('/api/performance/summary')
+def get_performance_summary():
+    """Retorna resumo de performance de todos os backtests"""
+    try:
+        from market_manus.performance.history_repository import PerformanceHistoryRepository
+        repo = PerformanceHistoryRepository()
+        
+        all_backtests = repo.get_all_backtests(limit=100)
+        
+        if not all_backtests:
+            return jsonify({
+                'total_backtests': 0,
+                'avg_win_rate': 0,
+                'avg_roi': 0,
+                'best_combination': None,
+                'recent_backtests': []
+            })
+        
+        # Calcular métricas gerais
+        total = len(all_backtests)
+        avg_win_rate = sum(b['win_rate'] for b in all_backtests) / total
+        avg_roi = sum(b['roi'] for b in all_backtests) / total
+        
+        # Melhor combinação
+        best = max(all_backtests, key=lambda x: x['win_rate'])
+        
+        # Formatar backtests recentes
+        recent = [{
+            'backtest_id': b['backtest_id'],
+            'timestamp': b['timestamp'],
+            'asset': b['asset'],
+            'timeframe': b['timeframe'],
+            'combination_name': b['combination_name'] or 'Custom',
+            'total_trades': b['total_trades'],
+            'win_rate': b['win_rate'],
+            'roi': b['roi'],
+            'manus_ai_enabled': b['manus_ai_enabled'],
+            'semantic_kernel_enabled': b['semantic_kernel_enabled']
+        } for b in all_backtests[:20]]
+        
+        return jsonify({
+            'total_backtests': total,
+            'avg_win_rate': avg_win_rate,
+            'avg_roi': avg_roi,
+            'best_combination': {
+                'name': best['combination_name'] or 'Custom',
+                'win_rate': best['win_rate']
+            },
+            'recent_backtests': recent
+        })
+        
+    except Exception as e:
+        print(f"Erro ao buscar performance: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/performance/export/<backtest_id>')
+def export_backtest_report(backtest_id):
+    """Exporta relatório de backtest em JSON"""
+    try:
+        from market_manus.performance.history_repository import PerformanceHistoryRepository
+        import json
+        
+        repo = PerformanceHistoryRepository()
+        backtest = repo.get_backtest_by_id(backtest_id)
+        strategies = repo.get_strategy_contributions(backtest_id)
+        
+        if not backtest:
+            return jsonify({'error': 'Backtest não encontrado'}), 404
+        
+        report = {
+            'backtest': backtest,
+            'strategies': strategies,
+            'exported_at': datetime.now().isoformat()
+        }
+        
+        return jsonify(report)
+        
+    except Exception as e:
+        print(f"Erro ao exportar relatório: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @socketio.on('connect')
 def handle_connect():

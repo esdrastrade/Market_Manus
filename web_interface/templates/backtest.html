@@ -139,10 +139,13 @@ if (combinationParam) {
 async function executeBacktest() {
     const resultsDiv = document.getElementById('backtest-results');
     resultsDiv.innerHTML = `
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Executando backtest...</span>
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Executando backtest...</span>
+            </div>
+            <p class="mt-3 text-white">🔄 Executando backtest com dados reais da Binance...</p>
+            <small class="text-muted">Isso pode levar alguns segundos</small>
         </div>
-        <p class="mt-3">Executando backtest, aguarde...</p>
     `;
     
     const config = {
@@ -150,66 +153,78 @@ async function executeBacktest() {
         timeframe: document.getElementById('backtest-timeframe').value,
         start_date: document.getElementById('backtest-start-date').value,
         end_date: document.getElementById('backtest-end-date').value,
-        initial_capital: parseFloat(document.getElementById('backtest-capital').value),
+        capital: parseFloat(document.getElementById('backtest-capital').value),
         mode: document.getElementById('backtest-mode').value,
-        manus_ai_enabled: document.getElementById('enable-manus-ai').checked,
-        semantic_kernel_enabled: document.getElementById('enable-sk').checked,
-        strategies: strategiesParam ? strategiesParam.split(',') : [],
-        combination: combinationParam
+        manus_ai: document.getElementById('enable-manus-ai').checked,
+        semantic_kernel: document.getElementById('enable-sk').checked,
+        strategies: strategiesParam ? strategiesParam.split(',') : []
     };
+    
+    // Validar seleção de estratégias
+    if (!config.strategies || config.strategies.length === 0) {
+        resultsDiv.innerHTML = `
+            <div class="alert alert-warning bg-dark border-warning text-white">
+                <i class="bi bi-exclamation-triangle"></i> Por favor, selecione pelo menos uma estratégia antes de executar o backtest.
+            </div>
+        `;
+        return;
+    }
+    
+    console.log('Executando backtest com configuração:', config);
     
     const result = await runBacktest(config);
     
-    if (result) {
+    if (result && result.status === 'success') {
         displayResults(result);
-        showToast('Sucesso', 'Backtest executado com sucesso!', 'success');
+        showToast('Sucesso', `Backtest concluído! Win Rate: ${result.results.win_rate.toFixed(1)}%`, 'success');
     } else {
-        resultsDiv.innerHTML = `
-            <div class="alert alert-danger">
-                <i class="bi bi-exclamation-triangle"></i> Erro ao executar backtest
-            </div>
-        `;
+        displayResults(result || {status: 'error', message: 'Erro desconhecido ao executar backtest'});
+        showToast('Erro', result?.message || 'Não foi possível executar o backtest', 'danger');
     }
 }
 
 function displayResults(result) {
     const resultsDiv = document.getElementById('backtest-results');
     
-    // Simular resultados (remover quando integrado com backend)
-    const mockResults = {
-        initial_capital: parseFloat(document.getElementById('backtest-capital').value),
-        final_capital: parseFloat(document.getElementById('backtest-capital').value) * 1.15,
-        roi: 15.0,
-        total_trades: 45,
-        winning_trades: 35,
-        losing_trades: 10,
-        win_rate: 77.8,
-        total_signals: 52
-    };
+    if (result.status === 'error') {
+        resultsDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <h6><i class="bi bi-exclamation-triangle"></i> Erro ao executar backtest</h6>
+                <p>${result.message}</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Usar dados REAIS do backend
+    const r = result.results;
+    const pnl = r.final_capital - r.initial_capital;
+    const pnlClass = pnl >= 0 ? 'text-success' : 'text-danger';
+    const roiClass = r.roi >= 0 ? 'success' : 'danger';
     
     resultsDiv.innerHTML = `
         <div class="row g-3">
             <div class="col-md-4">
-                <div class="card text-bg-primary">
+                <div class="card bg-dark border-primary text-white">
                     <div class="card-body text-center">
-                        <h6>Capital Final</h6>
-                        <h3>$${mockResults.final_capital.toFixed(2)}</h3>
+                        <h6 class="text-muted">Capital Final</h6>
+                        <h3 class="text-primary">$${r.final_capital.toFixed(2)}</h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-bg-success">
+                <div class="card bg-dark border-${roiClass} text-white">
                     <div class="card-body text-center">
-                        <h6>ROI</h6>
-                        <h3>${mockResults.roi.toFixed(2)}%</h3>
+                        <h6 class="text-muted">ROI</h6>
+                        <h3 class="${pnlClass}">${r.roi >= 0 ? '+' : ''}${r.roi.toFixed(2)}%</h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-bg-info">
+                <div class="card bg-dark border-info text-white">
                     <div class="card-body text-center">
-                        <h6>Win Rate</h6>
-                        <h3>${mockResults.win_rate.toFixed(1)}%</h3>
+                        <h6 class="text-muted">Win Rate</h6>
+                        <h3 class="text-info">${r.win_rate.toFixed(1)}%</h3>
                     </div>
                 </div>
             </div>
@@ -217,46 +232,78 @@ function displayResults(result) {
         
         <div class="row g-3 mt-3">
             <div class="col-md-6">
-                <div class="card">
+                <div class="card bg-dark text-white border-secondary">
                     <div class="card-body">
-                        <h6>📊 Estatísticas de Trades</h6>
+                        <h6 class="text-primary">📊 Estatísticas de Trades</h6>
                         <ul class="list-unstyled mb-0">
-                            <li>Total de trades: <strong>${mockResults.total_trades}</strong></li>
-                            <li>✅ Vencedores: <strong class="text-success">${mockResults.winning_trades}</strong></li>
-                            <li>❌ Perdedores: <strong class="text-danger">${mockResults.losing_trades}</strong></li>
-                            <li>🎯 Sinais totais: <strong>${mockResults.total_signals}</strong></li>
+                            <li>Total de trades: <strong>${r.total_trades}</strong></li>
+                            <li>✅ Vencedores: <strong class="text-success">${r.winning_trades}</strong></li>
+                            <li>❌ Perdedores: <strong class="text-danger">${r.losing_trades}</strong></li>
+                            <li>🎯 Sinais totais: <strong>${r.total_signals}</strong></li>
+                            <li>📈 BUY: <strong class="text-success">${r.buy_signals || 0}</strong></li>
+                            <li>📉 SELL: <strong class="text-danger">${r.sell_signals || 0}</strong></li>
+                            <li>📊 Candles analisados: <strong>${r.candles_analyzed}</strong></li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card">
+                <div class="card bg-dark text-white border-secondary">
                     <div class="card-body">
-                        <h6>💰 Performance Financeira</h6>
+                        <h6 class="text-primary">💰 Performance Financeira</h6>
                         <ul class="list-unstyled mb-0">
-                            <li>Capital inicial: <strong>$${mockResults.initial_capital.toFixed(2)}</strong></li>
-                            <li>Capital final: <strong>$${mockResults.final_capital.toFixed(2)}</strong></li>
-                            <li>P&L: <strong class="text-success">+$${(mockResults.final_capital - mockResults.initial_capital).toFixed(2)}</strong></li>
-                            <li>Retorno: <strong class="text-success">+${mockResults.roi.toFixed(2)}%</strong></li>
+                            <li>Capital inicial: <strong>$${r.initial_capital.toFixed(2)}</strong></li>
+                            <li>Capital final: <strong>$${r.final_capital.toFixed(2)}</strong></li>
+                            <li>P&L: <strong class="${pnlClass}">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</strong></li>
+                            <li>Retorno: <strong class="${pnlClass}">${r.roi >= 0 ? '+' : ''}${r.roi.toFixed(2)}%</strong></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
+        
+        ${result.strategy_details && result.strategy_details.length > 0 ? `
+        <div class="card bg-dark text-white border-secondary mt-3">
+            <div class="card-body">
+                <h6 class="text-primary">🎯 Detalhes por Estratégia</h6>
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm">
+                        <thead>
+                            <tr>
+                                <th>Estratégia</th>
+                                <th>Sinais</th>
+                                <th>Peso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${result.strategy_details.map(s => `
+                                <tr>
+                                    <td>${s.name}</td>
+                                    <td>${s.signals}</td>
+                                    <td>${s.weight.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        ` : ''}
     `;
     
     // Mostrar recomendações IA se habilitado
-    if (document.getElementById('enable-sk').checked) {
+    if (document.getElementById('enable-sk').checked && r.win_rate > 0) {
         document.getElementById('recommendations-card').style.display = 'block';
+        const performance = r.win_rate >= 70 ? 'Excelente' : r.win_rate >= 60 ? 'Boa' : 'Moderada';
         document.getElementById('ai-recommendations').innerHTML = `
-            <div class="alert alert-success">
+            <div class="alert alert-info bg-dark border-info text-white">
                 <h6><i class="bi bi-robot"></i> Análise do Semantic Kernel Advisor</h6>
-                <p>🎯 <strong>Performance Excelente!</strong> O backtest demonstrou consistência com win rate de ${mockResults.win_rate.toFixed(1)}%.</p>
-                <p>💡 <strong>Recomendações:</strong></p>
+                <p>🎯 <strong>Performance ${performance}!</strong> O backtest demonstrou win rate de ${r.win_rate.toFixed(1)}% com ROI de ${r.roi.toFixed(2)}%.</p>
+                <p>💡 <strong>Insights:</strong></p>
                 <ul>
-                    <li>Mantenha os pesos atuais das estratégias</li>
-                    <li>Considere aumentar position size gradualmente</li>
-                    <li>Timeframe atual (15m) está otimizado para este setup</li>
+                    <li>${r.total_trades} trades executados em ${r.candles_analyzed} candles analisados</li>
+                    <li>Taxa de conversão sinal→trade: ${((r.total_trades / r.total_signals) * 100).toFixed(1)}%</li>
+                    <li>${result.strategy_details ? result.strategy_details.length : 0} estratégias trabalhando em confluência</li>
                 </ul>
             </div>
         `;

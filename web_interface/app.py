@@ -740,8 +740,16 @@ def get_combination(combination_id):
         from market_manus.confluence_mode.recommended_combinations import RecommendedCombinations
         
         rc = RecommendedCombinations()
-        all_combos = rc.get_all_combinations()
+        all_combos_dict = rc.get_all_combinations()
         
+        # Achatar todas as combinações em uma lista única
+        all_combos = []
+        for category, combos in all_combos_dict.items():
+            for combo in combos:
+                combo['category'] = category
+                all_combos.append(combo)
+        
+        # Procurar pela combinação específica
         combo = next((c for c in all_combos if c['id'] == combination_id), None)
         
         if not combo:
@@ -750,6 +758,9 @@ def get_combination(combination_id):
         return jsonify(combo)
     
     except Exception as e:
+        import traceback
+        print(f"Erro ao buscar combinação: {e}")
+        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/performance/export')

@@ -189,22 +189,40 @@ def run_backtest():
         
         # Importar módulos necessários
         from market_manus.confluence_mode.confluence_mode_module import ConfluenceModeModule
-        from market_manus.data_providers.binance_data_provider import BinanceDataProvider
         from datetime import datetime
         import uuid
         import os
         
-        # Criar data provider com API keys
-        api_key = os.getenv('BINANCE_API_KEY', '')
-        api_secret = os.getenv('BINANCE_API_SECRET', '')
+        # Determinar exchange a usar
+        exchange = data.get('exchange', 'binance')
         
-        if not api_key or not api_secret:
-            return jsonify({
-                'status': 'error',
-                'message': 'Chaves API do Binance não configuradas. Configure BINANCE_API_KEY e BINANCE_API_SECRET.'
-            }), 500
-        
-        data_provider = BinanceDataProvider(api_key=api_key, api_secret=api_secret)
+        # Criar data provider baseado na exchange selecionada
+        if exchange == 'bybit':
+            from market_manus.data_providers.bybit_real_data_provider import BybitRealDataProvider
+            
+            api_key = os.getenv('BYBIT_API_KEY', '')
+            api_secret = os.getenv('BYBIT_API_SECRET', '')
+            
+            if not api_key or not api_secret:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Chaves API do Bybit não configuradas. Configure BYBIT_API_KEY e BYBIT_API_SECRET.'
+                }), 500
+            
+            data_provider = BybitRealDataProvider(api_key=api_key, api_secret=api_secret)
+        else:  # binance (default)
+            from market_manus.data_providers.binance_data_provider import BinanceDataProvider
+            
+            api_key = os.getenv('BINANCE_API_KEY', '')
+            api_secret = os.getenv('BINANCE_API_SECRET', '')
+            
+            if not api_key or not api_secret:
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Chaves API do Binance não configuradas. Configure BINANCE_API_KEY e BINANCE_API_SECRET.'
+                }), 500
+            
+            data_provider = BinanceDataProvider(api_key=api_key, api_secret=api_secret)
         
         # Criar módulo de confluência
         confluence_module = ConfluenceModeModule(

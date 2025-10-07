@@ -18,6 +18,14 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
+                    <label class="form-label">🌐 Exchange</label>
+                    <select class="form-select" id="backtest-exchange">
+                        <option value="binance" selected>Binance</option>
+                        <option value="bybit">Bybit</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
                     <label class="form-label">💱 Ativo</label>
                     <select class="form-select" id="backtest-asset">
                         <option value="BTCUSDT" selected>BTC/USDT</option>
@@ -208,6 +216,7 @@ async function executeBacktest() {
     `;
     
     const config = {
+        exchange: document.getElementById('backtest-exchange').value,
         asset: document.getElementById('backtest-asset').value,
         timeframe: document.getElementById('backtest-timeframe').value,
         start_date: document.getElementById('backtest-start-date').value,

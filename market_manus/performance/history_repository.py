@@ -227,7 +227,7 @@ class PerformanceHistoryRepository:
         
         if days:
             query += " AND timestamp >= datetime('now', '-' || ? || ' days')"
-            params.append(days)
+            params.append(str(days))
         
         query += " ORDER BY timestamp DESC"
         

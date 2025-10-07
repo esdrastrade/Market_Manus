@@ -151,8 +151,41 @@ document.getElementById('backtest-end-date').valueAsDate = today;
 
 // Carregar estratégias da URL se houver
 const urlParams = new URLSearchParams(window.location.search);
-const strategiesParam = urlParams.get('strategies');
+let strategiesParam = urlParams.get('strategies');
 const combinationParam = urlParams.get('combination');
+
+// Se veio do Confluence Lab com combinação, buscar estratégias
+if (combinationParam && !strategiesParam) {
+    (async () => {
+        try {
+            const response = await fetch(`/api/combination/${combinationParam}`);
+            const combo = await response.json();
+            
+            if (combo && combo.strategies) {
+                strategiesParam = combo.strategies.join(',');
+                console.log('Estratégias carregadas da combinação #' + combinationParam + ':', strategiesParam);
+                
+                // Atualizar modo de confluência se especificado
+                if (combo.mode) {
+                    document.getElementById('backtest-mode').value = combo.mode;
+                }
+                
+                // Mostrar mensagem informativa
+                const resultsDiv = document.getElementById('backtest-results');
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-success bg-dark border-success text-white">
+                        <h6><i class="bi bi-check-circle"></i> Combinação #${combinationParam} carregada!</h6>
+                        <p><strong>${combo.name}</strong></p>
+                        <p class="mb-0">${combo.strategies.length} estratégias: ${combo.strategies.join(', ')}</p>
+                        <p class="mb-0 mt-2"><small>Modo: ${combo.mode} | Win Rate esperado: ${combo.target_win_rate}</small></p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Erro ao carregar combinação:', error);
+        }
+    })();
+}
 
 if (strategiesParam) {
     console.log('Estratégias selecionadas:', strategiesParam);

@@ -192,9 +192,19 @@ def run_backtest():
         from market_manus.data_providers.binance_data_provider import BinanceDataProvider
         from datetime import datetime
         import uuid
+        import os
         
-        # Criar data provider
-        data_provider = BinanceDataProvider()
+        # Criar data provider com API keys
+        api_key = os.getenv('BINANCE_API_KEY', '')
+        api_secret = os.getenv('BINANCE_API_SECRET', '')
+        
+        if not api_key or not api_secret:
+            return jsonify({
+                'status': 'error',
+                'message': 'Chaves API do Binance não configuradas. Configure BINANCE_API_KEY e BINANCE_API_SECRET.'
+            }), 500
+        
+        data_provider = BinanceDataProvider(api_key=api_key, api_secret=api_secret)
         
         # Criar módulo de confluência
         confluence_module = ConfluenceModeModule(
@@ -704,6 +714,25 @@ def clear_cache():
     
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/combination/<int:combination_id>')
+def get_combination(combination_id):
+    """Retorna detalhes de uma combinação específica"""
+    try:
+        from market_manus.confluence_mode.recommended_combinations import RecommendedCombinations
+        
+        rc = RecommendedCombinations()
+        all_combos = rc.get_all_combinations()
+        
+        combo = next((c for c in all_combos if c['id'] == combination_id), None)
+        
+        if not combo:
+            return jsonify({'error': 'Combinação não encontrada'}), 404
+        
+        return jsonify(combo)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/performance/export')
 def export_performance():

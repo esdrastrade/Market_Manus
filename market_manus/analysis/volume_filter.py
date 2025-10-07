@@ -266,12 +266,14 @@ class VolumeFilterPipeline:
         """
         Aplica filtro de volume a sinais de múltiplas estratégias
         
+        ATUALIZADO (Out 2025 - Fase 2): Suporta tuplas (índice, direção)
+        
         Args:
-            strategy_signals: Dict {strategy_key: {"signal_indices": [...], ...}}
+            strategy_signals: Dict {strategy_key: {"signal_indices": [(idx, dir), ...] ou [idx, ...], ...}}
             volumes: Série de volumes
             
         Returns:
-            Dict com sinais filtrados (mesmo formato)
+            Dict com sinais filtrados (mesmo formato, preserva tuplas se presente)
         """
         # Calcular z-scores uma vez
         volume_zscores = self.volume_filter.calculate_volume_zscore(volumes)
@@ -286,7 +288,14 @@ class VolumeFilterPipeline:
             # Filtrar índices baseado em volume
             filtered_indices = []
             
-            for idx in signal_indices:
+            for signal_item in signal_indices:
+                # FASE 2: Desempacotar tupla (índice, direção) se presente
+                if isinstance(signal_item, tuple):
+                    idx, direction = signal_item
+                else:
+                    idx = signal_item
+                    direction = None
+                
                 if idx >= len(volume_zscores):
                     continue
                 
@@ -299,11 +308,19 @@ class VolumeFilterPipeline:
                 
                 elif zscore > self.volume_filter.threshold_boost:
                     self.stats["signals_boosted"] += 1
-                    filtered_indices.append(idx)
+                    # Preservar formato original (tupla ou int)
+                    if direction is not None:
+                        filtered_indices.append((idx, direction))
+                    else:
+                        filtered_indices.append(idx)
                 
                 else:
                     self.stats["signals_passed"] += 1
-                    filtered_indices.append(idx)
+                    # Preservar formato original (tupla ou int)
+                    if direction is not None:
+                        filtered_indices.append((idx, direction))
+                    else:
+                        filtered_indices.append(idx)
             
             # Criar entrada filtrada
             filtered_signals[strategy_key] = {

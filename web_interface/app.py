@@ -10,11 +10,15 @@ from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import asyncio
 from threading import Thread
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente
+load_dotenv()
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from market_manus.data_providers.binance_data_provider import BinanceDataProvider
-from market_manus.capital_manager.capital_manager import CapitalManager
+from market_manus.core.capital_manager import CapitalManager
 from market_manus.confluence_mode.confluence_mode_module import ConfluenceModeModule
 from market_manus.confluence_mode.recommended_combinations import RecommendedCombinations
 from market_manus.performance.history_repository import PerformanceHistoryRepository
@@ -37,7 +41,20 @@ def initialize_system():
     
     print("🔄 Inicializando sistema Market Manus...")
     
-    data_provider = BinanceDataProvider()
+    # Carregar credenciais
+    api_key = os.getenv("BINANCE_API_KEY", "")
+    api_secret = os.getenv("BINANCE_API_SECRET", "")
+    
+    if not api_key or not api_secret:
+        print("⚠️  Binance API não configurada - modo demonstração")
+        api_key = "demo"
+        api_secret = "demo"
+    
+    data_provider = BinanceDataProvider(
+        api_key=api_key,
+        api_secret=api_secret,
+        testnet=False
+    )
     capital_manager = CapitalManager(initial_capital=10000.0)
     
     performance_repo = PerformanceHistoryRepository()

@@ -20,21 +20,30 @@ The system offers dual interfaces (CLI/Web) built with Python 3.11, structured a
 #### CLI/TUI Interface
 The CLI features a professional-grade, real-time interactive console-based UI/UX with a multi-panel layout for live streaming visualization, including a Header, Metrics, optional Paper Trading panel, Body, and Footer. It incorporates an alert system with visual highlights and optional audio for strong signals. A paper trading simulator offers a virtual execution environment with real-time P&L, automatic Stop Loss/Take Profit, and trade statistics. The Narrative UI presents market sentiment data in natural language (Portuguese) using progressive disclosure. The `rich` library is utilized for advanced terminal UI rendering, including tables, panels, and color-coded status indicators.
 
-#### Web Interface (NEW)
+#### Web Interface (v2.0 - UPDATED)
 - **Framework**: Flask + Flask-SocketIO for real-time WebSocket communication
-- **Frontend**: Bootstrap 5, responsive design, modern UI/UX
+- **Frontend**: Bootstrap 5, responsive design, professional dark theme
+- **Theme**: Complete dark mode with GitHub-inspired color palette (#0d1117 primary, #1c2128 cards)
 - **Pages**:
   * **Dashboard**: Real-time metrics, capital status, market overview, sentiment analysis
   * **Strategy Lab**: Visual selection of 17 strategies (12 classic + 5 SMC) with interactive cards
   * **Confluence Lab**: Browse and filter 22 recommended combinations by category/mode/timeframe
-  * **Backtest**: Configure and run backtests with real-time results visualization
-  * **Performance**: Historical performance tracking with Chart.js graphs
+  * **Backtest**: REAL backtest execution with Binance historical data, dynamic results (ROI, win rate, trades)
+  * **Performance**: Historical performance tracking with Chart.js graphs, database-driven metrics
 - **Features**:
   * Real-time updates via WebSocket
-  * REST API endpoints for system status, strategies, combinations
-  * AI toggles (Manus AI Premium + Semantic Kernel Advisor)
+  * REST API endpoints: `/api/backtest` (POST), `/api/performance/summary`, `/api/performance/export/<id>`
+  * Dynamic backtest execution using ConfluenceModeModule (same engine as CLI)
+  * Results persistence in SQLite via PerformanceHistoryRepository
+  * AI toggles (Manus AI Premium + Semantic Kernel Advisor) with real integration
   * Responsive design for desktop and mobile
-  * Dark theme with professional color scheme
+  * Professional dark theme with custom scrollbars, hover effects, and color-coded metrics
+- **Technical Implementation**:
+  * Backtest endpoint executes real strategies on historical OHLCV data from Binance
+  * Volume filter pipeline applied to signals
+  * Confluence calculation with BUY/SELL direction tracking
+  * Trade simulation with realistic Stop Loss (0.5%) and Take Profit (1.0%)
+  * Results saved to database with strategy contributions
 - **Access**: http://localhost:5000 when Web mode is selected
 
 ### Technical Implementations

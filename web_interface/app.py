@@ -158,20 +158,28 @@ def run_backtest():
 @socketio.on('connect')
 def handle_connect():
     """Cliente conectado via WebSocket"""
-    print(f"✅ Cliente conectado: {request.sid}")
+    print("✅ Cliente conectado via WebSocket")
     emit('status', {'message': 'Conectado ao Market Manus'})
 
 @socketio.on('disconnect')
 def handle_disconnect():
     """Cliente desconectado"""
-    print(f"❌ Cliente desconectado: {request.sid}")
+    print(f"❌ Cliente desconectado")
 
 def run_web_server(host='0.0.0.0', port=5000, debug=False):
     """Inicia servidor web"""
     initialize_system()
     print(f"\n🌐 Iniciando interface web em http://{host}:{port}")
     print("📊 Acesse o dashboard para começar!\n")
-    socketio.run(app, host=host, port=port, debug=debug, allow_unsafe_werkzeug=True)
+    socketio.run(
+        app, 
+        host=host, 
+        port=port, 
+        debug=debug, 
+        allow_unsafe_werkzeug=True,
+        use_reloader=False,
+        log_output=True
+    )
 
 if __name__ == '__main__':
     run_web_server(debug=True)

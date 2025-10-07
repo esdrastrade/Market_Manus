@@ -1,0 +1,148 @@
+/* Market Manus - Interface Web CSS */
+
+:root {
+    --primary-color: #0066cc;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --dark-color: #212529;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-brand i {
+    color: var(--success-color);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.btn-lg i {
+    transition: transform 0.2s;
+}
+
+.btn-lg:hover i {
+    transform: scale(1.1);
+}
+
+#connection-status .bi-circle-fill {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.strategy-card {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.strategy-card:hover {
+    background-color: #e9ecef;
+}
+
+.strategy-card.selected {
+    background-color: #d1ecf1;
+    border-color: var(--info-color);
+}
+
+.combination-card {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.combination-card:hover {
+    border-color: var(--primary-color);
+    background-color: #e7f3ff;
+}
+
+.backtest-result {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.ai-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    animation: glow 2s infinite;
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.8); }
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.performance-chart {
+    height: 300px;
+    margin-top: 20px;
+}
+
+.signal-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.signal-buy {
+    background-color: var(--success-color);
+}
+
+.signal-sell {
+    background-color: var(--danger-color);
+}
+
+.signal-neutral {
+    background-color: var(--warning-color);
+}

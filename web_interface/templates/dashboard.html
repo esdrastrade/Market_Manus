@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Market Manus{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-4"><i class="bi bi-speedometer2"></i> Dashboard</h1>
+        <p class="lead">Sistema de Trading Automatizado com IA</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2"><i class="bi bi-currency-dollar"></i> Capital Atual</h6>
+                <h2 class="card-title mb-0" id="dashboard-capital">$10,000.00</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2"><i class="bi bi-diagram-3"></i> Estratégias</h6>
+                <h2 class="card-title mb-0" id="dashboard-strategies">17</h2>
+                <small>12 Clássicas + 5 SMC</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2"><i class="bi bi-layers"></i> Combinações</h6>
+                <h2 class="card-title mb-0" id="dashboard-combinations">22</h2>
+                <small>Win Rate 70-80%+</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-info">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2"><i class="bi bi-robot"></i> IA Premium</h6>
+                <h2 class="card-title mb-0">
+                    <span id="ai-status">
+                        <i class="bi bi-toggle-on"></i> Ativo
+                    </span>
+                </h2>
+                <small>Manus AI + Semantic Kernel</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-activity"></i> Market Overview</h5>
+            </div>
+            <div class="card-body">
+                <div id="market-chart" style="height: 400px;">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <i class="bi bi-graph-up" style="font-size: 4rem; color: #ccc;"></i>
+                            <p class="text-muted mt-3">Selecione um par e timeframe para visualizar</p>
+                            <div class="row g-2 mt-3">
+                                <div class="col-md-6">
+                                    <select class="form-select" id="asset-selector">
+                                        <option value="BTCUSDT">BTC/USDT</option>
+                                        <option value="ETHUSDT">ETH/USDT</option>
+                                        <option value="BNBUSDT">BNB/USDT</option>
+                                        <option value="ADAUSDT">ADA/USDT</option>
+                                        <option value="SOLUSDT">SOL/USDT</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select" id="timeframe-selector">
+                                        <option value="1m">1 Minuto</option>
+                                        <option value="5m">5 Minutos</option>
+                                        <option value="15m" selected>15 Minutos</option>
+                                        <option value="1h">1 Hora</option>
+                                        <option value="4h">4 Horas</option>
+                                        <option value="1d">1 Dia</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-newspaper"></i> Market Sentiment</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Fear & Greed Index</label>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 55%;" id="fear-greed-bar">
+                            <strong>55 - Neutral</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Market Regime</label>
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-arrow-up-right"></i> <strong>TRENDING</strong>
+                        <p class="mb-0 small">Condições favoráveis para momentum strategies</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Top Signals (24h)</label>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <small><i class="bi bi-arrow-up text-success"></i> RSI Oversold</small>
+                            <span class="badge bg-success">12</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <small><i class="bi bi-arrow-down text-danger"></i> MACD Cross</small>
+                            <span class="badge bg-danger">8</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <small><i class="bi bi-graph-up text-primary"></i> BOS Detected</small>
+                            <span class="badge bg-primary">5</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="/strategies" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="bi bi-diagram-3 d-block mb-2" style="font-size: 2rem;"></i>
+                            Strategy Lab
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/confluence" class="btn btn-outline-success btn-lg w-100">
+                            <i class="bi bi-layers d-block mb-2" style="font-size: 2rem;"></i>
+                            Confluence Lab
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/backtest" class="btn btn-outline-warning btn-lg w-100">
+                            <i class="bi bi-bar-chart-line d-block mb-2" style="font-size: 2rem;"></i>
+                            Run Backtest
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/performance" class="btn btn-outline-info btn-lg w-100">
+                            <i class="bi bi-trophy d-block mb-2" style="font-size: 2rem;"></i>
+                            Performance
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Atualizar status em tempo real
+    function updateDashboard() {
+        fetch('/api/system/status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('dashboard-capital').textContent = `$${data.capital.toFixed(2)}`;
+                document.getElementById('current-capital').textContent = `$${data.capital.toFixed(2)}`;
+                document.getElementById('dashboard-strategies').textContent = data.strategies_count;
+                document.getElementById('dashboard-combinations').textContent = data.combinations_count;
+            })
+            .catch(error => console.error('Erro ao atualizar dashboard:', error));
+    }
+    
+    // Atualizar a cada 5 segundos
+    setInterval(updateDashboard, 5000);
+    
+    // Atualizar na carga
+    updateDashboard();
+</script>
+{% endblock %}

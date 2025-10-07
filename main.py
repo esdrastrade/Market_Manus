@@ -439,8 +439,43 @@ class MarketManusMain:
 def main():
     """Função principal"""
     try:
-        app = MarketManusMain()
-        app.run()
+        # Tela de seleção de interface
+        print("\n" + "=" * 80)
+        print("     🏭 MARKET MANUS - SISTEMA DE TRADING AUTOMATIZADO V2.1")
+        print("=" * 80)
+        print("🎯 Sistema modular com Strategy Lab V6 e Confluence Lab")
+        print("📊 17 estratégias (12 clássicas + 5 SMC) + 22 Combinações Recomendadas")
+        print("🤖 Integração IA: Manus AI Premium + Semantic Kernel Advisor")
+        print("=" * 80)
+        
+        print("\n🚀 SELECIONE O MODO DE EXECUÇÃO:")
+        print("   1️⃣  🖥️  Interface CLI (Terminal)")
+        print("   2️⃣  🌐 Interface Web (Browser)")
+        print("   0️⃣  ❌ Sair")
+        
+        choice = input("\n🔢 Escolha uma opção (0-2): ").strip()
+        
+        if choice == '0':
+            print("\n👋 Até logo!")
+            return
+        elif choice == '1':
+            # Executar CLI
+            print("\n🖥️  Iniciando interface CLI...")
+            app = MarketManusMain()
+            app.run()
+        elif choice == '2':
+            # Executar interface web
+            print("\n🌐 Iniciando interface Web...")
+            print("📊 A interface será aberta no seu navegador padrão")
+            print("🔗 URL: http://localhost:5000")
+            print("\n⏹️  Pressione Ctrl+C para parar o servidor\n")
+            
+            from web_interface.app import run_web_server
+            run_web_server(host='0.0.0.0', port=5000, debug=False)
+        else:
+            print("\n❌ Opção inválida!")
+            main()  # Recursivo para voltar ao menu
+            
     except KeyboardInterrupt:
         print("\n\n⏹️ Sistema interrompido pelo usuário")
         print("👋 Obrigado por usar o Market Manus!")

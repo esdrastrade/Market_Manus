@@ -1,0 +1,575 @@
+PS C:\Users\Esdras\scalping-trading-system> tree /F
+Folder PATH listing
+Volume serial number is D4C8-78DF
+C:.
+│   .env
+│   .env.example
+│   .gitignore
+│   .replit
+│   api_test.py
+│   capital_data.json
+│   fix_git_history.ps1
+│   LICENSE
+│   main.py
+│   market_manus_semantic_kernel_integration.py
+│   pyproject.toml
+│   README.md
+│   replit.md
+│   requirements.txt
+│   test_complete_system_final.py
+│   test_ict_framework.py
+│
+├───.github
+│   └───workflows
+├───.local
+│   └───state
+│       └───replit
+│           └───agent
+│               │   .agent_state_05007d1afb2831f5865909a4771d5aeef2e64215.bin
+│               │   .agent_state_090e3d0dd59aff03c74840960050e9269cfb568c.bin
+│               │   .agent_state_0b77ac0e19be5d15849a248c912f06f721d56635.bin
+│               │   .agent_state_0b94121fcd0d2bbbbffd6f3a2f737fe70680e85a.bin
+│               │   .agent_state_21ba09ccdfdf5ebc41a0622d6215fd339bcaa41b.bin
+│               │   .agent_state_22d318e1191d1f57dd43f953561a0836605c5bfb.bin
+│               │   .agent_state_2324f9c6e3d849aa3dd0f530d9f36ae6f563a5ed.bin
+│               │   .agent_state_2cf8deed058e4e92c6e374d23d1c29a0c275f435.bin
+│               │   .agent_state_2cfdd02a23d6f54451e4ebf7bd26016f2e055fb4.bin
+│               │   .agent_state_2e707a47c8f99cf5525db4c725a23599a55998e3.bin
+│               │   .agent_state_327c48e32b03e9c0cf6a810c45401dd7fdd844a1.bin
+│               │   .agent_state_36db265d1c9e5e32ce7800771837a2a25e517731.bin
+│               │   .agent_state_375f2dcc9c4e2c2b9373856c835e9ee5f7629062.bin
+│               │   .agent_state_3986199015752988bff3b9b681787b9c6b823329.bin
+│               │   .agent_state_435e12cb66b4aa2e6ac541aaa602b4b9db7d18fc.bin
+│               │   .agent_state_4496fff823c4029e82e34a1b1328787755732872.bin
+│               │   .agent_state_45bed79173553fed088b152df6b7795b96149511.bin
+│               │   .agent_state_583579335bbaa98a84f1a64919ab7d8efa9e2719.bin
+│               │   .agent_state_5913e066549ae2f69fa060a4958b6f9b32c4e7c9.bin
+│               │   .agent_state_5b37983cde4f6d27eb481c35af528918bd2294b4.bin
+│               │   .agent_state_5d7e563d80ff7c38f440e1425883897b689a2d63.bin
+│               │   .agent_state_618e13b2095a658b156b07a4b689ad3fcd9d7ae3.bin
+│               │   .agent_state_62a22115ccec330da0327f1cd6e6c619c9c21156.bin
+│               │   .agent_state_63b21a94d35cfdf8057e5680f8a11ff4fc677134.bin
+│               │   .agent_state_658e76670b1a7752220e186e1c75ec09c518e4ff.bin
+│               │   .agent_state_6823111ccebd8247a4ef82feaec2312fae204a6a.bin
+│               │   .agent_state_686c487f1b10efe729482dfa94f5b2c6937dd6c0.bin
+│               │   .agent_state_6c2b8f953b2a5f824c75dad9ca979026f0c5e8a9.bin
+│               │   .agent_state_6c33068d676b7ce87b18d116f182192ce7d24027.bin
+│               │   .agent_state_6c435767d56db80347e84b36a7b5bf9426d848ae.bin
+│               │   .agent_state_6d23227c541b27cc3c6431a447120ffb500d8b49.bin
+│               │   .agent_state_6f64fbda7e20389734cedc2f3e963de7260b201b.bin
+│               │   .agent_state_720a392e7f350698e664e15dee1f03f5434e7d27.bin
+│               │   .agent_state_7446a2f84a8db2d0691d099a272a589509e9a89a.bin
+│               │   .agent_state_753dda3859e6addba2f936119d3389695bb82d9e.bin
+│               │   .agent_state_7a4b640f4cc3c39972a844328a5cdc36fb84f800.bin
+│               │   .agent_state_7a66514a3e9053152b4e9c0dc3c256d15a111537.bin
+│               │   .agent_state_7f258915c0551379c1c3c93f636151e9fbd203c1.bin
+│               │   .agent_state_8022ba5c24eaf4d7318423ec59d58e94f16412a2.bin
+│               │   .agent_state_81290b8d0ac8d51f4776f6828b68ece72af239d5.bin
+│               │   .agent_state_813919e17b61aa764caa0a5cb7985190516b1afc.bin
+│               │   .agent_state_827c3a40880e94633a71fe540e3f2af4b15fcfb5.bin
+│               │   .agent_state_86c15a7d7dd02e0ce0d492764949b445e24ead24.bin
+│               │   .agent_state_877a727a324dfe5cd3346c1d9de0cfcf5cd23d91.bin
+│               │   .agent_state_896fecd3409f992013ecfa3aa569637641318bf4.bin
+│               │   .agent_state_8b003f6ca8ead654bdd2b90a11c5b202b51f86cd.bin
+│               │   .agent_state_8f3b93fd0eae3c8cf73fb7a11bb321ed5368fb65.bin
+│               │   .agent_state_930c91caf0b2ad7ee1c74ab0abe644c51b75ea24.bin
+│               │   .agent_state_942c09a48b06b8d1858c48bab4979933e6e22f2d.bin
+│               │   .agent_state_94cb692dd4f20aad15bd5084f0a8293580dc2fa9.bin
+│               │   .agent_state_94eac594fd4c157527ffd858242a03af418c2d02.bin
+│               │   .agent_state_957020174b8bc9057ff479873b8bea42fae7daf3.bin
+│               │   .agent_state_97350b5fa9eee4f7c5d7e713ed87e26fb20e67b4.bin
+│               │   .agent_state_9ce068e6c339a9a3a57076e36e1be279a1ff5b77.bin
+│               │   .agent_state_9e338ffad528b42a433dcf6c6314d5d980a376dd.bin
+│               │   .agent_state_9f3f26c25dc86c9e449cde3c33ef19dab7326a2d.bin
+│               │   .agent_state_9fffa7b40650dcb9c93eda9b330480ca5907a60d.bin
+│               │   .agent_state_a1e9b39aefb80ea2b97d8ade7346b4663950ba57.bin
+│               │   .agent_state_a46a67424788baef800cb8eb1ba4b94b4086ed4f.bin
+│               │   .agent_state_a4d5e7104eea9b3e55d8434ff6ca0f71ac6a23cb.bin
+│               │   .agent_state_aceadfef28d31dd8ca8ddc7c7ac7c56893835acf.bin
+│               │   .agent_state_af5912c9055d940074b814ffae01c4c900b00f2b.bin
+│               │   .agent_state_b06edf63ad548069815bff9e0916c1ed7d15d16a.bin
+│               │   .agent_state_b0dd9824d2ddeee036c6d03341a7620fe60e2d87.bin
+│               │   .agent_state_b80a8d0be13e29ae775a718e4289c0200babb15d.bin
+│               │   .agent_state_bdd2e28fc8aac33f6278e7365f4b6fc68420086c.bin
+│               │   .agent_state_bf30d1c7acf5579942e05b2ab1819669f4b4f560.bin
+│               │   .agent_state_c02619822ae22d6c2c12288eddfb6ade53b9302e.bin
+│               │   .agent_state_c3fc7c9e2150c00f4a4fe61393d5cec64d32a265.bin
+│               │   .agent_state_cb55c7d70d09cc168e12437f1b9b6e194f16db01.bin
+│               │   .agent_state_cd5b75b628c3c66c7ebcb8f5d7b6826f82302c16.bin
+│               │   .agent_state_d31ab62d95057b218fa88cef59541f0b6f6591be.bin
+│               │   .agent_state_d458b4a027ebebb80ea70f6e10d8e3d00d09e97c.bin
+│               │   .agent_state_d4ff4e9931b6e07134c26c71c3a322bac915a873.bin
+│               │   .agent_state_d510af2af4c4b8e654ca30c1efeb99b897029300.bin
+│               │   .agent_state_d63d54f027b141b85869912780d3fa001cae3eff.bin
+│               │   .agent_state_d7e08f3d70d81630477f1a8b62afe6043f8c2923.bin
+│               │   .agent_state_dc99dd68062e6d15679224f58d4a53e82178df8f.bin
+│               │   .agent_state_dd49b4b093f33fd685cd412972552043016b2cca.bin
+│               │   .agent_state_de5e21992fe27ea1bc88b6f158f098cc2edca4cd.bin
+│               │   .agent_state_e3428b5bb4c1f02c3f9ae60b7dcf1445998a5420.bin
+│               │   .agent_state_e727a25ffdc1b5f87f01f7a916de76f18acfe038.bin
+│               │   .agent_state_e799197504e0c335b0cfb0f43bf8a93304f551dc.bin
+│               │   .agent_state_ec061d116c70839343a7773fd65185236a057f3c.bin
+│               │   .agent_state_f0c9a184b9eceecfa2a7596c6f4b6e31e4693fb1.bin
+│               │   .agent_state_f38eed422b0b493627ca40351d3eb7be4ba5a912.bin
+│               │   .agent_state_fb456d5cc7c1194bd7d5600341676e4776a0a198.bin
+│               │   .agent_state_fbcaf58657462ac5c9fb075f27014d00d4ea74f1.bin
+│               │   .agent_state_main.bin
+│               │   .latest.json
+│               │   repl_state.bin
+│               │
+│               └───filesystem
+│                       filesystem_state.json
+│
+├───attached_assets
+│       .env_1759599162473.example
+│       .env_1759599208132.example
+│       ChatGPT Image Oct 6, 2025, 06_50_16 PM_1759787513045.png
+│       image_1759331439302.png
+│       image_1759333048486.png
+│       image_1759334026757.png
+│       image_1759359021016.png
+│       Pasted--CONFLUENCE-MODE-1759611139764_1759611139767.txt
+│       Pasted--CONFLUENCE-MODE-1759611215417_1759611215418.txt
+│       Pasted--CONFLUENCE-MODE-1759617580629_1759617580630.txt
+│       Pasted--CONFLUENCE-MODE-SISTEMA-DE-CONFLU-NCIA--1759617268248_1759617268249.txt
+│       Pasted--Escolha-estrat-gias-ex-1-3-5-ou-0-4-5-6-7-Estrat-gias-selecionadas-MACD-S-1759609921638_1759609921640.txt
+│       Pasted--ORIENTA-O-IMPERATIVA-PARA-O-REPLIT-Feature-Market-Sentiment-Analysis-no-menu-principal-d-1759351888814_1759351888822.txt
+│       Pasted--Pontos-Fortes-Muito-Bem-Implementado-Estrutura-modular-limpa-cada-conceito-SMC-est-isolado-n-1759787482474_1759787482478.txt
+│       Pasted--REPLIT-IMPLEMENTAR-VISUALIZA-O-LIVE-EM-TEMPO-REAL-SEM-SPAM-E-SEM-ESTOURAR-RATE-LIMIT-OBJ-1759339845187_1759339845191.txt
+│       Pasted--REPLIT-TAREFA-CONFLUIR-SMC-patterns-py-CLASSIC-ANALYSIS-classic-analysis-Objetivo-uni-1759335665232_1759335665237.txt
+│       Pasted-3-Bootstrap-hist-rico-Antes-do-WS-buscar-300-1000-candles-via-REST-para-preencher-a-deque-de-c--1759339964811_1759339964813.txt
+│       Pasted-O-que-est-bom-Agrega-o-por-ndice-real-lock-de-posi-o-voc-s-abre-trade-quando-o-ndice-do-c-1759792770378_1759792770381.txt
+│       Pasted-PS-C-Users-Esdras-cd-scalping-trading-system-PS-C-Users-Esdras-scalping-trading-system-python-m-1759781812322_1759781812326.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-1-Adicionar-ao-PATH-temporariamente-PS-C-Users-Esdr-1759674921981_1759674921983.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-git-add-warning-in-the-working-copy-of-gitignore--1759627762166_1759627762173.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-pip-install-git-filter-repo-Defaulting-to-user-installa-1759674665825_1759674665833.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py--1759342476704_1759342476711.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py--1759597206613_1759597206624.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py--1759598937875_1759598937876.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py--1759599913798_1759599913803.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py--1759606928100_1759606928103.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py--1759609157250_1759609157254.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py--1759616261176_1759616261181.txt
+│       Pasted-PS-C-Users-Esdras-scalping-trading-system-python-main-py-MARKET-MANUS-SISTEMA-INTEGRADO-Dat-1759328083980_1759328083986.txt
+│       Pasted-Windows-PowerShell-Copyright-C-Microsoft-Corporation-All-rights-reserved-Try-the-new-cross-p-1759629247012_1759629247013.txt
+│       patterns_1759334460542.py
+│       patterns_1759600044244.py
+│
+├───backup_20250929_194817
+├───config
+│       capital_config.json
+│       confluence.yaml
+│       settings.json
+│
+├───C__
+│   └───Users
+│       └───Esdras
+│           └───scalping-trading-system
+│               └───data
+├───data
+├───docs
+│       deployment_guide.md
+│       strategies.md
+│       troubleshooting.md
+│
+├───logs
+│   │   .gitkeep
+│   │   market_manus.log
+│   │   market_manus_cli.log
+│   │   market_manus_complete.log
+│   │   portfolio.db
+│   │   README.md
+│   │
+│   └───.cache
+│           5a4deac7a5687ca4f596c33cfe595f62.parquet
+│
+├───market_manus
+│   │   __init__.py
+│   │
+│   ├───agents
+│   │       backtesting_agent.py
+│   │       backtesting_agent_v5.py
+│   │       base_agent.py
+│   │       market_analysis_agent.py
+│   │       notification_agent.py
+│   │       orchestrator_agent.py
+│   │       performance_agent.py
+│   │       risk_management_agent.py
+│   │       __init__.py
+│   │
+│   ├───analysis
+│   │   │   market_context_analyzer.py
+│   │   │   volume_filter.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           market_context_analyzer.cpython-311.pyc
+│   │           market_context_analyzer.cpython-313.pyc
+│   │           volume_filter.cpython-311.pyc
+│   │           volume_filter.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───backtest
+│   │   │   confluence_backtest.py
+│   │   │   confluence_realtime.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           confluence_backtest.cpython-311.pyc
+│   │           confluence_backtest.cpython-313.pyc
+│   │           confluence_realtime.cpython-311.pyc
+│   │           confluence_realtime.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───cli
+│   │   │   live_view.py
+│   │   │   market_manus_cli_2025_09_30.py
+│   │   │   market_manus_cli_complete_final.py
+│   │   │   MARKET_MANUS_CLI_COMPLETE_V4.py
+│   │   │   market_manus_final_implemented.py
+│   │   │   STRATEGY_LAB_PROFESSIONAL_V6.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           live_view.cpython-311.pyc
+│   │           live_view.cpython-313.pyc
+│   │           market_manus_cli.cpython-313.pyc
+│   │           market_manus_cli_2025_09_30.cpython-313.pyc
+│   │           STRATEGY_LAB_PROFESSIONAL_V6.cpython-311.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───confluence_mode
+│   │   │   confluence_engine_adapter.py
+│   │   │   confluence_mode_module.py
+│   │   │   shadow_mode_validator.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           confluence_mode_module.cpython-311.pyc
+│   │           confluence_mode_module.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───core
+│   │   │   advanced_features.py
+│   │   │   capital_manager.py
+│   │   │   signal.py
+│   │   │   test_configuration_manager.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           capital_manager.cpython-311.pyc
+│   │           capital_manager.cpython-313.pyc
+│   │           signal.cpython-311.pyc
+│   │           signal.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───data_providers
+│   │   │   binance_data_provider.py
+│   │   │   bybit_real_data_provider.py
+│   │   │   bybit_real_data_provider_fixed.py
+│   │   │   bybit_real_data_provider_pybit.py
+│   │   │   historical_cache.py
+│   │   │   market_data_ws.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           binance_data_provider.cpython-311.pyc
+│   │           binance_data_provider.cpython-313.pyc
+│   │           bybit_real_data_provider.cpython-311.pyc
+│   │           bybit_real_data_provider.cpython-313.pyc
+│   │           bybit_real_data_provider_fixed.cpython-313.pyc
+│   │           market_data_ws.cpython-311.pyc
+│   │           market_data_ws.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───engines
+│   │   │   IMPLEMENTATION_SUMMARY.md
+│   │   │   README_REALTIME.md
+│   │   │   realtime_strategy_engine.py
+│   │   │   stream_runtime.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           realtime_strategy_engine.cpython-313.pyc
+│   │           stream_runtime.cpython-311.pyc
+│   │           stream_runtime.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───explanations
+│   │   │   adx.md
+│   │   │   bollinger_breakout.md
+│   │   │   ema_crossover.md
+│   │   │   fibonacci.md
+│   │   │   macd.md
+│   │   │   rsi_mean_reversion.md
+│   │   │   smc_bos.md
+│   │   │   smc_choch.md
+│   │   │   smc_fvg.md
+│   │   │   smc_liquidity_sweep.md
+│   │   │   smc_order_blocks.md
+│   │   │   stochastic.md
+│   │   │   strategy_explanations.py
+│   │   │   williams_r.md
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           strategy_explanations.cpython-311.pyc
+│   │           strategy_explanations.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───sentiment
+│   │   │   sentiment_service.py
+│   │   │   __init__.py
+│   │   │
+│   │   ├───cache
+│   │   │   │   memo.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           memo.cpython-311.pyc
+│   │   │           memo.cpython-313.pyc
+│   │   │           __init__.cpython-311.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───collectors
+│   │   │   │   alt_fng.py
+│   │   │   │   binance_ws.py
+│   │   │   │   bybit_derivs.py
+│   │   │   │   coingecko.py
+│   │   │   │   coinglass.py
+│   │   │   │   cryptopanic.py
+│   │   │   │   glassnode.py
+│   │   │   │   google_trends.py
+│   │   │   │   santiment.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           alt_fng.cpython-311.pyc
+│   │   │           alt_fng.cpython-313.pyc
+│   │   │           bybit_derivs.cpython-311.pyc
+│   │   │           bybit_derivs.cpython-313.pyc
+│   │   │           coingecko.cpython-311.pyc
+│   │   │           coingecko.cpython-313.pyc
+│   │   │           coinglass.cpython-311.pyc
+│   │   │           coinglass.cpython-313.pyc
+│   │   │           cryptopanic.cpython-311.pyc
+│   │   │           cryptopanic.cpython-313.pyc
+│   │   │           glassnode.cpython-311.pyc
+│   │   │           glassnode.cpython-313.pyc
+│   │   │           google_trends.cpython-311.pyc
+│   │   │           google_trends.cpython-313.pyc
+│   │   │           santiment.cpython-311.pyc
+│   │   │           santiment.cpython-313.pyc
+│   │   │           __init__.cpython-311.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───parsers
+│   │   │       __init__.py
+│   │   │
+│   │   ├───services
+│   │   │   │   normalizers.py
+│   │   │   │   weights.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           normalizers.cpython-311.pyc
+│   │   │           normalizers.cpython-313.pyc
+│   │   │           weights.cpython-311.pyc
+│   │   │           weights.cpython-313.pyc
+│   │   │           __init__.cpython-311.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───ui
+│   │   │   │   cli_views.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           cli_views.cpython-311.pyc
+│   │   │           cli_views.cpython-313.pyc
+│   │   │           __init__.cpython-311.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   └───__pycache__
+│   │           sentiment_service.cpython-311.pyc
+│   │           sentiment_service.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───strategies
+│   │   │   adx_strategy.py
+│   │   │   ai_agent_strategy.py
+│   │   │   base_strategy.py
+│   │   │   bollinger_breakout_strategy.py
+│   │   │   classic_analysis.py
+│   │   │   ema_crossover_strategy.py
+│   │   │   fibonacci_strategy.py
+│   │   │   macd_strategy.py
+│   │   │   rsi_mean_reversion_strategy.py
+│   │   │   stochastic_strategy.py
+│   │   │   strategy_manager.py
+│   │   │   __init__.py
+│   │   │
+│   │   ├───classic_analysis
+│   │   │       adx_strategy.py
+│   │   │       bollinger_breakout_strategy.py
+│   │   │       ema_crossover_strategy.py
+│   │   │       fibonacci_strategy.py
+│   │   │       macd_strategy.py
+│   │   │       rsi_mean_reversion_strategy.py
+│   │   │       stochastic_strategy.py
+│   │   │
+│   │   ├───smc
+│   │   │   │   context.py
+│   │   │   │   ict_framework.py
+│   │   │   │   market_structure.py
+│   │   │   │   narrative.py
+│   │   │   │   patterns.py
+│   │   │   │   setup.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           context.cpython-311.pyc
+│   │   │           context.cpython-313.pyc
+│   │   │           ict_framework.cpython-311.pyc
+│   │   │           ict_framework.cpython-313.pyc
+│   │   │           market_structure.cpython-311.pyc
+│   │   │           market_structure.cpython-313.pyc
+│   │   │           narrative.cpython-311.pyc
+│   │   │           narrative.cpython-313.pyc
+│   │   │           patterns.cpython-311.pyc
+│   │   │           patterns.cpython-313.pyc
+│   │   │           setup.cpython-311.pyc
+│   │   │           setup.cpython-313.pyc
+│   │   │           __init__.cpython-311.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   └───__pycache__
+│   │           adx_strategy.cpython-313.pyc
+│   │           bollinger_breakout_strategy.cpython-313.pyc
+│   │           classic_analysis.cpython-311.pyc
+│   │           classic_analysis.cpython-313.pyc
+│   │           ema_crossover_strategy.cpython-313.pyc
+│   │           fibonacci_strategy.cpython-313.pyc
+│   │           macd_strategy.cpython-313.pyc
+│   │           rsi_mean_reversion_strategy.cpython-313.pyc
+│   │           stochastic_strategy.cpython-313.pyc
+│   │           strategy_manager_enhanced.cpython-313.pyc
+│   │           strategy_manager_integrated.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───strategy_lab
+│   │   │   assets_manager.py
+│   │   │   strategy_lab_professional.py
+│   │   │   STRATEGY_LAB_PROFESSIONAL_V2.py
+│   │   │   STRATEGY_LAB_PROFESSIONAL_V3.py
+│   │   │   STRATEGY_LAB_PROFESSIONAL_V4.py
+│   │   │   STRATEGY_LAB_PROFESSIONAL_V5.py
+│   │   │   STRATEGY_LAB_PROFESSIONAL_V6.py
+│   │   │   test_assets_manager.py
+│   │   │   __init__.py
+│   │   │
+│   │   ├───config
+│   │   │       selected_assets.json
+│   │   │
+│   │   └───__pycache__
+│   │           strategy_lab_professional.cpython-313.pyc
+│   │           STRATEGY_LAB_PROFESSIONAL_V6.cpython-311.pyc
+│   │           STRATEGY_LAB_PROFESSIONAL_V6.cpython-313.pyc
+│   │           __init__.cpython-311.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───utils
+│   │       __init__.py
+│   │
+│   └───__pycache__
+│           strategy_contract.cpython-313.pyc
+│           __init__.cpython-311.pyc
+│           __init__.cpython-313.pyc
+│
+├───reports
+│       backtest_bollinger_breakout_BNBUSDT_4h_20250924_192500.json
+│       backtest_bollinger_breakout_BTCUSDT_30m_20250924_193301.json
+│       backtest_bollinger_breakout_ETHUSDT_15m_20250924_192838.json
+│       backtest_ema_BTCUSDT_1h_20250924_192346.json
+│       backtest_ema_BTCUSDT_30m_20250924_193259.json
+│       backtest_ema_ETHUSDT_15m_20250924_192841.json
+│       backtest_report_20250719_152156.json
+│       backtest_rsi_mean_reversion_BTCUSDT_30m_20250924_193007.json
+│       backtest_rsi_mean_reversion_BTCUSDT_30m_20250924_193258.json
+│       backtest_rsi_mean_reversion_ETHUSDT_15m_20250924_192838.json
+│       backtest_rsi_mean_reversion_ETHUSDT_1h_20250924_192546.json
+│       bollinger_breakout_10-08-25_15-52-56.json
+│       dual_mix_ema_bol_10-08-25_15-53-41.json
+│       dual_mix_ema_rsi_10-08-25_15-53-20.json
+│       dual_mix_rsi_bol_10-08-25_15-54-04.json
+│       ema_crossover_10-08-25_15-52-18.json
+│       quick_backtest_with_capital_BTCUSDT_ema_crossover_20250808_220637.json
+│       rsi_mean_reversion_10-08-25_15-52-36.json
+│       triple_mix_all_basic_10-08-25_14-13-45.json
+│       triple_mix_all_basic_10-08-25_15-54-28.json
+│       triple_mix_all_basic_10-08-25_15-54-50.json
+│
+├───scripts
+│       main.py
+│       README.md
+│
+├───tests
+│   │   capital_data.json
+│   │   LICENSE
+│   │   main.py
+│   │   pyproject.toml
+│   │   README.md
+│   │   replit.md
+│   │   requirements.txt
+│   │   run_tests.py
+│   │   test_framework.py
+│   │   __init__.py
+│   │
+│   ├───fixtures
+│   │       __init__.py
+│   │
+│   ├───integration
+│   │       test_system_integration.py
+│   │       __init__.py
+│   │
+│   ├───system
+│   └───unit
+│       │   __init__.py
+│       │
+│       ├───test_agents
+│       │       test_market_analysis_agent.py
+│       │       test_risk_management_agent.py
+│       │       __init__.py
+│       │
+│       ├───test_cli
+│       │       test_market_manus_cli.py
+│       │       __init__.py
+│       │
+│       ├───test_core
+│       │       __init__.py
+│       │
+│       ├───test_strategies
+│       │       test_strategy_factory.py
+│       │       __init__.py
+│       │
+│       └───test_strategy_lab
+│               __init__.py
+│
+├───tools
+└───__pycache__
+        bybit_provider.cpython-313.pyc
+        capital_persistence.cpython-313.pyc
+        market_manus_cli_complete.cpython-313.pyc
+        strategy_contract.cpython-313.pyc
+        strategy_lab.cpython-313.pyc
+
+PS C:\Users\Esdras\scalping-trading-system>

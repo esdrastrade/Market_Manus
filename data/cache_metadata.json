@@ -1,0 +1,12 @@
+{
+  "BTCUSDT_1_070925_until_071025": {
+    "symbol": "BTCUSDT",
+    "interval": "1",
+    "start_date": "2025-09-07",
+    "end_date": "2025-10-07",
+    "candles": 43199,
+    "columns": 6,
+    "cached_at": "2025-10-07T15:56:53.604231",
+    "file_size_kb": 1034.89
+  }
+}

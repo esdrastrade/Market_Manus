@@ -92,14 +92,24 @@ class HistoricalDataCache:
         try:
             df = pd.read_parquet(cache_path)
             
-            # BUG FIX: Converter DataFrame de volta para formato kline preservando TODOS os campos
+            # Converter DataFrame de volta para formato kline
             klines = df.values.tolist()
             
-            # BUG FIX: Converter valores para strings preservando todos os campos dinamicamente
-            klines_str = [
-                [str(value) for value in row]
-                for row in klines
-            ]
+            # Converter valores para strings no formato correto Binance
+            # Timestamp (coluna 0) deve ser int sem decimais
+            # OHLC e volume devem ser strings mantendo precisão decimal
+            klines_str = []
+            for row in klines:
+                formatted_row = []
+                for i, value in enumerate(row):
+                    if i == 0:  # Timestamp - converter para int sem decimais
+                        formatted_row.append(str(int(float(value))))
+                    else:  # OHLC, volume, etc - remover .0 se for inteiro
+                        str_val = str(value)
+                        if str_val.endswith('.0'):
+                            str_val = str_val[:-2]
+                        formatted_row.append(str_val)
+                klines_str.append(formatted_row)
             
             return klines_str
             

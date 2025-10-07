@@ -29,7 +29,7 @@ Market Manus is an automated trading system designed for scalping and swing trad
 - **Color-Coded Transparency**: Intuitive visual feedback using green for profitable/bullish conditions, red for losses/bearish, and yellow for neutral/equilibrium states across all panels.
 
 ### Phase 2 Historical Data Caching System - COMPLETED ✅
-- **HistoricalDataCache Integration**: Fully integrated Parquet-based caching system in both Confluence Lab and Strategy Lab V6, drastically reducing API calls by storing historical data locally in `data/` directory (C:\Users\Esdras\scalping-trading-system\data).
+- **HistoricalDataCache Integration**: Fully integrated Parquet-based caching system in both Confluence Lab and Strategy Lab V6, drastically reducing API calls by storing historical data locally in `data/` directory.
 - **Cache-First Architecture**: Modified `_fetch_historical_klines()` in both modules to check cache BEFORE making API calls. Cache HIT returns stored data instantly with visual feedback ("✅ Cache HIT: {cache_key}"), while Cache MISS triggers API fetch followed by automatic cache save ("📥 Cache MISS: buscando API...").
 - **Session Statistics Tracking**: Added `cache_stats` dictionary tracking hits, misses, and API calls saved per session, providing transparency on cache efficiency.
 - **CLI Cache Management Menu**: New "📁 Dados Históricos Salvos" menu option (option 6️⃣ in Confluence Lab, option 9️⃣ in Strategy Lab) with 4 submenu options:
@@ -39,6 +39,7 @@ Market Manus is an automated trading system designed for scalping and swing trad
   * 📈 Estatísticas de uso (files, space, hits/misses)
 - **Metadata Management**: Automatic cache metadata tracking in `cache_metadata.json` including symbol, interval, date range, candle count, file size, and cache timestamp.
 - **Smart Key Generation**: Unique cache keys based on symbol+interval+start_date+end_date ensuring precise cache matching and avoiding stale data issues.
+- **Type Safety Fix**: Corrected Parquet data recovery to properly convert timestamps from float to int format, fixing "invalid literal for int()" error. Timestamps now recovered as '1757260020000' instead of '1757260020000.0', ensuring compatibility with Binance API format expectations.
 
 ## User Preferences
 *No specific user preferences recorded yet*

@@ -38,5 +38,45 @@
     "columns": 6,
     "cached_at": "2025-10-07T17:21:51.039514",
     "file_size_kb": 3820.28
+  },
+  "BTCUSDT_1h_010123_until_071025": {
+    "symbol": "BTCUSDT",
+    "interval": "1h",
+    "start_date": "2023-01-01",
+    "end_date": "2025-10-07",
+    "candles": 1453970,
+    "columns": 6,
+    "cached_at": "2025-10-07T21:27:01.170228",
+    "file_size_kb": 38993.54
+  },
+  "BTCUSDT_60_010123_until_071025": {
+    "symbol": "BTCUSDT",
+    "interval": "60",
+    "start_date": "2023-01-01",
+    "end_date": "2025-10-07",
+    "candles": 24233,
+    "columns": 6,
+    "cached_at": "2025-10-07T21:38:58.196514",
+    "file_size_kb": 1058.33
+  },
+  "BTCUSDT_60_010124_until_010125": {
+    "symbol": "BTCUSDT",
+    "interval": "60",
+    "start_date": "2024-01-01",
+    "end_date": "2025-01-01",
+    "candles": 8784,
+    "columns": 6,
+    "cached_at": "2025-10-07T22:13:33.201200",
+    "file_size_kb": 380.79
+  },
+  "BTCUSDT_15_010124_until_010125": {
+    "symbol": "BTCUSDT",
+    "interval": "15",
+    "start_date": "2024-01-01",
+    "end_date": "2025-01-01",
+    "candles": 35136,
+    "columns": 6,
+    "cached_at": "2025-10-07T22:33:34.840065",
+    "file_size_kb": 1451.34
   }
 }

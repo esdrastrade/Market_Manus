@@ -1,0 +1,55 @@
+# Market Manus - Semantic Kernel Requirements
+# Data: 24/09/2025
+
+# Core dependencies
+requests>=2.31.0
+numpy>=1.24.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# Semantic Kernel and AI
+semantic-kernel>=1.0.0
+openai>=1.0.0
+
+# Data visualization and analysis
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+
+# API and web
+fastapi>=0.100.0
+uvicorn>=0.23.0
+aiohttp>=3.8.0
+
+# Utilities
+python-dateutil>=2.8.0
+pytz>=2023.3
+colorama>=0.4.6
+
+# Development and testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.7.0
+flake8>=6.0.0
+mypy>=1.5.0
+
+# Optional: For advanced features
+scikit-learn>=1.3.0  # For ML features
+ta-lib>=0.4.0        # Technical analysis (optional)
+ccxt>=4.0.0          # Alternative crypto exchange library (optional)
+
+# Documentation
+sphinx>=7.1.0        # For generating documentation
+sphinx-rtd-theme>=1.3.0
+rich
+websockets
+cachetools
+httpx
+orjson
+pydantic
+python-dateutil
+pytrends
+pytz
+rich
+tenacity
+websockets

@@ -23,6 +23,7 @@ from market_manus.confluence_mode.confluence_mode_module import ConfluenceModeMo
 from market_manus.confluence_mode.recommended_combinations import RecommendedCombinations
 from market_manus.performance.history_repository import PerformanceHistoryRepository
 from market_manus.performance.analytics_service import PerformanceAnalyticsService
+from market_manus.explanations.strategy_explanations import StrategyExplanations
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'market-manus-secret-key-2025'
@@ -112,6 +113,11 @@ def livetest():
     """Página de Live Test (Tempo Real)"""
     return render_template('livetest.html')
 
+@app.route('/explanations')
+def explanations():
+    """Página de explicações das estratégias (Docs)"""
+    return render_template('explanations.html')
+
 @app.route('/api/system/status')
 def system_status():
     """Retorna status do sistema"""
@@ -168,6 +174,15 @@ def run_backtest():
     """Executa backtest com configurações fornecidas"""
     try:
         data = request.json
+        # Helper para emitir progresso em tempo-real
+        def emit_progress(percent: int, message: str, extra: dict = None):
+            payload = {'percent': int(percent), 'message': message}
+            if extra:
+                payload.update(extra)
+            try:
+                socketio.emit('backtest_progress', payload, broadcast=True)
+            except Exception:
+                pass
         
         # Extrair parâmetros
         asset = data.get('asset', 'BTCUSDT')
@@ -195,6 +210,13 @@ def run_backtest():
         
         # Determinar exchange a usar
         exchange = data.get('exchange', 'binance')
+        emit_progress(5, 'Iniciando backtest', {
+            'exchange': exchange,
+            'asset': asset,
+            'timeframe': timeframe,
+            'strategies': strategies,
+            'mode': confluence_mode
+        })
         
         # Criar data provider baseado na exchange selecionada
         if exchange == 'bybit':
@@ -210,6 +232,7 @@ def run_backtest():
                 }), 500
             
             data_provider = BybitRealDataProvider(api_key=api_key, api_secret=api_secret)
+            emit_progress(10, 'Conectado à Bybit e preparando provider')
         else:  # binance (default)
             from market_manus.data_providers.binance_data_provider import BinanceDataProvider
             
@@ -223,6 +246,7 @@ def run_backtest():
                 }), 500
             
             data_provider = BinanceDataProvider(api_key=api_key, api_secret=api_secret)
+            emit_progress(10, 'Conectado à Binance e preparando provider')
         
         # Criar módulo de confluência
         confluence_module = ConfluenceModeModule(
@@ -246,6 +270,10 @@ def run_backtest():
         print(f"   Strategies: {len(strategies)}, Mode: {confluence_mode}")
         
         # Buscar dados históricos
+        emit_progress(15, 'Carregando dados históricos', {
+            'start_date': start_date,
+            'end_date': end_date
+        })
         klines, metrics = confluence_module._fetch_historical_klines(
             symbol=asset,
             interval=timeframe,
@@ -259,6 +287,7 @@ def run_backtest():
                 'message': f'Dados insuficientes: {len(klines) if klines else 0} candles recebidos'
             }), 400
         
+        emit_progress(25, f'Dados carregados: {len(klines)} candles')
         # Converter dados OHLCV
         opens = [float(k[1]) for k in klines]
         highs = [float(k[2]) for k in klines]
@@ -269,11 +298,13 @@ def run_backtest():
         import pandas as pd
         volumes = pd.Series(volumes_raw)
         
+        emit_progress(35, 'Pré-processando OHLCV e volume')
         # Executar estratégias
         strategy_signals = {}
-        for strategy_key in strategies:
+        for idx, strategy_key in enumerate(strategies, start=1):
             if strategy_key in confluence_module.available_strategies:
                 strategy = confluence_module.available_strategies[strategy_key]
+                emit_progress(35 + int(25 * (idx / max(1, len(strategies)))), f'Calculando sinais: {strategy["name"]}')
                 signal_indices = confluence_module._execute_strategy_on_data(
                     strategy_key, closes, highs, lows, opens
                 )
@@ -291,14 +322,17 @@ def run_backtest():
             )
         else:
             filtered_strategy_signals = strategy_signals
+        emit_progress(65, 'Aplicando filtro de volume e limpeza de sinais')
         
         # Calcular confluência
         confluence_signals = confluence_module._calculate_confluence_signals(filtered_strategy_signals)
+        emit_progress(75, f'Confluência calculada — {len(confluence_signals)} sinais totais')
         
         # Simular trades
         final_capital, total_trades, winning_trades = confluence_module._simulate_trades_from_signals(
             confluence_signals, closes, initial_capital, highs, lows
         )
+        emit_progress(90, f'Simulando trades — {total_trades} executados')
         
         losing_trades = total_trades - winning_trades
         pnl = final_capital - initial_capital
@@ -359,8 +393,15 @@ def run_backtest():
         
         # Salvar no repositório
         repo.save_backtest_result(backtest_result, contributions)
+        emit_progress(95, 'Salvando resultado e métricas no SQLite', {'backtest_id': backtest_id})
         
         print(f"✅ Backtest concluído: {win_rate:.1f}% win rate, {roi:+.2f}% ROI")
+        emit_progress(100, f'Concluído: ROI {roi:+.2f}% · Win rate {win_rate:.1f}%', {
+            'final_capital': final_capital,
+            'initial_capital': initial_capital,
+            'win_rate': win_rate,
+            'roi': roi
+        })
         
         # Retornar resultados
         return jsonify({
@@ -811,6 +852,49 @@ def export_performance():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# =============================
+# Strategy Explanations API
+# =============================
+@app.route('/api/explanations/strategies')
+def list_explanations_strategies():
+    """Lista metadados das estratégias com agrupamento clássico/SMC"""
+    explainer = StrategyExplanations()
+    result = {'classic': [], 'smc': []}
+    for key, data in explainer.strategies.items():
+        item = {
+            'key': key,
+            'name': data.get('name'),
+            'emoji': data.get('emoji'),
+            'type': data.get('type'),
+            'description': data.get('description')
+        }
+        if key.startswith('smc_'):
+            result['smc'].append(item)
+        else:
+            result['classic'].append(item)
+    return jsonify(result)
+
+@app.route('/api/explanations/strategy/<key>')
+def get_explanation_for_strategy(key: str):
+    """Retorna a explicação completa para uma estratégia"""
+    explainer = StrategyExplanations()
+    data = explainer.strategies.get(key)
+    if not data:
+        return jsonify({'error': f"Estratégia '{key}' não encontrada"}), 404
+    return jsonify({
+        'key': key,
+        'name': data.get('name'),
+        'emoji': data.get('emoji'),
+        'type': data.get('type'),
+        'description': data.get('description'),
+        'logic': data.get('logic'),
+        'triggers': data.get('triggers'),
+        'parameters': data.get('parameters'),
+        'best_for': data.get('best_for'),
+        'avoid': data.get('avoid')
+    })
+
 
 @socketio.on('connect')
 def handle_connect():

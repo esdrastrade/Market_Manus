@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Market Manus - Strategy Explanations{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card bg-dark text-light mb-3">
+      <div class="card-header d-flex align-items-center">
+        <i class="bi bi-book me-2"></i>
+        <strong>Explanações das Estratégias</strong>
+        <span class="ms-auto">
+          <input id="search" type="text" class="form-control form-control-sm" placeholder="Buscar..." />
+        </span>
+      </div>
+      <div class="card-body">
+        <h6 class="text-muted">Clássicas</h6>
+        <ul id="list-classic" class="list-group list-group-flush mb-3"></ul>
+        <h6 class="text-muted">Smart Money Concepts (SMC)</h6>
+        <ul id="list-smc" class="list-group list-group-flush"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card bg-dark text-light">
+      <div class="card-header">
+        <strong id="detail-title">Selecione uma estratégia</strong>
+      </div>
+      <div class="card-body">
+        <div id="detail-content">
+          <p class="text-muted">Use a lista à esquerda para visualizar a documentação completa de cada estratégia: descrição, lógica, gatilhos, parâmetros e indicações de uso.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const listClassicEl = document.getElementById('list-classic');
+  const listSmcEl = document.getElementById('list-smc');
+  const searchEl = document.getElementById('search');
+  const detailTitleEl = document.getElementById('detail-title');
+  const detailContentEl = document.getElementById('detail-content');
+
+  let allData = { classic: [], smc: [] };
+
+  function createItem(item){
+    const li = document.createElement('li');
+    li.className = 'list-group-item bg-dark text-light d-flex align-items-center';
+    li.style.cursor = 'pointer';
+    li.dataset.key = item.key;
+    li.innerHTML = `<span class="me-2">${item.emoji || '📈'}</span> <strong>${item.name}</strong><span class="ms-2 text-muted">${item.type || ''}</span>`;
+    li.addEventListener('click', () => loadDetail(item.key));
+    return li;
+  }
+
+  async function loadList(){
+    try {
+      const res = await fetch('/api/explanations/strategies');
+      const data = await res.json();
+      allData = data;
+
+      listClassicEl.innerHTML = '';
+      listSmcEl.innerHTML = '';
+      data.classic.forEach(item => listClassicEl.appendChild(createItem(item)));
+      data.smc.forEach(item => listSmcEl.appendChild(createItem(item)));
+    } catch (err) {
+      console.error('Falha ao carregar lista de estratégias', err);
+      detailContentEl.innerHTML = '<div class="alert alert-danger">Erro ao carregar lista de estratégias.</div>';
+    }
+  }
+
+  async function loadDetail(key){
+    try {
+      detailTitleEl.textContent = 'Carregando...';
+      detailContentEl.innerHTML = '';
+      const res = await fetch(`/api/explanations/strategy/${key}`);
+      if (!res.ok) throw new Error('Falha ao carregar explicação');
+      const d = await res.json();
+
+      detailTitleEl.textContent = `${d.emoji || ''} ${d.name}`;
+      const triggers = Object.entries(d.triggers || {}).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('');
+      const params = Object.entries(d.parameters || {}).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('');
+
+      detailContentEl.innerHTML = `
+        <p class="mb-2"><span class="badge bg-secondary">${d.type || ''}</span></p>
+        <p>${d.description || ''}</p>
+        <h6>Lógica</h6>
+        <pre class="bg-black text-light p-3 rounded">${(d.logic || '').trim()}</pre>
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Gatilhos</h6>
+            <ul>${triggers}</ul>
+          </div>
+          <div class="col-md-6">
+            <h6>Parâmetros</h6>
+            <ul>${params}</ul>
+          </div>
+        </div>
+        <div class="mt-3">
+          <p><strong>✅ Melhor para:</strong> ${d.best_for || ''}</p>
+          <p><strong>❌ Evitar:</strong> ${d.avoid || ''}</p>
+        </div>
+      `;
+    } catch (err) {
+      console.error('Erro ao carregar detalhes', err);
+      detailTitleEl.textContent = 'Erro';
+      detailContentEl.innerHTML = '<div class="alert alert-danger">Não foi possível carregar os detalhes.</div>';
+    }
+  }
+
+  function applySearch(){
+    const q = (searchEl.value || '').toLowerCase();
+    const filterList = (items, el) => {
+      el.innerHTML = '';
+      items.filter(i => `${i.name} ${i.key} ${i.type}`.toLowerCase().includes(q))
+          .forEach(i => el.appendChild(createItem(i)));
+    };
+    filterList(allData.classic, listClassicEl);
+    filterList(allData.smc, listSmcEl);
+  }
+
+  searchEl.addEventListener('input', applySearch);
+  loadList();
+</script>
+{% endblock %}

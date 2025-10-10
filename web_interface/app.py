@@ -23,6 +23,7 @@ from market_manus.confluence_mode.confluence_mode_module import ConfluenceModeMo
 from market_manus.confluence_mode.recommended_combinations import RecommendedCombinations
 from market_manus.performance.history_repository import PerformanceHistoryRepository
 from market_manus.performance.analytics_service import PerformanceAnalyticsService
+from market_manus.sentiment.sentiment_service import gather_sentiment
 from market_manus.explanations.strategy_explanations import StrategyExplanations
 
 app = Flask(__name__)
@@ -35,6 +36,8 @@ capital_manager = None
 confluence_module = None
 performance_repo = None
 performance_analytics = None
+sentiment_cache = {}
+SENTIMENT_CACHE_TTL_SECONDS = 300
 
 def initialize_system():
     """Inicializa os módulos do sistema"""
@@ -194,6 +197,34 @@ def run_backtest():
         initial_capital = float(data.get('capital', 10000))
         manus_ai_enabled = data.get('manus_ai', False)
         sk_enabled = data.get('semantic_kernel', False)
+
+        # Normalização de timeframe e datas para evitar 0 candles
+        # Aceitar formatos da UI (1m, 5m, 15m, 1h, 4h, 1d) e do engine (1,5,15,60,240,D)
+        tf_map_ui_to_engine = {
+            '1m': '1', '5m': '5', '15m': '15', '30m': '30', '1h': '60', '4h': '240', '1d': 'D'
+        }
+        # timeframe pode já vir como número/engine; manter se não houver mapeamento
+        tf_engine = tf_map_ui_to_engine.get(str(timeframe).lower(), str(timeframe))
+
+        from datetime import datetime, timedelta
+        def normalize_dates(s, e):
+            try:
+                s_dt = datetime.strptime(s, '%Y-%m-%d') if s else None
+            except Exception:
+                s_dt = None
+            try:
+                e_dt = datetime.strptime(e, '%Y-%m-%d') if e else None
+            except Exception:
+                e_dt = None
+            # End date padrão: hoje
+            if not e_dt:
+                e_dt = datetime.now()
+            # Se start ausente/igual/maior que end, usar janela padrão de 30 dias
+            if not s_dt or s_dt >= e_dt:
+                s_dt = e_dt - timedelta(days=30)
+            return s_dt.strftime('%Y-%m-%d'), e_dt.strftime('%Y-%m-%d')
+
+        norm_start_date, norm_end_date = normalize_dates(start_date, end_date)
         
         # Validar parâmetros
         if not strategies or len(strategies) == 0:
@@ -213,7 +244,7 @@ def run_backtest():
         emit_progress(5, 'Iniciando backtest', {
             'exchange': exchange,
             'asset': asset,
-            'timeframe': timeframe,
+            'timeframe': tf_engine,
             'strategies': strategies,
             'mode': confluence_mode
         })
@@ -256,29 +287,29 @@ def run_backtest():
         
         # Configurar parâmetros
         confluence_module.selected_asset = asset
-        confluence_module.selected_timeframe = timeframe
+        confluence_module.selected_timeframe = tf_engine
         confluence_module.selected_strategies = strategies
         confluence_module.selected_confluence_mode = confluence_mode
-        confluence_module.custom_start_date = start_date
-        confluence_module.custom_end_date = end_date
+        confluence_module.custom_start_date = norm_start_date
+        confluence_module.custom_end_date = norm_end_date
         confluence_module.manus_ai_enabled = manus_ai_enabled
         confluence_module.sk_advisor_enabled = sk_enabled
         
         # Executar backtest programaticamente
         print(f"\n🧪 Executando backtest via Web API...")
-        print(f"   Asset: {asset}, Timeframe: {timeframe}")
+        print(f"   Asset: {asset}, Timeframe: {tf_engine}")
         print(f"   Strategies: {len(strategies)}, Mode: {confluence_mode}")
         
         # Buscar dados históricos
         emit_progress(15, 'Carregando dados históricos', {
-            'start_date': start_date,
-            'end_date': end_date
+            'start_date': norm_start_date,
+            'end_date': norm_end_date
         })
         klines, metrics = confluence_module._fetch_historical_klines(
             symbol=asset,
-            interval=timeframe,
-            start_date=start_date,
-            end_date=end_date
+            interval=tf_engine,
+            start_date=norm_start_date,
+            end_date=norm_end_date
         )
         
         if not klines or len(klines) < 50:
@@ -358,10 +389,10 @@ def run_backtest():
             combination_id=data.get('combination_id'),
             combination_name=data.get('combination_name'),
             strategies=strategies,
-            timeframe=timeframe,
+            timeframe=tf_engine,
             asset=asset,
-            start_date=start_date or "auto",
-            end_date=end_date or "auto",
+            start_date=norm_start_date or "auto",
+            end_date=norm_end_date or "auto",
             confluence_mode=confluence_mode,
             win_rate=win_rate,
             total_trades=total_trades,
@@ -403,7 +434,86 @@ def run_backtest():
             'roi': roi
         })
         
-        # Retornar resultados
+        # Preparar recomendações de IA e peso
+        ai_payload = {}
+        weight_recommendations_data = []
+
+        try:
+            from market_manus.performance.analytics_service import PerformanceAnalyticsService
+            analytics = PerformanceAnalyticsService(repo)
+            current_weights = {k: v.get('weight', 1.0) for k, v in filtered_strategy_signals.items()}
+            weight_recs = analytics.calculate_weight_recommendations(backtest_id, current_weights)
+            weight_recommendations_data = [
+                {
+                    'strategy_key': rec.strategy_key,
+                    'strategy_name': rec.strategy_name,
+                    'current_weight': rec.current_weight,
+                    'recommended_weight': rec.recommended_weight,
+                    'reason': rec.reason,
+                    'confidence': rec.confidence
+                }
+                for rec in weight_recs
+            ]
+        except Exception:
+            weight_recommendations_data = []
+
+        if sk_enabled:
+            try:
+                from market_manus.ai.semantic_kernel_advisor import SemanticKernelAdvisor
+                sk = SemanticKernelAdvisor()
+                if sk.is_available():
+                    backtest_summary = {
+                        'asset': asset,
+                        'timeframe': tf_engine,
+                        'start_date': norm_start_date,
+                        'end_date': norm_end_date,
+                        'confluence_mode': confluence_mode,
+                        'win_rate': win_rate,
+                        'total_trades': total_trades,
+                        'roi': roi,
+                        'initial_capital': initial_capital,
+                        'final_capital': final_capital
+                    }
+                    strategy_contributions_data = [
+                        {
+                            'strategy_name': data.get('name'),
+                            'signals_after_volume_filter': len(data['signal_indices']),
+                            'win_rate': win_rate,
+                            'weight': data.get('weight', 1.0),
+                            'winning_signals': int(len(data['signal_indices']) * win_rate / 100),
+                            'losing_signals': int(len(data['signal_indices']) * (100 - win_rate) / 100)
+                        }
+                        for data in filtered_strategy_signals.values()
+                    ]
+                    sk_text = sk.generate_recommendations(
+                        backtest_summary,
+                        strategy_contributions_data,
+                        weight_recommendations_data
+                    )
+                    ai_payload['semantic_kernel'] = {'available': True, 'text': sk_text}
+                else:
+                    ai_payload['semantic_kernel'] = {'available': False, 'text': '❌ Semantic Kernel não disponível (OPENAI_API_KEY não configurada)'}
+            except Exception as e:
+                ai_payload['semantic_kernel'] = {'available': False, 'text': f'❌ Erro ao gerar recomendações SK: {str(e)}'}
+
+        if manus_ai_enabled:
+            try:
+                from market_manus.ai.manus_ai_integration import ManusAIAnalyzer
+                import pandas as pd, asyncio
+                analyzer = ManusAIAnalyzer()
+                df = pd.DataFrame({'open': opens, 'high': highs, 'low': lows, 'close': closes, 'volume': volumes.tolist() if hasattr(volumes, 'tolist') else volumes_raw})
+                strategies_votes = {
+                    s['name']: {
+                        'action': 'BUY' if buy_signals >= sell_signals else ('SELL' if sell_signals > buy_signals else 'NEUTRAL'),
+                        'confidence': max(0.3, min(0.9, (win_rate/100)))
+                    }
+                    for s in filtered_strategy_signals.values()
+                }
+                ai_analysis = asyncio.run(analyzer.analyze_market_context(df, asset, strategies_votes))
+                ai_payload['manus_ai'] = ai_analysis
+            except Exception as e:
+                ai_payload['manus_ai'] = {'ai_enabled': False, 'error': f'Erro Manus AI: {str(e)}'}
+
         return jsonify({
             'status': 'success',
             'backtest_id': backtest_id,
@@ -429,7 +539,9 @@ def run_backtest():
                     'weight': data['weight']
                 }
                 for data in filtered_strategy_signals.values()
-            ]
+            ],
+            'ai': ai_payload,
+            'weight_recommendations': weight_recommendations_data
         })
         
     except Exception as e:
@@ -642,8 +754,32 @@ def get_sentiment(asset):
     """Retorna análise de sentimento do mercado"""
     try:
         import random
+        from datetime import datetime, timedelta
         
-        fear_greed_value = random.randint(0, 100)
+        # Cache simples em memória para estabilizar resultados por ativo
+        force_refresh = request.args.get('force_refresh', 'false').lower() in ('1', 'true', 'yes')
+        now = datetime.now()
+        cached = sentiment_cache.get(asset)
+        if cached and not force_refresh:
+            ts = cached.get('timestamp')
+            if isinstance(ts, str):
+                try:
+                    ts = datetime.fromisoformat(ts)
+                except Exception:
+                    ts = now
+            if ts and (now - ts) < timedelta(seconds=SENTIMENT_CACHE_TTL_SECONDS):
+                return jsonify(cached['data'])
+        
+        # Coletar dados reais de sentimento/mercado
+        result = asyncio.run(gather_sentiment(asset, "1d"))
+        sources = result.get('sources', [])
+        score = result.get('score')
+        coingecko = next((s for s in sources if s.get('source') == 'coingecko' and not s.get('error')), None)
+        change_24h = coingecko.get('chg_24h') if coingecko else None
+        vol_24h = coingecko.get('vol_24h') if coingecko else None
+        alt = next((s for s in sources if s.get('kind') == 'macro_sentiment' and 'score' in s), None)
+        
+        fear_greed_value = int(round(float(score) * 100)) if score is not None else int(round(float(alt.get('score', 50))))
         if fear_greed_value < 25:
             fear_greed_label = 'Extreme Fear'
         elif fear_greed_value < 45:
@@ -656,7 +792,7 @@ def get_sentiment(asset):
             fear_greed_label = 'Extreme Greed'
         
         regimes = ['BULLISH', 'BEARISH', 'NEUTRAL', 'CORRECTION']
-        regime = random.choice(regimes)
+        regime = 'BULLISH' if (score is not None and score >= 0.7) else 'BEARISH' if (score is not None and score <= 0.3) else 'NEUTRAL'
         
         if regime == 'BULLISH':
             prognosis_title = 'Mercado em Alta'
@@ -675,7 +811,7 @@ def get_sentiment(asset):
             prognosis_desc = 'Consolidação entre suporte e resistência. Aguardando definição.'
             recommendation = 'Aguardar breakout'
         
-        return jsonify({
+        payload = {
             'asset': asset,
             'fear_greed': {'value': fear_greed_value, 'label': fear_greed_label},
             'prognosis': {
@@ -683,19 +819,21 @@ def get_sentiment(asset):
                 'description': prognosis_desc,
                 'regime': regime,
                 'trend': 'Alta' if regime == 'BULLISH' else 'Baixa' if regime == 'BEARISH' else 'Lateral',
-                'volatility': f'{random.uniform(10, 50):.1f}%',
+                'volatility': f'{abs(change_24h):.1f}%' if isinstance(change_24h, (int, float)) else '--',
                 'recommendation': recommendation
             },
             'market_data': {
-                'volume_24h': f'${random.uniform(10, 100):.1f}B',
-                'market_cap': f'${random.uniform(500, 1500):.1f}B',
-                'volatility': f'{random.uniform(15, 45):.1f}%',
-                'change_24h': random.uniform(-10, 10)
+                'volume_24h': vol_24h if vol_24h is not None else '--',
+                'market_cap': '--',
+                'volatility': f'{abs(change_24h):.1f}%' if isinstance(change_24h, (int, float)) else '--',
+                'change_24h': float(change_24h) if isinstance(change_24h, (int, float)) else 0.0
             },
             'social': {
-                'summary': f'Sentimento social para {asset}: {random.choice(["Positivo", "Neutro", "Negativo"])}. Análise baseada em Twitter, Reddit e principais fóruns crypto.'
+                'summary': f'Sem dados sociais/notícias recentes para {asset}.'
             }
-        })
+        }
+        sentiment_cache[asset] = {'timestamp': now.isoformat(), 'data': payload}
+        return jsonify(payload)
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500

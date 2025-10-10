@@ -188,6 +188,12 @@ if (combinationParam && !strategiesParam) {
                         <p class="mb-0 mt-2"><small>Modo: ${combo.mode} | Win Rate esperado: ${combo.target_win_rate}</small></p>
                     </div>
                 `;
+                // Autostart opcional via URL (?autostart=true). Por padrão, não auto-executa.
+                const autostartParam = (urlParams.get('autostart') || '').toLowerCase();
+                const shouldAutostart = autostartParam === 'true' || autostartParam === '1';
+                if (shouldAutostart) {
+                    try { await executeBacktest(); } catch (e) { console.error('Falha ao auto-executar backtest:', e); }
+                }
             }
         } catch (error) {
             console.error('Erro ao carregar combinação:', error);
@@ -207,20 +213,26 @@ async function executeBacktest() {
     const resultsDiv = document.getElementById('backtest-results');
     resultsDiv.innerHTML = `
         <div class="py-3">
-            <div class="progress bg-dark" style="height: 28px;">
-                <div id="backtest-progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+            <div class="progress progress-modern">
+                <div id="backtest-progress-bar" class="progress-bar modern" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width: 0%">0%</div>
             </div>
-            <div id="backtest-status" class="mt-3 text-white">
-                <i class="bi bi-info-circle"></i> Preparando execução do backtest...
+            <div id="backtest-status" class="mt-3 status-line text-white">
+                <i class="bi bi-info-circle"></i>
+                <span id="backtest-status-text">Preparando execução do backtest...</span>
             </div>
             <ul id="backtest-log" class="mt-2 text-muted small list-unstyled" style="max-height: 180px; overflow-y: auto;"></ul>
         </div>
     `;
     
+    // Normalizar timeframe para o formato esperado pelo backend
+    const uiTf = document.getElementById('backtest-timeframe').value;
+    const tfMap = { '1m':'1', '5m':'5', '15m':'15', '30m':'30', '1h':'60', '4h':'240', '1d':'D' };
+    const normalizedTf = tfMap[uiTf] || uiTf;
+
     const config = {
         exchange: document.getElementById('backtest-exchange').value,
         asset: document.getElementById('backtest-asset').value,
-        timeframe: document.getElementById('backtest-timeframe').value,
+        timeframe: normalizedTf,
         start_date: document.getElementById('backtest-start-date').value,
         end_date: document.getElementById('backtest-end-date').value,
         capital: parseFloat(document.getElementById('backtest-capital').value),
@@ -249,14 +261,28 @@ async function executeBacktest() {
     socket.off('backtest_progress');
     socket.on('backtest_progress', (payload) => {
         const bar = document.getElementById('backtest-progress-bar');
-        const status = document.getElementById('backtest-status');
+        const statusText = document.getElementById('backtest-status-text');
         const log = document.getElementById('backtest-log');
-        if (!bar || !status || !log) return;
+        if (!bar || !statusText || !log) return;
 
         const pct = Math.max(0, Math.min(100, parseInt(payload.percent ?? 0)));
         bar.style.width = pct + '%';
-        bar.textContent = pct + '%';
-        status.innerHTML = `<i class="bi bi-lightning-charge"></i> ${payload.message}`;
+        // Estados visuais na barra + ícones
+        bar.classList.remove('state-loading', 'state-processing', 'state-finished');
+        if (pct === 0) {
+            bar.classList.add('state-loading');
+            bar.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> ${pct}%`;
+        } else if (pct < 100) {
+            bar.classList.add('state-processing');
+            bar.innerHTML = `<i class="bi bi-cpu me-1"></i> ${pct}%`;
+        } else {
+            bar.classList.add('state-finished');
+            bar.innerHTML = `<i class="bi bi-check-circle me-1"></i> ${pct}%`;
+        }
+        bar.setAttribute('aria-valuenow', String(pct));
+        bar.classList.add('animated');
+
+        statusText.textContent = String(payload.message || '').trim();
 
         const extra = [];
         if (payload.asset) extra.push(`Ativo: ${payload.asset}`);
@@ -268,6 +294,10 @@ async function executeBacktest() {
         const li = document.createElement('li');
         li.innerHTML = `${payload.message}${meta}`;
         log.appendChild(li);
+        // Limitar log a últimas 50 entradas para manter leve e estável
+        while (log.children.length > 50) {
+            log.removeChild(log.firstChild);
+        }
         log.scrollTop = log.scrollHeight;
     });
     

@@ -43,10 +43,10 @@
                 <h6 class="card-subtitle mb-2"><i class="bi bi-robot"></i> IA Premium</h6>
                 <h2 class="card-title mb-0">
                     <span id="ai-status">
-                        <i class="bi bi-toggle-on"></i> Ativo
+                        <i class="bi bi-toggle-off"></i> Verificando...
                     </span>
                 </h2>
-                <small>Manus AI + Semantic Kernel</small>
+                <small class="text-muted">Manus AI + Semantic Kernel</small>
             </div>
         </div>
     </div>
@@ -55,7 +55,7 @@
 <div class="row g-3 mb-4">
     <div class="col-lg-8">
         <div class="card">
-            <div class="card-header bg-dark text-white">
+            <div class="card-header bg-dark">
                 <h5 class="mb-0"><i class="bi bi-activity"></i> Market Overview</h5>
             </div>
             <div class="card-body">
@@ -94,10 +94,24 @@
     
     <div class="col-lg-4">
         <div class="card">
-            <div class="card-header bg-dark text-white">
+            <div class="card-header bg-dark">
                 <h5 class="mb-0"><i class="bi bi-newspaper"></i> Market Sentiment</h5>
             </div>
             <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex gap-2 align-items-center">
+                        <select class="form-select form-select-sm" id="sentiment-asset-selector" style="max-width: 160px;">
+                            <option value="BTCUSDT" selected>BTC/USDT</option>
+                            <option value="ETHUSDT">ETH/USDT</option>
+                            <option value="BNBUSDT">BNB/USDT</option>
+                            <option value="ADAUSDT">ADA/USDT</option>
+                            <option value="SOLUSDT">SOL/USDT</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm" id="read-market-btn">
+                            <i class="bi bi-search"></i> Ler Mercado
+                        </button>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label class="form-label">Fear & Greed Index</label>
                     <div class="progress" style="height: 30px;">
@@ -108,9 +122,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Market Regime</label>
-                    <div class="alert alert-info mb-0">
-                        <i class="bi bi-arrow-up-right"></i> <strong>TRENDING</strong>
-                        <p class="mb-0 small">Condições favoráveis para momentum strategies</p>
+                    <div class="alert alert-info mb-0" id="regime-alert">
+                        <i class="bi bi-arrow-up-right"></i> <strong id="regime-title">--</strong>
+                        <p class="mb-0 small" id="regime-desc">Selecione um ativo e clique em Ler Mercado</p>
                     </div>
                 </div>
                 <div>
@@ -194,5 +208,79 @@
     
     // Atualizar na carga
     updateDashboard();
+
+    // Atualiza status do IA Premium (Manus AI)
+    function updateAIStatus() {
+        fetch('/api/connectivity/manus')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('ai-status');
+                if (!el) return;
+                if (data.configured) {
+                    el.innerHTML = '<i class="bi bi-toggle-on"></i> Ativo';
+                } else {
+                    el.innerHTML = '<i class="bi bi-toggle-off"></i> Inativo';
+                }
+            })
+            .catch(() => {
+                const el = document.getElementById('ai-status');
+                if (el) el.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Indisponível';
+            });
+    }
+
+    // Ler mercado sob demanda no Dashboard
+    async function readMarket() {
+        const assetSel = document.getElementById('sentiment-asset-selector');
+        const asset = assetSel ? assetSel.value : 'BTCUSDT';
+        try {
+            const response = await fetch(`/api/sentiment/${asset}`);
+            const data = await response.json();
+
+            // Fear & Greed
+            if (data.fear_greed) {
+                const value = parseInt(data.fear_greed.value, 10) || 0;
+                const label = data.fear_greed.label || 'Neutral';
+                const bar = document.getElementById('fear-greed-bar');
+                if (bar) {
+                    bar.style.width = `${value}%`;
+                    // Cor por label
+                    bar.className = 'progress-bar ' + (
+                        label.includes('Extreme Fear') ? 'bg-danger' :
+                        label.includes('Fear') ? 'bg-warning' :
+                        label.includes('Extreme Greed') ? 'bg-success' :
+                        label.includes('Greed') ? 'bg-success' : 'bg-secondary'
+                    );
+                    bar.innerHTML = `<strong>${value} - ${label}</strong>`;
+                }
+            }
+
+            // Regime
+            if (data.prognosis) {
+                const titleEl = document.getElementById('regime-title');
+                const descEl = document.getElementById('regime-desc');
+                const alertEl = document.getElementById('regime-alert');
+                const regime = data.prognosis.regime || 'NEUTRAL';
+                if (titleEl) titleEl.textContent = regime;
+                if (descEl) descEl.textContent = data.prognosis.description || '';
+                if (alertEl) {
+                    let alertClass = 'alert-info';
+                    if (regime === 'BULLISH') alertClass = 'alert-success';
+                    else if (regime === 'BEARISH') alertClass = 'alert-danger';
+                    else if (regime === 'CORRECTION') alertClass = 'alert-warning';
+                    alertEl.className = `alert ${alertClass} mb-0`;
+                }
+            }
+        } catch (e) {
+            console.error('Erro ao ler mercado:', e);
+            alert('Erro ao ler mercado');
+        }
+    }
+
+    // Bind de eventos na carga
+    document.addEventListener('DOMContentLoaded', () => {
+        updateAIStatus();
+        const btn = document.getElementById('read-market-btn');
+        if (btn) btn.addEventListener('click', readMarket);
+    });
 </script>
 {% endblock %}

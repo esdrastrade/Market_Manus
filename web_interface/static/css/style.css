@@ -266,6 +266,39 @@ body {
     min-height: 200px;
 }
 
+/* Spinners consistentes e responsivos */
+.spinner-container.compact { min-height: 100px; }
+.spinner-border { width: 2.25rem; height: 2.25rem; border-width: 0.3rem; }
+.spinner-border.spinner-lg { width: 3rem; height: 3rem; border-width: 0.35rem; }
+.spinner-border.spinner-sm { width: 1.5rem; height: 1.5rem; border-width: 0.25rem; }
+
+.loading-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+}
+
+.loading-block .state-label { color: var(--text-primary); opacity: 0.85; }
+
+/* Modificadores de estado para barra de progresso */
+.progress-bar.modern.state-loading {
+    background-image: linear-gradient(90deg, var(--info-color), rgba(88,166,255,0.85)),
+                      repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 6px, transparent 6px, transparent 12px);
+}
+.progress-bar.modern.state-processing {
+    background-image: linear-gradient(90deg, var(--warning-color), rgba(210,153,34,0.85)),
+                      repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 6px, transparent 6px, transparent 12px);
+}
+.progress-bar.modern.state-finished {
+    background-image: linear-gradient(90deg, var(--success-color), rgba(63,185,80,0.85)),
+                      repeating-linear-gradient(45deg, rgba(255,255,255,0.12) 0, rgba(255,255,255,0.12) 6px, transparent 6px, transparent 12px);
+}
+
 .toast-container {
     position: fixed;
     top: 80px;
@@ -337,6 +370,52 @@ body {
 .table-dark th,
 .table-dark td {
     border-color: var(--border-color);
+}
+
+/* Barra de progresso moderna e responsiva */
+.progress-modern {
+    height: 28px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar.modern {
+    background-image: linear-gradient(90deg, rgba(63,185,80,1), rgba(63,185,80,0.85)),
+                      repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 6px, transparent 6px, transparent 12px);
+    background-size: 100% 100%, 24px 24px;
+    transition: width 240ms ease-in-out;
+}
+
+.progress-bar.modern.animated {
+    animation: progressShift 1.2s linear infinite;
+}
+
+@keyframes progressShift {
+    from { background-position: 0 0, 0 0; }
+    to { background-position: 0 0, 24px 24px; }
+}
+
+/* Linha de status estável durante processamento */
+.status-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 26px;
+    padding: 4px 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsividade para telas pequenas */
+@media (max-width: 576px) {
+    .progress-modern { height: 22px; }
+    .status-line { min-height: 22px; font-size: 0.9rem; }
 }
 
 .badge {

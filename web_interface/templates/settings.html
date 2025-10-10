@@ -25,7 +25,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="text-muted">Capital Atual:</label>
-                        <h3 class="text-primary" id="current-capital">$10,000.00</h3>
+                        <h3 class="text-primary" id="current-capital-settings">$10,000.00</h3>
                     </div>
                     <div class="mb-3">
                         <label class="text-muted">Position Size:</label>
@@ -124,8 +124,18 @@ async function loadCapitalStatus() {
         
         document.getElementById('initial-capital').textContent = 
             `$${data.initial_capital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        document.getElementById('current-capital').textContent = 
-            `$${data.current_capital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        // Atualiza o painel de Settings
+        const currentSettingsEl = document.getElementById('current-capital-settings');
+        if (currentSettingsEl) {
+            currentSettingsEl.textContent = 
+                `$${data.current_capital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        }
+        // Também sincroniza o valor do navbar, se existir
+        const currentNavbarEl = document.getElementById('current-capital');
+        if (currentNavbarEl) {
+            currentNavbarEl.textContent = 
+                `$${data.current_capital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        }
         document.getElementById('position-size').textContent = 
             `$${data.position_size.toLocaleString('en-US', {minimumFractionDigits: 2})} (${data.position_size_pct}%)`;
         

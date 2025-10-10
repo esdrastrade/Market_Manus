@@ -168,4 +168,24 @@ window.addEventListener('beforeunload', (event) => {
     }
 });
 
+// Sincronizar capital na navbar em todas as páginas
+async function syncNavbarCapital() {
+    try {
+        const res = await fetch('/api/capital/status');
+        const data = await res.json();
+        const el = document.getElementById('current-capital');
+        if (el && data && typeof data.current_capital === 'number') {
+            el.textContent = formatCurrency(data.current_capital);
+        }
+    } catch (e) {
+        console.warn('Não foi possível sincronizar capital:', e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    syncNavbarCapital();
+    // Atualiza a cada 10s para manter consistente entre abas
+    setInterval(syncNavbarCapital, 10000);
+});
+
 console.log('🚀 Market Manus Web Interface carregada!');

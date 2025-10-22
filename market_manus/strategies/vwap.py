@@ -16,42 +16,59 @@ def vwap_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
     Args:
         candles: DataFrame com OHLCV
         params: Parâmetros (session_start_hour para VWAP diário)
+                NEW: anchor_index ou anchor_timestamp para VWAP ancorado
+                NEW: band_multiplier para ajustar sensibilidade (desvio padrão)
     
     Returns:
         Signal com direção e confidence
     """
     params = params or {}
     deviation_threshold = params.get('deviation_threshold', 0.005)  # 0.5% desvio
+    band_multiplier = params.get('band_multiplier', 1.0)
+    anchor_index = params.get('anchor_index')
+    anchor_timestamp = params.get('anchor_timestamp')
     
     if len(candles) < 20:
         return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:VWAP"], reasons=["Dados insuficientes"])
     
+    # NEW: Suporte a VWAP ancorado
+    df = candles
+    if anchor_timestamp is not None and 'timestamp' in df.columns:
+        try:
+            # Seleciona a partir do primeiro timestamp >= anchor_timestamp
+            start_row = df.index[df['timestamp'] >= anchor_timestamp]
+            if len(start_row) > 0:
+                df = df.loc[start_row[0]:]
+        except Exception:
+            pass
+    elif isinstance(anchor_index, int) and 0 <= anchor_index < len(df):
+        df = df.iloc[anchor_index:]
+    
     # Calcular VWAP
-    typical_price = (candles['high'] + candles['low'] + candles['close']) / 3
-    vwap = (typical_price * candles['volume']).cumsum() / candles['volume'].cumsum()
+    typical_price = (df['high'] + df['low'] + df['close']) / 3
+    vwap = (typical_price * df['volume']).cumsum() / df['volume'].cumsum()
     
-    # Calcular desvio padrão do VWAP
-    variance = ((typical_price - vwap) ** 2 * candles['volume']).cumsum() / candles['volume'].cumsum()
-    std_dev = np.sqrt(variance)
+    # Calcular desvio padrão do VWAP com multiplicador
+    variance = ((typical_price - vwap) ** 2 * df['volume']).cumsum() / df['volume'].cumsum()
+    std_dev = np.sqrt(variance) * max(band_multiplier, 1e-6)
     
-    current_price = candles['close'].iloc[-1]
+    current_price = df['close'].iloc[-1]
     current_vwap = vwap.iloc[-1]
     current_std = std_dev.iloc[-1]
     
     # Calcular distância em % e número de desvios padrão
-    distance_pct = (current_price - current_vwap) / current_vwap
+    distance_pct = (current_price - current_vwap) / (current_vwap if current_vwap != 0 else 1)
     num_std_devs = (current_price - current_vwap) / current_std if current_std > 0 else 0
     
     # Análise de momentum de volume
-    recent_volume = candles['volume'].iloc[-5:].mean()
-    avg_volume = candles['volume'].mean()
+    recent_volume = df['volume'].iloc[-5:].mean()
+    avg_volume = df['volume'].mean()
     volume_ratio = recent_volume / avg_volume if avg_volume > 0 else 1.0
     
     # BUY: Preço abaixo do VWAP (desconto institucional)
     if distance_pct < -deviation_threshold:
-        # Maior confiança se volume está aumentando (institucionais comprando)
         confidence = min(0.5 + abs(num_std_devs) * 0.15, 1.0)
-        if volume_ratio > 1.3:  # Volume 30% acima da média
+        if volume_ratio > 1.3:
             confidence = min(confidence + 0.2, 1.0)
         
         return Signal(
@@ -68,7 +85,10 @@ def vwap_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
                 "price": current_price,
                 "distance_pct": distance_pct,
                 "num_std_devs": num_std_devs,
-                "volume_ratio": volume_ratio
+                "volume_ratio": volume_ratio,
+                "anchor_index": anchor_index,
+                "anchor_timestamp": anchor_timestamp,
+                "band_multiplier": band_multiplier
             }
         )
     
@@ -92,7 +112,10 @@ def vwap_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
                 "price": current_price,
                 "distance_pct": distance_pct,
                 "num_std_devs": num_std_devs,
-                "volume_ratio": volume_ratio
+                "volume_ratio": volume_ratio,
+                "anchor_index": anchor_index,
+                "anchor_timestamp": anchor_timestamp,
+                "band_multiplier": band_multiplier
             }
         )
     

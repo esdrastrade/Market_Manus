@@ -27,6 +27,12 @@ from market_manus.sentiment.sentiment_service import gather_sentiment
 from market_manus.explanations.strategy_explanations import StrategyExplanations
 
 app = Flask(__name__)
+print(f"🔧 Flask root_path: {app.root_path}")
+try:
+    searchpath = getattr(app.jinja_loader, 'searchpath', [])
+    print(f"🔧 Jinja searchpath: {searchpath}")
+except Exception as e:
+    print(f"🔧 Jinja searchpath unavailable: {e}")
 app.config['SECRET_KEY'] = 'market-manus-secret-key-2025'
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
@@ -144,7 +150,7 @@ def get_strategies():
             'key': key,
             'name': strategy['name'],
             'emoji': strategy['emoji'],
-            'type': strategy.get('type', 'classic'),
+            'type': 'microstructure' if key == 'order_flow_scalper' else ('smc' if key.startswith('smc_') else 'classic'),
             'description': strategy.get('description', '')
         })
     
@@ -295,6 +301,45 @@ def run_backtest():
         confluence_module.manus_ai_enabled = manus_ai_enabled
         confluence_module.sk_advisor_enabled = sk_enabled
         
+        # NEW: Parâmetros específicos (VWAP/ADX) e strategy_params dinâmico
+        strategy_params_in = data.get('strategy_params')
+        if isinstance(strategy_params_in, dict):
+            confluence_module.strategy_params = strategy_params_in
+        else:
+            vwap_anchor_smc = bool(data.get('vwap_anchor_smc', False))
+            try:
+                vwap_band_multiplier = float(data.get('vwap_band_multiplier', 1.0))
+            except Exception:
+                vwap_band_multiplier = 1.0
+            adx_filter = data.get('adx_filter', {}) or {}
+            use_adx = bool(adx_filter.get('use', False))
+            try:
+                adx_threshold = float(adx_filter.get('threshold', 25))
+            except Exception:
+                adx_threshold = 25.0
+            strict_adx = bool(adx_filter.get('strict', True))
+            
+            confluence_module.strategy_params = {
+                "vwap": {
+                    "anchor_index": 0 if vwap_anchor_smc else None,
+                    "band_multiplier": vwap_band_multiplier
+                },
+                "ema_crossover": {
+                    "adx_filter": {
+                        "use": use_adx,
+                        "threshold": adx_threshold,
+                        "strict": strict_adx
+                    }
+                },
+                "macd": {
+                    "adx_filter": {
+                        "use": use_adx,
+                        "threshold": adx_threshold,
+                        "strict": strict_adx
+                    }
+                }
+            }
+        
         # Executar backtest programaticamente
         print(f"\n🧪 Executando backtest via Web API...")
         print(f"   Asset: {asset}, Timeframe: {tf_engine}")
@@ -360,10 +405,17 @@ def run_backtest():
         emit_progress(75, f'Confluência calculada — {len(confluence_signals)} sinais totais')
         
         # Simular trades
+        # Callback para atualizar barra 100% baseada no tempo real durante simulação
+        def sim_cb(pct: int, msg: str):
+            emit_progress(pct, msg, {
+                'asset': asset,
+                'timeframe': tf_engine,
+                'mode': confluence_mode
+            })
         final_capital, total_trades, winning_trades = confluence_module._simulate_trades_from_signals(
-            confluence_signals, closes, initial_capital, highs, lows
+            confluence_signals, closes, initial_capital, highs, lows,
+            progress_cb=sim_cb, progress_start=75, progress_end=90
         )
-        emit_progress(90, f'Simulando trades — {total_trades} executados')
         
         losing_trades = total_trades - winning_trades
         pnl = final_capital - initial_capital
@@ -587,7 +639,13 @@ def get_performance_summary():
             'timestamp': b['timestamp'],
             'asset': b['asset'],
             'timeframe': b['timeframe'],
+            'combination_id': b.get('combination_id'),
             'combination_name': b['combination_name'] or 'Custom',
+            'is_recommended': True if b.get('combination_id') or b.get('combination_name') else False,
+            'start_date': b.get('start_date'),
+            'end_date': b.get('end_date'),
+            'strategies': b.get('strategies', []),
+            'confluence_mode': b.get('confluence_mode'),
             'total_trades': b['total_trades'],
             'win_rate': b['win_rate'],
             'roi': b['roi'],
@@ -838,6 +896,67 @@ def get_sentiment(asset):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# --- Market Overview (chart data) ---
+@app.route('/api/market/overview')
+def market_overview():
+    """Retorna série de preços para o widget Market Overview"""
+    try:
+        symbol = request.args.get('symbol', 'BTCUSDT')
+        timeframe = request.args.get('timeframe', '15m')
+        limit = int(request.args.get('limit', '200'))
+
+        # Mapear timeframe UI -> engine
+        tf_map_ui_to_engine = {
+            '1m': '1', '5m': '5', '15m': '15', '30m': '30', '1h': '60', '4h': '240', '1d': 'D'
+        }
+        tf_engine = tf_map_ui_to_engine.get(str(timeframe).lower(), str(timeframe))
+
+        if data_provider is None:
+            return jsonify({'status': 'error', 'message': 'data_provider indisponível'}), 500
+
+        klines = data_provider.get_kline(category='spot', symbol=symbol, interval=tf_engine, limit=limit)
+        if not klines:
+            return jsonify({'status': 'error', 'message': 'Sem dados de mercado para o par/intervalo'}), 502
+
+        # Construir série simples (timestamp, close)
+        series = []
+        for k in klines:
+            try:
+                ts = int(k[0])
+                close = float(k[4])
+                series.append({'t': ts, 'c': close})
+            except Exception:
+                # Ignorar linhas malformadas
+                continue
+
+        if not series:
+            return jsonify({'status': 'error', 'message': 'Falha ao processar candles'}), 500
+
+        # Metadados
+        start_ts = series[0]['t']
+        end_ts = series[-1]['t']
+        first_close = series[0]['c']
+        last_close = series[-1]['c']
+        change_pct = ((last_close - first_close) / first_close) * 100 if first_close else 0.0
+        min_p = min(s['c'] for s in series)
+        max_p = max(s['c'] for s in series)
+
+        return jsonify({
+            'status': 'ok',
+            'symbol': symbol,
+            'timeframe': timeframe,
+            'points': len(series),
+            'start': start_ts,
+            'end': end_ts,
+            'last': last_close,
+            'min': min_p,
+            'max': max_p,
+            'change_pct': change_pct,
+            'series': series
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 @app.route('/api/cache/list')
 def list_cache():
     """Lista arquivos em cache"""
@@ -948,27 +1067,40 @@ def export_performance():
     try:
         from io import StringIO
         import csv
+        import json
+        from flask import Response
+        from market_manus.performance.history_repository import PerformanceHistoryRepository
         
         format_type = request.args.get('format', 'json')
         
-        # Obter dados do banco
-        summary = get_performance_summary()
+        # Obter dados diretamente do repositório
+        repo = PerformanceHistoryRepository()
+        all_backtests = repo.get_all_backtests(limit=100)
         
         if format_type == 'csv':
             # Criar CSV
             output = StringIO()
             writer = csv.writer(output)
             
-            # Cabeçalho
-            writer.writerow(['Data', 'Ativo', 'Timeframe', 'Combinação', 'Trades', 'Win Rate (%)', 'ROI (%)', 'Manus AI', 'Semantic Kernel'])
+            # Cabeçalho atualizado
+            writer.writerow(['Data', 'Ativo', 'Timeframe', 'Período', 'Modo', 'Combinação', 'Estratégias', 'Trades', 'Win Rate (%)', 'ROI (%)', 'Manus AI', 'Semantic Kernel'])
             
             # Dados
-            for b in summary.get('recent_backtests', []):
+            for b in all_backtests:
+                period = ''
+                if b.get('start_date') and b.get('end_date') and b.get('start_date') != 'default' and b.get('end_date') != 'default':
+                    period = f"{b.get('start_date')} → {b.get('end_date')}"
+                
+                strategies_list = '|'.join(b.get('strategies', []))
+                
                 writer.writerow([
                     b.get('timestamp', ''),
                     b.get('asset', ''),
                     b.get('timeframe', ''),
-                    b.get('combination_name', ''),
+                    period,
+                    b.get('confluence_mode', ''),
+                    (b.get('combination_name') or 'Custom'),
+                    strategies_list,
                     b.get('total_trades', 0),
                     round(b.get('win_rate', 0), 2),
                     round(b.get('roi', 0), 2),
@@ -981,8 +1113,13 @@ def export_performance():
             return response
         
         else:  # JSON
+            export_payload = {
+                'total_backtests': len(all_backtests),
+                'recent_backtests': all_backtests,
+                'exported_at': datetime.now().isoformat()
+            }
             response = Response(
-                json.dumps(summary, indent=2, ensure_ascii=False),
+                json.dumps(export_payload, indent=2, ensure_ascii=False),
                 mimetype='application/json'
             )
             response.headers['Content-Disposition'] = 'attachment; filename=market_manus_performance.json'
@@ -1033,6 +1170,25 @@ def get_explanation_for_strategy(key: str):
         'avoid': data.get('avoid')
     })
 
+
+@app.route('/api/debug/templates')
+def debug_templates():
+    try:
+        searchpath = getattr(app.jinja_loader, 'searchpath', [])
+        return jsonify({
+            'root_path': app.root_path,
+            'template_folder': app.template_folder,
+            'searchpath': searchpath,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/debug/routes')
+def debug_routes():
+    rules = []
+    for rule in app.url_map.iter_rules():
+        rules.append({'endpoint': rule.endpoint, 'rule': str(rule), 'methods': list(rule.methods)})
+    return jsonify({'routes': rules})
 
 @socketio.on('connect')
 def handle_connect():

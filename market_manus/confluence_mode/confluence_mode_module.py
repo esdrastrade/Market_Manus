@@ -12,7 +12,7 @@ import time
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple, Any, Callable
 from pathlib import Path
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.table import Table
@@ -31,6 +31,7 @@ from market_manus.strategies.smc.patterns import (
 from market_manus.strategies.parabolic_sar import parabolic_sar_signal
 from market_manus.strategies.vwap import vwap_signal, vwap_volume_combo_signal
 from market_manus.strategies.cpr import cpr_signal
+from market_manus.strategies.order_flow_scalper import order_flow_signal
 
 # Importar filtro de volume
 from market_manus.analysis.volume_filter import VolumeFilterPipeline
@@ -92,6 +93,9 @@ class ConfluenceModeModule:
         self.performance_repo = PerformanceHistoryRepository()
         self.performance_analytics = PerformanceAnalyticsService(self.performance_repo)
         
+        # NEW: parâmetros específicos por estratégia (ex.: VWAP anchor, ADX filter)
+        self.strategy_params = {}
+        
         # ORDEM FIXA de estratégias para garantir mapeamento consistente UI → Engine
         # Esta lista DEVE corresponder exatamente à ordem exibida no menu
         self.strategies_order = [
@@ -111,7 +115,8 @@ class ConfluenceModeModule:
             "smc_choch",
             "smc_order_blocks",
             "smc_fvg",
-            "smc_liquidity_sweep"
+            "smc_liquidity_sweep",
+            "order_flow_scalper"
         ]
         
         # Estratégias disponíveis para confluência (17 estratégias: 12 clássicas + 5 SMC)
@@ -216,6 +221,12 @@ class ConfluenceModeModule:
                 "name": "SMC: Liquidity Sweep",
                 "description": "Pavio que varre liquidez indicando trap",
                 "emoji": "🎣",
+                "weight": 1.0
+            },
+            "order_flow_scalper": {
+                "name": "Order Flow Scalper",
+                "description": "Scalper por CVD/spread/imbalance (realtime)",
+                "emoji": "⚡",
                 "weight": 1.0
             }
         }
@@ -1368,77 +1379,146 @@ class ConfluenceModeModule:
         
         # RSI Mean Reversion
         if strategy_key == "rsi_mean_reversion":
-            rsi_values = self._calculate_rsi(closes, period=14)
+            rsi_cfg = self.strategy_params.get("rsi_mean_reversion", {})
+            rsi_period = int(rsi_cfg.get("period", 14))
+            oversold = float(rsi_cfg.get("oversold_threshold", 30))
+            overbought = float(rsi_cfg.get("overbought_threshold", 70))
+            rsi_values = self._calculate_rsi(closes, period=rsi_period)
             for i, rsi in enumerate(rsi_values):
-                if rsi < 30:  # Sobrevenda - comprar
-                    signal_indices.append((i + 14, "BUY"))
-                elif rsi > 70:  # Sobrecompra - vender
-                    signal_indices.append((i + 14, "SELL"))
+                if rsi < oversold:
+                    signal_indices.append((i + rsi_period, "BUY"))
+                elif rsi > overbought:
+                    signal_indices.append((i + rsi_period, "SELL"))
         
         # EMA Crossover
         elif strategy_key == "ema_crossover":
-            ema_fast = self._calculate_ema(closes, 12)
-            ema_slow = self._calculate_ema(closes, 26)
-            offset = 26  # Offset do EMA mais longo
+            ema_cfg = self.strategy_params.get("ema_crossover", {})
+            fast_period = int(ema_cfg.get("fast_period", 12))
+            slow_period = int(ema_cfg.get("slow_period", 26))
+            ema_fast = self._calculate_ema(closes, fast_period)
+            ema_slow = self._calculate_ema(closes, slow_period)
+            offset = slow_period
+            
+            # ADX gating opcional
+            adx_cfg = ema_cfg.get("adx_filter", {})
+            use_adx = bool(adx_cfg.get("use", False))
+            adx_threshold = float(adx_cfg.get("threshold", 25))
+            strict_adx = bool(adx_cfg.get("strict", True))
+            adx_period = int(adx_cfg.get("period", 14))
+            adx_values = None
+            adx_offset = adx_period
+            if use_adx:
+                try:
+                    adx_values = self._calculate_adx(closes, highs, lows, period=adx_period)
+                except Exception:
+                    adx_values = None
+            
             for i in range(1, min(len(ema_fast), len(ema_slow))):
+                candle_index = i + offset
                 # Cruzamento para cima - BUY
                 if ema_fast[i-1] <= ema_slow[i-1] and ema_fast[i] > ema_slow[i]:
-                    signal_indices.append((i + offset, "BUY"))
+                    if use_adx and adx_values is not None:
+                        adx_idx = candle_index - adx_offset
+                        if 0 <= adx_idx < len(adx_values) and adx_values[adx_idx] < adx_threshold and strict_adx:
+                            continue
+                    signal_indices.append((candle_index, "BUY"))
                 # Cruzamento para baixo - SELL
                 elif ema_fast[i-1] >= ema_slow[i-1] and ema_fast[i] < ema_slow[i]:
-                    signal_indices.append((i + offset, "SELL"))
+                    if use_adx and adx_values is not None:
+                        adx_idx = candle_index - adx_offset
+                        if 0 <= adx_idx < len(adx_values) and adx_values[adx_idx] < adx_threshold and strict_adx:
+                            continue
+                    signal_indices.append((candle_index, "SELL"))
         
         # Bollinger Bands
         elif strategy_key == "bollinger_breakout":
-            bb_upper, bb_lower = self._calculate_bollinger_bands(closes, period=20, std_dev=2.0)
-            offset = 19  # Offset do período BB
+            bb_cfg = self.strategy_params.get("bollinger_breakout", {})
+            bb_period = int(bb_cfg.get("period", 20))
+            bb_std = float(bb_cfg.get("std_dev", 2.0))
+            bb_upper, bb_lower = self._calculate_bollinger_bands(closes, period=bb_period, std_dev=bb_std)
+            offset = bb_period - 1
             for i in range(len(bb_upper)):
                 if i < len(closes) - offset:
                     candle_index = i + offset
-                    if closes[candle_index] > bb_upper[i]:  # Rompimento superior - SELL
+                    if closes[candle_index] > bb_upper[i]:
                         signal_indices.append((candle_index, "SELL"))
-                    elif closes[candle_index] < bb_lower[i]:  # Rompimento inferior - BUY
+                    elif closes[candle_index] < bb_lower[i]:
                         signal_indices.append((candle_index, "BUY"))
         
         # MACD
         elif strategy_key == "macd":
-            macd_line, signal_line = self._calculate_macd(closes)
-            offset = 26 + 9  # Offset do EMA26 + Signal Line
+            macd_cfg = self.strategy_params.get("macd", {})
+            fast = int(macd_cfg.get("fast_period", 12))
+            slow = int(macd_cfg.get("slow_period", 26))
+            sig = int(macd_cfg.get("signal_period", 9))
+            macd_line, signal_line = self._calculate_macd(closes, fast=fast, slow=slow, signal_period=sig)
+            offset = slow + sig
+            
+            adx_cfg = macd_cfg.get("adx_filter", {})
+            use_adx = bool(adx_cfg.get("use", False))
+            adx_threshold = float(adx_cfg.get("threshold", 25))
+            strict_adx = bool(adx_cfg.get("strict", True))
+            adx_period = int(adx_cfg.get("period", 14))
+            adx_values = None
+            adx_offset = adx_period
+            if use_adx:
+                try:
+                    adx_values = self._calculate_adx(closes, highs, lows, period=adx_period)
+                except Exception:
+                    adx_values = None
+            
             for i in range(1, min(len(macd_line), len(signal_line))):
-                # Cruzamento MACD para cima - BUY
+                candle_index = i + offset
                 if macd_line[i-1] <= signal_line[i-1] and macd_line[i] > signal_line[i]:
-                    signal_indices.append((i + offset, "BUY"))
-                # Cruzamento MACD para baixo - SELL
+                    if use_adx and adx_values is not None:
+                        adx_idx = candle_index - adx_offset
+                        if 0 <= adx_idx < len(adx_values) and adx_values[adx_idx] < adx_threshold and strict_adx:
+                            continue
+                    signal_indices.append((candle_index, "BUY"))
                 elif macd_line[i-1] >= signal_line[i-1] and macd_line[i] < signal_line[i]:
-                    signal_indices.append((i + offset, "SELL"))
+                    if use_adx and adx_values is not None:
+                        adx_idx = candle_index - adx_offset
+                        if 0 <= adx_idx < len(adx_values) and adx_values[adx_idx] < adx_threshold and strict_adx:
+                            continue
+                    signal_indices.append((candle_index, "SELL"))
         
         # Stochastic
         elif strategy_key == "stochastic":
-            stoch_values = self._calculate_stochastic(closes, highs, lows, period=14)
-            offset = 13  # Offset do período
+            stoch_cfg = self.strategy_params.get("stochastic", {})
+            stoch_period = int(stoch_cfg.get("period", 14))
+            oversold = float(stoch_cfg.get("oversold", 20))
+            overbought = float(stoch_cfg.get("overbought", 80))
+            stoch_values = self._calculate_stochastic(closes, highs, lows, period=stoch_period)
+            offset = stoch_period - 1
             for i, stoch in enumerate(stoch_values):
-                if stoch < 20:  # Sobrevenda - BUY
+                if stoch < oversold:
                     signal_indices.append((i + offset, "BUY"))
-                elif stoch > 80:  # Sobrecompra - SELL
+                elif stoch > overbought:
                     signal_indices.append((i + offset, "SELL"))
         
         # Williams %R
         elif strategy_key == "williams_r":
-            williams_values = self._calculate_williams_r(closes, highs, lows, period=14)
-            offset = 13  # Offset do período
+            wr_cfg = self.strategy_params.get("williams_r", {})
+            wr_period = int(wr_cfg.get("period", 14))
+            oversold = float(wr_cfg.get("oversold", -80))
+            overbought = float(wr_cfg.get("overbought", -20))
+            williams_values = self._calculate_williams_r(closes, highs, lows, period=wr_period)
+            offset = wr_period - 1
             for i, wr in enumerate(williams_values):
-                if wr < -80:  # Sobrevenda - BUY
+                if wr < oversold:
                     signal_indices.append((i + offset, "BUY"))
-                elif wr > -20:  # Sobrecompra - SELL
+                elif wr > overbought:
                     signal_indices.append((i + offset, "SELL"))
         
         # ADX
         elif strategy_key == "adx":
-            adx_values = self._calculate_adx(closes, highs, lows, period=14)
-            offset = 14  # Offset do período
+            adx_cfg = self.strategy_params.get("adx", {})
+            adx_period = int(adx_cfg.get("period", 14))
+            adx_threshold = float(adx_cfg.get("threshold", 25))
+            adx_values = self._calculate_adx(closes, highs, lows, period=adx_period)
+            offset = adx_period
             for i, adx in enumerate(adx_values):
-                if adx > 25:  # Tendência forte - inferir direção pela tendência de preço
-                    # Comparar close atual vs média recente para determinar direção
+                if adx > adx_threshold:
                     if i + offset < len(closes):
                         current_idx = i + offset
                         if current_idx > 10:
@@ -1464,9 +1544,13 @@ class ConfluenceModeModule:
                 'close': closes,
                 'volume': [1.0] * len(closes)  # Volume não usado pelo PSAR
             })
+            psar_cfg = self.strategy_params.get("parabolic_sar", {})
+            af_start = float(psar_cfg.get("af_start", 0.02))
+            af_step = float(psar_cfg.get("af_step", 0.02))
+            af_max = float(psar_cfg.get("af_max", 0.2))
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
-                signal = parabolic_sar_signal(window_df)
+                signal = parabolic_sar_signal(window_df, af_start=af_start, af_step=af_step, af_max=af_max)
                 if signal.action != "HOLD":
                     signal_indices.append((i, signal.action))
         
@@ -1481,9 +1565,11 @@ class ConfluenceModeModule:
                 'close': closes,
                 'volume': volumes
             })
+            # NEW: Suporte a parâmetros de VWAP (anchor e bandas)
+            vwap_params = self.strategy_params.get("vwap", {})
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
-                signal = vwap_signal(window_df)
+                signal = vwap_signal(window_df, params=vwap_params)
                 if signal.action != "HOLD":
                     signal_indices.append((i, signal.action))
         
@@ -1497,9 +1583,10 @@ class ConfluenceModeModule:
                 'close': closes,
                 'volume': volumes
             })
+            vwap_vol_params = self.strategy_params.get("vwap_volume", {})
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
-                signal = vwap_volume_combo_signal(window_df)
+                signal = vwap_volume_combo_signal(window_df, params=vwap_vol_params)
                 if signal.action != "HOLD":
                     signal_indices.append((i, signal.action))
         
@@ -1512,11 +1599,31 @@ class ConfluenceModeModule:
                 'close': closes,
                 'volume': [1.0] * len(closes)
             })
+            cpr_params = self.strategy_params.get("cpr", {})
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
-                signal = cpr_signal(window_df)
+                signal = cpr_signal(window_df, params=cpr_params)
                 if signal.action != "HOLD":
                     signal_indices.append((i, signal.action))
+        
+        # Order Flow Scalper (offline-safe stub; requires realtime metrics)
+        elif strategy_key == "order_flow_scalper":
+            df = pd.DataFrame({
+                'open': opens,
+                'high': highs,
+                'low': lows,
+                'close': closes
+            })
+            ofs_params = self.strategy_params.get("order_flow_scalper", {})
+            # Without order book metrics, signals will typically be HOLD.
+            for i in range(50, len(df)):
+                window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
+                try:
+                    signal = order_flow_signal(window_df, metrics=None, params=ofs_params)
+                    if signal.action != "HOLD":
+                        signal_indices.append((i, signal.action))
+                except Exception:
+                    pass
         
         # SMC: Break of Structure
         elif strategy_key == "smc_bos":
@@ -1526,10 +1633,12 @@ class ConfluenceModeModule:
                 'low': lows,
                 'close': closes
             })
+            bos_cfg = self.strategy_params.get("smc_bos", {})
+            min_disp = float(bos_cfg.get("min_displacement", 0.0))
             # Aplicar em janelas deslizantes
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
-                signal = detect_bos(window_df)
+                signal = detect_bos(window_df, min_displacement=min_disp)
                 if signal.action != "HOLD":
                     signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
@@ -1555,9 +1664,11 @@ class ConfluenceModeModule:
                 'low': lows,
                 'close': closes
             })
+            ob_cfg = self.strategy_params.get("smc_order_blocks", {})
+            min_range = float(ob_cfg.get("min_range", 0.0))
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
-                signal = detect_order_blocks(window_df)
+                signal = detect_order_blocks(window_df, min_range=min_range)
                 if signal.action != "HOLD":
                     signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
@@ -1583,15 +1694,17 @@ class ConfluenceModeModule:
                 'low': lows,
                 'close': closes
             })
+            ls_cfg = self.strategy_params.get("smc_liquidity_sweep", {})
+            body_ratio = float(ls_cfg.get("body_ratio", 0.5))
             for i in range(50, len(df)):
                 window_df = df.iloc[max(0, i-50):i+1].reset_index(drop=True)
-                signal = detect_liquidity_sweep(window_df)
+                signal = detect_liquidity_sweep(window_df, body_ratio=body_ratio)
                 if signal.action != "HOLD":
                     signal_indices.append((i, signal.action))  # Captura direção BUY/SELL
         
         return signal_indices
     
-    def _simulate_trades_from_signals(self, confluence_signals: List[Tuple[int, str]], closes: List[float], initial_capital: float, highs: List[float] = None, lows: List[float] = None) -> Tuple[float, int, int]:
+    def _simulate_trades_from_signals(self, confluence_signals: List[Tuple[int, str]], closes: List[float], initial_capital: float, highs: List[float] = None, lows: List[float] = None, progress_cb: Optional[Callable[[int, str], None]] = None, progress_start: int = 75, progress_end: int = 90) -> Tuple[float, int, int]:
         """
         Simula trades REALISTAS com LONG e SHORT usando high/low intrabar
         
@@ -1630,8 +1743,22 @@ class ConfluenceModeModule:
         # Converter para dict para lookup O(1): {índice: direção}
         signal_dict = {idx: direction for idx, direction in confluence_signals}
         
+        # Instrumentação de progresso por candle
+        total_candles = len(closes)
+        last_emitted_pct = -1
+        
         # Iterar através de TODOS os candles
         for candle_index in range(len(closes)):
+            # Atualizar progresso incremental (mapeado para 75→90%)
+            if progress_cb is not None and total_candles > 0:
+                frac = (candle_index + 1) / total_candles
+                pct = int(progress_start + (progress_end - progress_start) * frac)
+                if pct != last_emitted_pct:
+                    last_emitted_pct = pct
+                    try:
+                        progress_cb(pct, f"Simulando trades ({candle_index+1}/{total_candles} candles)")
+                    except Exception:
+                        pass
             # Verificar se há posição aberta
             if current_position is not None:
                 high = highs[candle_index]
@@ -1747,6 +1874,14 @@ class ConfluenceModeModule:
             losing_trades += 1 if pnl <= 0 else 0
         
         total_trades = winning_trades + losing_trades
+        
+        # Garantir emissão final no término da simulação
+        if progress_cb is not None:
+            try:
+                progress_cb(progress_end, f"Simulação de trades concluída — {total_trades} executados")
+            except Exception:
+                pass
+        
         return capital, total_trades, winning_trades
     
     def _calculate_rsi(self, data: List[float], period: int = 14) -> List[float]:
@@ -1810,16 +1945,16 @@ class ConfluenceModeModule:
         
         return upper_band, lower_band
     
-    def _calculate_macd(self, data: List[float]) -> Tuple[List[float], List[float]]:
-        """Calcula MACD real"""
-        ema_12 = self._calculate_ema(data, 12)
-        ema_26 = self._calculate_ema(data, 26)
+    def _calculate_macd(self, data: List[float], fast: int = 12, slow: int = 26, signal_period: int = 9) -> Tuple[List[float], List[float]]:
+        """Calcula MACD real (parametrizado)"""
+        ema_fast = self._calculate_ema(data, fast)
+        ema_slow = self._calculate_ema(data, slow)
         
         macd_line = []
-        for i in range(min(len(ema_12), len(ema_26))):
-            macd_line.append(ema_12[i] - ema_26[i])
+        for i in range(min(len(ema_fast), len(ema_slow))):
+            macd_line.append(ema_fast[i] - ema_slow[i])
         
-        signal_line = self._calculate_ema(macd_line, 9) if len(macd_line) >= 9 else []
+        signal_line = self._calculate_ema(macd_line, signal_period) if len(macd_line) >= signal_period else []
         
         return macd_line, signal_line
     

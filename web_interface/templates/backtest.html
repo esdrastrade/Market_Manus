@@ -86,6 +86,21 @@
                         🧠 Semantic Kernel Advisor
                     </label>
                 </div>
+
+                <!-- NEW: Parâmetros Avançados (Dinâmicos por estratégia) -->
+                <div class="mb-2">
+                    <button class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#advanced-params" aria-expanded="false" aria-controls="advanced-params">
+                        <span><i class="bi bi-sliders"></i> Advanced Parameters</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="collapse mt-2" id="advanced-params">
+                        <div class="card card-body bg-dark text-white border-secondary">
+                            <div id="advanced-params-content">
+                                <p class="text-muted mb-0">Selecione estratégias para ajustar parâmetros específicos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="d-grid mb-2">
                     <button class="btn btn-primary btn-lg" onclick="executeBacktest()">
@@ -177,6 +192,9 @@ if (combinationParam && !strategiesParam) {
                 if (combo.mode) {
                     document.getElementById('backtest-mode').value = combo.mode;
                 }
+
+                // Renderizar parâmetros avançados conforme estratégias da combinação
+                try { renderAdvancedParameters(combo.strategies || []); } catch (e) { console.warn('Falha ao renderizar parâmetros (combo):', e); }
                 
                 // Mostrar mensagem informativa
                 const resultsDiv = document.getElementById('backtest-results');
@@ -203,12 +221,173 @@ if (combinationParam && !strategiesParam) {
 
 if (strategiesParam) {
     console.log('Estratégias selecionadas:', strategiesParam);
+    try { renderAdvancedParameters(strategiesParam.split(',')); } catch (e) { console.warn('Falha ao renderizar parâmetros avançados:', e); }
 }
 
 if (combinationParam) {
     console.log('Combinação selecionada:', combinationParam);
 }
 
+// Helpers para parâmetros avançados dinâmicos
+function getSelectedStrategies() {
+    return strategiesParam ? strategiesParam.split(',') : [];
+}
+
+const STRATEGY_PARAM_DEFS = {
+    vwap: [
+        { type: 'checkbox', id: 'vwap-anchor-smc', label: 'VWAP ancorado (SMC)', param: 'anchor_index', default: false, transform: v => v ? 0 : null },
+        { type: 'number', id: 'vwap-band-multiplier', label: 'VWAP bandas', param: 'band_multiplier', default: 1.0, step: 0.1, min: 0.1 }
+    ],
+    vwap_volume: [
+        { type: 'number', id: 'vwap-volume-deviation', label: 'Desvio VWAP', param: 'deviation_threshold', default: 0.005, step: 0.001, min: 0.0 },
+        { type: 'number', id: 'vwap-volume-band-multiplier', label: 'VWAP bandas', param: 'band_multiplier', default: 1.0, step: 0.1, min: 0.1 }
+    ],
+    ema_crossover: [
+        { type: 'number', id: 'ema-fast-period', label: 'EMA rápida', param: 'fast_period', default: 9, step: 1, min: 1 },
+        { type: 'number', id: 'ema-slow-period', label: 'EMA lenta', param: 'slow_period', default: 21, step: 1, min: 2 },
+        { type: 'checkbox', id: 'ema-adx-use', label: 'Filtrar por ADX', param: 'adx_filter.use', default: false },
+        { type: 'number', id: 'ema-adx-threshold', label: 'ADX mínimo', param: 'adx_filter.threshold', default: 25, step: 1, min: 5, max: 50 },
+        { type: 'checkbox', id: 'ema-adx-strict', label: 'Estrito', param: 'adx_filter.strict', default: true }
+    ],
+    macd: [
+        { type: 'number', id: 'macd-fast-period', label: 'MACD rápido', param: 'fast_period', default: 12, step: 1, min: 1 },
+        { type: 'number', id: 'macd-slow-period', label: 'MACD lento', param: 'slow_period', default: 26, step: 1, min: 2 },
+        { type: 'number', id: 'macd-signal-period', label: 'Signal', param: 'signal_period', default: 9, step: 1, min: 1 },
+        { type: 'checkbox', id: 'macd-adx-use', label: 'Filtrar por ADX', param: 'adx_filter.use', default: false },
+        { type: 'number', id: 'macd-adx-threshold', label: 'ADX mínimo', param: 'adx_filter.threshold', default: 25, step: 1, min: 5, max: 50 },
+        { type: 'checkbox', id: 'macd-adx-strict', label: 'Estrito', param: 'adx_filter.strict', default: true }
+    ],
+    bollinger_breakout: [
+        { type: 'number', id: 'bb-period', label: 'Período BB', param: 'period', default: 20, step: 1, min: 2 },
+        { type: 'number', id: 'bb-std-dev', label: 'Desvio (σ)', param: 'std_dev', default: 2.0, step: 0.1, min: 0.5 }
+    ],
+    rsi_mean_reversion: [
+        { type: 'number', id: 'rsi-period', label: 'Período RSI', param: 'period', default: 14, step: 1, min: 2 },
+        { type: 'number', id: 'rsi-oversold', label: 'Sobrevendido', param: 'oversold_threshold', default: 30, step: 1, min: 1, max: 50 },
+        { type: 'number', id: 'rsi-overbought', label: 'Sobrecomprado', param: 'overbought_threshold', default: 70, step: 1, min: 50, max: 99 }
+    ],
+    stochastic: [
+        { type: 'number', id: 'stoch-period', label: 'Período Stoch', param: 'period', default: 14, step: 1, min: 2 },
+        { type: 'number', id: 'stoch-oversold', label: 'Sobrevendido', param: 'oversold', default: 20, step: 1, min: 1, max: 50 },
+        { type: 'number', id: 'stoch-overbought', label: 'Sobrecomprado', param: 'overbought', default: 80, step: 1, min: 50, max: 99 }
+    ],
+    williams_r: [
+        { type: 'number', id: 'wr-period', label: 'Período %R', param: 'period', default: 14, step: 1, min: 2 },
+        { type: 'number', id: 'wr-oversold', label: 'Sobrevendido', param: 'oversold', default: -80, step: 1, min: -100, max: -1 },
+        { type: 'number', id: 'wr-overbought', label: 'Sobrecomprado', param: 'overbought', default: -20, step: 1, min: -99, max: 0 }
+    ],
+    adx: [
+        { type: 'number', id: 'adx-period', label: 'Período ADX', param: 'period', default: 14, step: 1, min: 2 },
+        { type: 'number', id: 'adx-threshold-global', label: 'ADX mínimo', param: 'threshold', default: 25, step: 1, min: 5, max: 50 }
+    ],
+    parabolic_sar: [
+        { type: 'number', id: 'psar-af-start', label: 'AF start', param: 'af_start', default: 0.02, step: 0.01, min: 0.01, max: 0.5 },
+        { type: 'number', id: 'psar-af-step', label: 'AF step', param: 'af_step', default: 0.02, step: 0.01, min: 0.01, max: 0.5 },
+        { type: 'number', id: 'psar-af-max', label: 'AF max', param: 'af_max', default: 0.2, step: 0.01, min: 0.05, max: 1.0 }
+    ],
+    cpr: [
+        { type: 'number', id: 'cpr-sensitivity', label: 'Sensibilidade CPR', param: 'sensitivity', default: 0.002, step: 0.0005, min: 0.0 }
+    ],
+    order_flow_scalper: [
+        { type: 'number', id: 'ofs-max-spread', label: 'Spread máx (%)', param: 'max_spread_pct', default: 0.0005, step: 0.0001, min: 0.0 },
+        { type: 'number', id: 'ofs-imbalance', label: 'Desequilíbrio', param: 'imbalance_threshold', default: 0.2, step: 0.01, min: 0.0, max: 1.0 },
+        { type: 'number', id: 'ofs-atr-period', label: 'Período ATR', param: 'atr_period', default: 14, step: 1, min: 2 },
+        { type: 'number', id: 'ofs-atr-gate', label: 'ATR gate x', param: 'atr_gate_multiplier', default: 4.0, step: 0.1, min: 0.0 },
+        { type: 'number', id: 'ofs-cvd-norm', label: 'CVD norm qty', param: 'cvd_norm_qty', default: 1000.0, step: 10, min: 0.0 }
+    ],
+    smc_bos: [
+        { type: 'number', id: 'smc-bos-min-disp', label: 'Min displacement', param: 'min_displacement', default: 0.0, step: 0.1, min: 0.0 }
+    ],
+    smc_order_blocks: [
+        { type: 'number', id: 'smc-ob-min-range', label: 'Min range', param: 'min_range', default: 0.0, step: 0.1, min: 0.0 }
+    ],
+    smc_liquidity_sweep: [
+        { type: 'number', id: 'smc-ls-body-ratio', label: 'Body ratio', param: 'body_ratio', default: 0.5, step: 0.05, min: 0.0, max: 1.0 }
+    ]
+};
++
+function renderAdvancedParameters(strategies) {
+    const container = document.getElementById('advanced-params-content');
+    if (!container) return;
+    const list = Array.isArray(strategies) ? strategies : [];
+    if (!list.length) {
+        container.innerHTML = '<p class="text-muted mb-0">Nenhuma estratégia selecionada.</p>';
+        return;
+    }
+    let html = '';
+    list.forEach(name => {
+        const key = String(name || '').trim();
+        const defs = STRATEGY_PARAM_DEFS[key];
+        html += `<div class="mb-3 border-top pt-3">
+            <h6 class="text-primary mb-2">${key}</h6>`;
+        if (!defs) {
+            html += `<p class="text-muted">Sem parâmetros ajustáveis.</p>`;
+        } else {
+            html += `<div class="row g-2">`;
+            defs.forEach(def => {
+                const inputId = `${key}-${def.id}`;
+                if (def.type === 'checkbox') {
+                    html += `<div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="${inputId}" data-strategy="${key}" data-param="${def.param}" ${def.default ? 'checked' : ''}>
+                            <label class="form-check-label" for="${inputId}">${def.label}</label>
+                        </div>
+                    </div>`;
+                } else if (def.type === 'number') {
+                    html += `<div class="col-12">
+                        <div class="input-group">
+                            <span class="input-group-text">${def.label}</span>
+                            <input type="number" class="form-control" id="${inputId}" data-strategy="${key}" data-param="${def.param}" value="${def.default}" step="${def.step || 1}" ${def.min!=null?`min="${def.min}"`:''} ${def.max!=null?`max="${def.max}"`:''}>
+                        </div>
+                    </div>`;
+                }
+            });
+            html += `</div>`;
+        }
+        html += `</div>`;
+    });
+    container.innerHTML = html;
+}
+
+function setNested(obj, path, value) {
+    const parts = path.split('.');
+    let cur = obj;
+    for (let i = 0; i < parts.length - 1; i++) {
+        const p = parts[i];
+        if (cur[p] == null || typeof cur[p] !== 'object') cur[p] = {};
+        cur = cur[p];
+    }
+    cur[parts[parts.length - 1]] = value;
+}
+
+function collectStrategyParams() {
+    const container = document.getElementById('advanced-params-content');
+    const params = {};
+    if (!container) return params;
+    const inputs = container.querySelectorAll('[data-strategy][data-param]');
+    inputs.forEach(input => {
+        const strategy = input.getAttribute('data-strategy');
+        const paramPath = input.getAttribute('data-param');
+        let value;
+        if (input.type === 'checkbox') {
+            value = input.checked;
+        } else if (input.type === 'number') {
+            value = parseFloat(input.value);
+        } else {
+            value = input.value;
+        }
+        // Transformações específicas
+        const defs = STRATEGY_PARAM_DEFS[strategy] || [];
+        const def = defs.find(d => `${strategy}-${d.id}` === input.id);
+        if (def && typeof def.transform === 'function') {
+            value = def.transform(value);
+        }
+        if (!params[strategy]) params[strategy] = {};
+        setNested(params[strategy], paramPath, value);
+    });
+    return params;
+}
++
 async function executeBacktest() {
     const resultsDiv = document.getElementById('backtest-results');
     resultsDiv.innerHTML = `
@@ -239,7 +418,9 @@ async function executeBacktest() {
         mode: document.getElementById('backtest-mode').value,
         manus_ai: document.getElementById('enable-manus-ai').checked,
         semantic_kernel: document.getElementById('enable-sk').checked,
-        strategies: strategiesParam ? strategiesParam.split(',') : []
+        strategies: strategiesParam ? strategiesParam.split(',') : [],
+        // NEW: Parâmetros dinâmicos por estratégia
+        strategy_params: collectStrategyParams()
     };
     
     // Validar seleção de estratégias

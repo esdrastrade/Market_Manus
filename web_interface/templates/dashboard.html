@@ -209,6 +209,109 @@
     // Atualizar na carga
     updateDashboard();
 
+    // Renderizador simples de linha no canvas (sem dependências externas)
+    function renderMarketChart(containerId, series) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const width = container.clientWidth || 800;
+        const height = container.clientHeight || 400;
+        container.innerHTML = `<canvas id="market-canvas" width="${width}" height="${height}"></canvas>`;
+        const canvas = document.getElementById('market-canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!series || series.length === 0) {
+            ctx.fillStyle = '#888';
+            ctx.textAlign = 'center';
+            ctx.font = '16px Segoe UI, Arial';
+            ctx.fillText('Sem dados para exibir', width/2, height/2);
+            return;
+        }
+
+        const padding = { left: 50, right: 20, top: 20, bottom: 30 };
+        const plotW = width - padding.left - padding.right;
+        const plotH = height - padding.top - padding.bottom;
+
+        const xs = series.map(p => p.t);
+        const ys = series.map(p => p.c);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+        const minX = Math.min(...xs);
+        const maxX = Math.max(...xs);
+
+        const xScale = x => padding.left + ((x - minX) / (maxX - minX)) * plotW;
+        const yScale = y => padding.top + (1 - (y - minY) / (maxY - minY)) * plotH;
+
+        // Fundo do gráfico
+        ctx.fillStyle = '#161b22';
+        ctx.fillRect(padding.left, padding.top, plotW, plotH);
+        ctx.strokeStyle = '#30363d';
+        ctx.lineWidth = 1;
+        // Grade horizontal
+        for (let i=0;i<=4;i++) {
+            const y = padding.top + (i/4)*plotH;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(padding.left + plotW, y);
+            ctx.stroke();
+        }
+
+        // Linha de preço
+        ctx.strokeStyle = '#58a6ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        series.forEach((p, idx) => {
+            const x = xScale(p.t);
+            const y = yScale(p.c);
+            if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Último preço
+        const last = series[series.length-1];
+        const lastX = xScale(last.t);
+        const lastY = yScale(last.c);
+        ctx.fillStyle = '#c9d1d9';
+        ctx.font = '12px Segoe UI, Arial';
+        ctx.fillText(`Último: ${last.c.toFixed(2)}`, lastX+8, lastY-8);
+
+        // Eixos
+        ctx.fillStyle = '#8b949e';
+        ctx.textAlign = 'left';
+        ctx.fillText(maxY.toFixed(2), 6, padding.top + 8);
+        ctx.fillText(minY.toFixed(2), 6, padding.top + plotH);
+    }
+
+    // Carregar dados do Market Overview
+    async function loadMarketOverview() {
+        const assetSel = document.getElementById('asset-selector');
+        const tfSel = document.getElementById('timeframe-selector');
+        const symbol = assetSel ? assetSel.value : 'BTCUSDT';
+        const timeframe = tfSel ? tfSel.value : '15m';
+        try {
+            showSpinner('market-chart');
+            const res = await fetch(`/api/market/overview?symbol=${encodeURIComponent(symbol)}&timeframe=${encodeURIComponent(timeframe)}&limit=200`);
+            const ct = (res.headers.get('content-type') || '').toLowerCase();
+            let data;
+            if (ct.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                throw new Error(`Resposta inválida do servidor (${res.status})`);
+            }
+            if (!res.ok || data.status !== 'ok') {
+                const msg = (data && data.message) ? data.message : 'Falha ao carregar dados do mercado';
+                throw new Error(msg);
+            }
+            renderMarketChart('market-chart', data.series);
+        } catch (e) {
+            console.error('Erro ao carregar Market Overview:', e);
+            const container = document.getElementById('market-chart');
+            if (container) {
+                container.innerHTML = `<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle"></i> ${e.message || 'Erro ao carregar Market Overview'}</div>`;
+            }
+        }
+    }
+
     // Atualiza status do IA Premium (Manus AI)
     function updateAIStatus() {
         fetch('/api/connectivity/manus')
@@ -235,6 +338,11 @@
         try {
             const response = await fetch(`/api/sentiment/${asset}`);
             const data = await response.json();
+
+            if (!response.ok || data.error) {
+                const msg = data && data.error ? data.error : 'Falha ao ler mercado';
+                throw new Error(msg);
+            }
 
             // Fear & Greed
             if (data.fear_greed) {
@@ -272,7 +380,7 @@
             }
         } catch (e) {
             console.error('Erro ao ler mercado:', e);
-            alert('Erro ao ler mercado');
+            alert('Erro ao ler mercado: ' + (e.message || 'Indisponível'));
         }
     }
 
@@ -281,6 +389,15 @@
         updateAIStatus();
         const btn = document.getElementById('read-market-btn');
         if (btn) btn.addEventListener('click', readMarket);
+
+        const assetSel = document.getElementById('asset-selector');
+        const tfSel = document.getElementById('timeframe-selector');
+        if (assetSel) assetSel.addEventListener('change', loadMarketOverview);
+        if (tfSel) tfSel.addEventListener('change', loadMarketOverview);
+        // primeira carga
+        loadMarketOverview();
+        // ajuste responsivo ao redimensionar
+        window.addEventListener('resize', debounce(loadMarketOverview, 300));
     });
 </script>
 {% endblock %}

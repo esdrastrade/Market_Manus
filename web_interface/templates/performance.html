@@ -71,7 +71,10 @@
                                 <th>Data</th>
                                 <th>Ativo</th>
                                 <th>Timeframe</th>
+                                <th>Período</th>
+                                <th>Modo</th>
                                 <th>Combinação</th>
+                                <th>Estratégias</th>
                                 <th>Trades</th>
                                 <th>Win Rate</th>
                                 <th>ROI</th>
@@ -145,7 +148,10 @@ async function loadPerformanceData() {
                     <td>${new Date(b.timestamp).toLocaleString('pt-BR')}</td>
                     <td>${b.asset}</td>
                     <td>${b.timeframe}</td>
-                    <td>${b.combination_name}</td>
+                    <td>${(b.start_date && b.end_date && b.start_date !== 'default' && b.end_date !== 'default') ? `${b.start_date} → ${b.end_date}` : '—'}</td>
+                    <td><span class="badge bg-secondary">${b.confluence_mode || '—'}</span></td>
+                    <td>${b.is_recommended ? `${b.combination_name}` : `Custom`}</td>
+                    <td><span title="${(b.strategies || []).join(', ')}">${(b.strategies || []).length} estratégia(s)</span></td>
                     <td>${b.total_trades}</td>
                     <td class="${b.win_rate >= 70 ? 'text-success' : b.win_rate >= 50 ? 'text-warning' : 'text-danger'}">${b.win_rate.toFixed(1)}%</td>
                     <td class="${b.roi >= 0 ? 'text-success' : 'text-danger'}">${b.roi >= 0 ? '+' : ''}${b.roi.toFixed(2)}%</td>
@@ -156,7 +162,7 @@ async function loadPerformanceData() {
                 </tr>
             `).join('');
         } else {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nenhum backtest registrado ainda</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted">Nenhum backtest registrado ainda</td></tr>';
         }
         
     } catch (error) {

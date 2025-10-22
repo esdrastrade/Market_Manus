@@ -84,6 +84,22 @@ body {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
+/* Enforce white text on colored cards for dark theme */
+.card.text-bg-primary,
+.card.text-bg-success,
+.card.text-bg-warning,
+.card.text-bg-info,
+.card.text-bg-danger {
+  color: #ffffff !important;
+}
+
+.card.text-bg-primary .text-muted,
+.card.text-bg-success .text-muted,
+.card.text-bg-warning .text-muted,
+.card.text-bg-info .text-muted,
+.card.text-bg-danger .text-muted {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
 .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0,0,0,0.4);
@@ -103,7 +119,7 @@ body {
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
-    color: #000;
+    color: #fff; /* corrigir texto preto em tema escuro */
 }
 
 .btn-primary:hover {
@@ -114,6 +130,7 @@ body {
 .btn-success {
     background-color: var(--success-color);
     border-color: var(--success-color);
+    color: #fff; /* coerência com tema escuro */
 }
 
 .btn-success:hover {
@@ -124,11 +141,24 @@ body {
 .btn-danger {
     background-color: var(--danger-color);
     border-color: var(--danger-color);
+    color: #fff; /* coerência com tema escuro */
 }
 
 .btn-danger:hover {
     background-color: #da3633;
     border-color: #da3633;
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: #000; /* legibilidade em amarelo forte */
+}
+
+.btn-info {
+    background-color: var(--info-color);
+    border-color: var(--info-color);
+    color: #fff;
 }
 
 .btn-lg i {
@@ -291,7 +321,7 @@ body {
                       repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 6px, transparent 6px, transparent 12px);
 }
 .progress-bar.modern.state-processing {
-    background-image: linear-gradient(90deg, var(--warning-color), rgba(210,153,34,0.85)),
+    background-image: linear-gradient(90deg, var(--success-color), rgba(63,185,80,0.85)),
                       repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 6px, transparent 6px, transparent 12px);
 }
 .progress-bar.modern.state-finished {
@@ -392,6 +422,9 @@ body {
     animation: progressShift 1.2s linear infinite;
 }
 
+/* Garantir texto visível dentro da barra de progresso */
+.progress .progress-bar strong { color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,0.3); }
+
 @keyframes progressShift {
     from { background-position: 0 0, 0 0; }
     to { background-position: 0 0, 24px 24px; }
@@ -424,25 +457,38 @@ body {
 
 .badge.bg-primary {
     background-color: var(--primary-color) !important;
-    color: #000;
+    color: #fff; /* corrigir texto preto */
 }
 
 .badge.bg-success {
     background-color: var(--success-color) !important;
+    color: #fff;
 }
 
 .badge.bg-danger {
     background-color: var(--danger-color) !important;
+    color: #fff;
 }
 
 .badge.bg-warning {
     background-color: var(--warning-color) !important;
-    color: #000;
+    color: #000; /* amarelo mantém texto escuro para contraste */
 }
 
 .badge.bg-info {
     background-color: var(--info-color) !important;
-    color: #000;
+    color: #fff;
+}
+
+/* Lista em tema escuro */
+.list-group-item {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.text-muted {
+    color: var(--text-secondary) !important;
 }
 
 .text-muted {

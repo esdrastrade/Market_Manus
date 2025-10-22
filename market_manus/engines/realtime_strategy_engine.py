@@ -15,7 +15,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from market_manus.data_providers.market_data_ws import BinanceUSWebSocket
+from market_manus.data_providers.market_data_ws import BinanceUSWebSocket, BinanceUSOrderFlowWebSocket
 from market_manus.strategies.classic_analysis import (
     calculate_ema,
     calculate_rsi,
@@ -31,9 +31,11 @@ from market_manus.strategies.smc.patterns import (
     detect_fvg,
     detect_liquidity_sweep
 )
+from market_manus.strategies.order_flow_scalper import order_flow_signal
 from market_manus.core.signal import Signal
 from market_manus.analysis.market_context_analyzer import MarketContextAnalyzer
 from market_manus.core.capital_manager import FeeModel, FeePreset
+from market_manus.core.slippage import simulate_market_fill
 
 
 class RealtimeStrategyEngine:
@@ -75,6 +77,7 @@ class RealtimeStrategyEngine:
         self.fee_model = FeeModel.from_preset(FeePreset.LIVE) if enable_paper_trading else None
         
         self.ws_provider = None
+        self.orderflow_ws_provider = None
         self.candles_deque = deque(maxlen=1000)
         self.signals_history = deque(maxlen=100)
         self.running = False
@@ -110,7 +113,19 @@ class RealtimeStrategyEngine:
             'paper_realized_pnl': 0.0,
             'paper_total_trades': 0,
             'paper_winning_trades': 0,
-            'paper_losing_trades': 0
+            'paper_losing_trades': 0,
+            'orderflow': {
+                'best_bid': None,
+                'best_ask': None,
+                'spread': None,
+                'imbalance': None,
+                'cvd': None,
+                'cvd_prev': None,
+                'bids': [],
+                'asks': [],
+                'last_slippage_entry_pct': None,
+                'last_slippage_exit_pct': None
+            }
         }
         
         self.strategy_functions = {
@@ -126,7 +141,8 @@ class RealtimeStrategyEngine:
             'choch': detect_choch,
             'order_blocks': detect_order_blocks,
             'fvg': detect_fvg,
-            'liquidity_sweep': detect_liquidity_sweep
+            'liquidity_sweep': detect_liquidity_sweep,
+            'order_flow_scalper': self._apply_order_flow_scalper
         }
     
     def _apply_rsi_strategy(self, df: pd.DataFrame) -> Signal:
@@ -346,6 +362,13 @@ class RealtimeStrategyEngine:
     def _apply_fibonacci_strategy(self, df: pd.DataFrame) -> Signal:
         """Apply Fibonacci Retracement strategy"""
         return fibonacci_signal(df, params={'lookback': 50})
+
+    def _apply_order_flow_scalper(self, df: pd.DataFrame) -> Signal:
+        metrics = self.state.get('orderflow', {})
+        try:
+            return order_flow_signal(df, metrics=metrics, params=None)
+        except Exception as e:
+            return Signal(action="HOLD", confidence=0.0, reasons=[f"Erro OF: {str(e)[:30]}"], tags=["ORDER_FLOW"])
     
     async def _analyze_context(self):
         """Analisa contexto de mercado antes de iniciar streaming"""
@@ -539,35 +562,79 @@ class RealtimeStrategyEngine:
         if not self.enable_paper_trading:
             return
         
+        of = self.state.get('orderflow', {})
+        bids = of.get('bids') or []
+        asks = of.get('asks') or []
+        best_bid = of.get('best_bid')
+        best_ask = of.get('best_ask')
+        
         if action == 'BUY' and not self.current_position:
-            position_size = (self.state['paper_equity'] * 0.95) / price
+            # Size em base (BTC) usando melhor ask se disponível
+            ref_price = best_ask if (best_ask is not None and best_ask > 0) else price
+            position_size = (self.state['paper_equity'] * 0.95) / ref_price
+            entry_price = ref_price
+            used_slippage_sim = False
+            
+            # Simular execução via order book (VWAP) se houver profundidade
+            if asks and best_ask:
+                sim = simulate_market_fill('BUY', position_size, bids, asks, best_bid, best_ask)
+                if sim:
+                    entry_price = sim['avg_price']
+                    # Ajustar tamanho pelo preenchimento efetivo
+                    position_size = sim['filled_qty']
+                    used_slippage_sim = True
+                    self.state['orderflow']['last_slippage_entry_pct'] = sim['slippage_pct']
+                else:
+                    self.state['orderflow']['last_slippage_entry_pct'] = None
+            else:
+                self.state['orderflow']['last_slippage_entry_pct'] = None
+            
             self.current_position = {
                 'type': 'LONG',
-                'entry_price': price,
+                'entry_price': entry_price,
                 'size': position_size,
                 'entry_time': datetime.now(),
-                'stop_loss': price * 0.98,
-                'take_profit': price * 1.05,
+                'stop_loss': entry_price * 0.98,
+                'take_profit': entry_price * 1.05,
                 'confidence': confidence
             }
-        
+            
         elif action == 'SELL' and self.current_position and self.current_position['type'] == 'LONG':
             exit_price = price
-            entry_price = self.current_position['entry_price']
+            used_slippage_sim = False
             size = self.current_position['size']
+            
+            # Simular execução de saída via order book
+            if bids and best_bid:
+                sim = simulate_market_fill('SELL', size, bids, asks, best_bid, best_ask)
+                if sim:
+                    exit_price = sim['avg_price']
+                    used_slippage_sim = True
+                    self.state['orderflow']['last_slippage_exit_pct'] = sim['slippage_pct']
+                else:
+                    self.state['orderflow']['last_slippage_exit_pct'] = None
+            else:
+                self.state['orderflow']['last_slippage_exit_pct'] = None
+            
+            entry_price = self.current_position['entry_price']
             position_value = entry_price * size
             
-            # P&L bruto (sem custos)
+            # P&L bruto
             gross_pnl = (exit_price - entry_price) * size
             
-            # FASE 2: Aplicar custos realistas (fees + slippage)
+            # Aplicar custos (fees) evitando dupla contagem de slippage
             if self.fee_model:
-                # Market orders (taker) para entry e exit - mais realista para paper trading
-                net_pnl, total_costs = self.fee_model.apply_costs_to_pnl(
+                fm = self.fee_model
+                fm_trade = FeeModel(
+                    maker_fee_pct=fm.maker_fee_pct,
+                    taker_fee_pct=fm.taker_fee_pct,
+                    slippage_pct=0.0 if used_slippage_sim else fm.slippage_pct
+                )
+                net_pnl, total_costs = fm_trade.apply_costs_to_pnl(
                     gross_pnl=gross_pnl,
                     position_size=position_value,
-                    entry_is_maker=False,  # Market order
-                    exit_is_maker=False    # Market order
+                    entry_is_maker=False,
+                    exit_is_maker=False
                 )
             else:
                 net_pnl = gross_pnl
@@ -589,7 +656,9 @@ class RealtimeStrategyEngine:
                 'gross_pnl': gross_pnl,
                 'trading_costs': total_costs,
                 'net_pnl': net_pnl,
-                'pnl_pct': (net_pnl / position_value) * 100 if position_value > 0 else 0
+                'pnl_pct': (net_pnl / position_value) * 100 if position_value > 0 else 0,
+                'entry_slippage_pct': self.state['orderflow'].get('last_slippage_entry_pct'),
+                'exit_slippage_pct': self.state['orderflow'].get('last_slippage_exit_pct')
             })
             
             self.current_position = None
@@ -709,6 +778,39 @@ class RealtimeStrategyEngine:
             print(f"⚠️  Erro na coleta WS: {e}")
             self.state['reconnections'] += 1
     
+    async def collect_orderflow_messages(self):
+        """Collect order flow metrics from combined aggTrade + depth stream"""
+        try:
+            async for msg in self.orderflow_ws_provider:
+                # Count messages for overall monitoring
+                self.state['msgs_received'] += 1
+
+                of = self.state.get('orderflow')
+                if msg.get('type') == 'aggTrade':
+                    # Update CVD with previous tracking
+                    prev_cvd = of.get('cvd')
+                    of['cvd_prev'] = prev_cvd
+                    of['cvd'] = msg.get('cvd')
+                    # Best bid/ask and spread may be present
+                    if msg.get('best_bid') is not None:
+                        of['best_bid'] = msg.get('best_bid')
+                    if msg.get('best_ask') is not None:
+                        of['best_ask'] = msg.get('best_ask')
+                    of['spread'] = msg.get('spread', of.get('spread'))
+                elif msg.get('type') == 'depth':
+                    of['best_bid'] = msg.get('best_bid')
+                    of['best_ask'] = msg.get('best_ask')
+                    of['spread'] = msg.get('spread')
+                    of['imbalance'] = msg.get('imbalance')
+                    of['bids'] = msg.get('bids') or []
+                    of['asks'] = msg.get('asks') or []
+
+                # Update timestamp for UI
+                self.state['last_update'] = datetime.now()
+        except Exception as e:
+            print(f"⚠️  Erro na coleta OrderFlow WS: {e}")
+            self.state['reconnections'] += 1
+    
     def render_ui(self) -> Layout:
         """Render live UI"""
         layout = Layout()
@@ -785,7 +887,22 @@ class RealtimeStrategyEngine:
                 f"[bold yellow]Win Rate:[/bold yellow] {win_rate:.1f}%",
                 f"[bold magenta]Trades:[/bold magenta] {self.state['paper_total_trades']}"
             )
-            
+            # New: slippage and orderflow metrics row
+            of = self.state.get('orderflow', {})
+            spread = of.get('spread')
+            imbalance = of.get('imbalance')
+            e_slip = of.get('last_slippage_entry_pct')
+            x_slip = of.get('last_slippage_exit_pct')
+            spread_txt = f"Spread: {spread:.6f}" if spread is not None else "Spread: —"
+            imb_txt = f"Imbalance: {imbalance:+.3f}" if imbalance is not None else "Imbalance: —"
+            e_txt = f"Entry slip: {e_slip:.3%}" if e_slip is not None else "Entry slip: —"
+            x_txt = f"Exit slip: {x_slip:.3%}" if x_slip is not None else "Exit slip: —"
+            paper_table.add_row(
+                f"[dim]{spread_txt}[/dim]",
+                f"[dim]{imb_txt}[/dim]",
+                f"[dim]{e_txt}[/dim]",
+                f"[dim]{x_txt}[/dim]"
+            )
             if self.current_position:
                 unrealized_color = "green" if self.state['paper_unrealized_pnl'] >= 0 else "red"
                 paper_table.add_row(
@@ -897,6 +1014,7 @@ class RealtimeStrategyEngine:
             return
         
         self.ws_provider = BinanceUSWebSocket(self.symbol, self.interval)
+        self.orderflow_ws_provider = BinanceUSOrderFlowWebSocket(self.symbol, depth_levels=10)
         
         print(f"\n🚀 Iniciando execução em tempo real...")
         print(f"📊 Símbolo: {self.symbol}")
@@ -911,12 +1029,10 @@ class RealtimeStrategyEngine:
                     while self.running:
                         live.update(self.render_ui())
                         await asyncio.sleep(0.5)
-                
                 collector_task = asyncio.create_task(self.collect_ws_messages())
+                orderflow_task = asyncio.create_task(self.collect_orderflow_messages())
                 ui_task = asyncio.create_task(update_ui())
-                
-                await asyncio.gather(collector_task, ui_task)
-                
+                await asyncio.gather(collector_task, orderflow_task, ui_task)
         except KeyboardInterrupt:
             print("\n\n⏹️  Execução interrompida pelo usuário")
             self.running = False

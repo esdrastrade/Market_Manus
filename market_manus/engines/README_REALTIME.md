@@ -28,6 +28,11 @@ O `RealtimeStrategyEngine` é um motor de execução de estratégias em tempo re
   - Estratégias individuais
   - Métricas de performance (latência, msgs recebidas, etc.)
 
+### ✅ Order Flow e Slippage L2
+- Coleta de fluxo de ordens (spread, imbalance, CVD)
+- Simulador de slippage L2 (VWAP) para paper trading
+- Execução por VWAP com métricas exibidas na Live UI
+
 ### ✅ Estratégias Suportadas
 
 #### Estratégias Clássicas:
@@ -86,14 +91,17 @@ data_provider = BybitRealDataProvider(api_key, api_secret)
 engine = RealtimeStrategyEngine(
     symbol="BTCUSDT",
     interval="5m",
-    strategies=["rsi_mean_reversion", "ema_crossover"],
+    strategies=["order_flow_scalper", "ema_crossover"],
     data_provider=data_provider,
-    confluence_mode="MAJORITY"
+    confluence_mode="MAJORITY",
+    enable_paper_trading=True  # ativa paper trading com slippage L2 (VWAP)
 )
 
 # Executar
 asyncio.run(engine.start())
 ```
+
+> Nota: Com `enable_paper_trading=True`, o engine simula fills via order book L2 por VWAP e exibe spread, imbalance e slippage (entrada/saída) na Live UI.
 
 ## Fluxo de Execução
 

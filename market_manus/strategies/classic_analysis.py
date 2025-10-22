@@ -103,10 +103,14 @@ def ema_crossover_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
     """
     EMA Crossover: cruzamento EMA rápida > lenta = BUY; lenta > rápida = SELL.
     Confidence baseado em distância/ângulo entre EMAs.
+    NEW: filtro opcional por ADX para evitar sinais em tendência fraca.
     """
     params = params or {}
     fast_period = params.get('fast_period', 9)
     slow_period = params.get('slow_period', 21)
+    use_adx_filter = params.get('use_adx_filter', False)
+    adx_threshold = params.get('adx_threshold', 25)
+    strict_adx = params.get('strict_adx', False)
     
     closes = candles['close']
     ema_fast = calculate_ema(closes, fast_period)
@@ -115,46 +119,101 @@ def ema_crossover_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
     if len(ema_fast) < 2 or len(ema_slow) < 2:
         return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:EMA"], reasons=["Dados insuficientes"])
     
+    # Opcional: calcular ADX
+    curr_adx = None
+    if use_adx_filter:
+        try:
+            adx, _, _ = calculate_adx(candles, period=14)
+            curr_adx = float(adx.iloc[-1]) if not np.isnan(adx.iloc[-1]) else 0.0
+        except Exception:
+            curr_adx = 0.0
+    
     # Verifica cruzamento
     prev_fast, prev_slow = ema_fast.iloc[-2], ema_slow.iloc[-2]
     curr_fast, curr_slow = ema_fast.iloc[-1], ema_slow.iloc[-1]
     
     # Crossover bullish: fast cruza acima de slow
     if prev_fast <= prev_slow and curr_fast > curr_slow:
-        distance_pct = abs(curr_fast - curr_slow) / curr_slow
+        distance_pct = abs(curr_fast - curr_slow) / (curr_slow if curr_slow != 0 else 1)
         confidence = min(0.5 + distance_pct * 10, 1.0)
+        reasons = [f"EMA crossover bullish: EMA{fast_period} cruza acima EMA{slow_period}, distância {distance_pct:.3%}"]
+        tags = ["CLASSIC:EMA", "CLASSIC:EMA_CROSSUP"]
+        
+        if use_adx_filter:
+            if curr_adx < adx_threshold:
+                if strict_adx:
+                    return Signal(
+                        action="HOLD",
+                        confidence=0.0,
+                        reasons=reasons + [f"ADX fraco {curr_adx:.1f} < {adx_threshold}"],
+                        tags=tags + ["FILTER:ADX_WEAK"],
+                        meta={"ema_fast": curr_fast, "ema_slow": curr_slow, "distance_pct": distance_pct, "adx": curr_adx}
+                    )
+                else:
+                    confidence = max(confidence * 0.6, 0.1)
+                    reasons.append(f"ADX fraco {curr_adx:.1f} < {adx_threshold} (conf reduzida)")
+                    tags.append("FILTER:ADX_WEAK")
+            else:
+                reasons.append(f"ADX {curr_adx:.1f} ≥ {adx_threshold} (tendência válida)")
+                tags.append("FILTER:ADX_OK")
+        
         return Signal(
             action="BUY",
             confidence=confidence,
-            reasons=[f"EMA crossover bullish: EMA{fast_period} cruza acima EMA{slow_period}, distância {distance_pct:.3%}"],
-            tags=["CLASSIC:EMA", "CLASSIC:EMA_CROSSUP"],
-            meta={"ema_fast": curr_fast, "ema_slow": curr_slow, "distance_pct": distance_pct}
+            reasons=reasons,
+            tags=tags,
+            meta={"ema_fast": curr_fast, "ema_slow": curr_slow, "distance_pct": distance_pct, **({"adx": curr_adx} if curr_adx is not None else {})}
         )
     
     # Crossover bearish: fast cruza abaixo de slow
     if prev_fast >= prev_slow and curr_fast < curr_slow:
-        distance_pct = abs(curr_fast - curr_slow) / curr_slow
+        distance_pct = abs(curr_fast - curr_slow) / (curr_slow if curr_slow != 0 else 1)
         confidence = min(0.5 + distance_pct * 10, 1.0)
+        reasons = [f"EMA crossover bearish: EMA{fast_period} cruza abaixo EMA{slow_period}, distância {distance_pct:.3%}"]
+        tags = ["CLASSIC:EMA", "CLASSIC:EMA_CROSSDOWN"]
+        
+        if use_adx_filter:
+            if curr_adx < adx_threshold:
+                if strict_adx:
+                    return Signal(
+                        action="HOLD",
+                        confidence=0.0,
+                        reasons=reasons + [f"ADX fraco {curr_adx:.1f} < {adx_threshold}"],
+                        tags=tags + ["FILTER:ADX_WEAK"],
+                        meta={"ema_fast": curr_fast, "ema_slow": curr_slow, "distance_pct": distance_pct, "adx": curr_adx}
+                    )
+                else:
+                    confidence = max(confidence * 0.6, 0.1)
+                    reasons.append(f"ADX fraco {curr_adx:.1f} < {adx_threshold} (conf reduzida)")
+                    tags.append("FILTER:ADX_WEAK")
+            else:
+                reasons.append(f"ADX {curr_adx:.1f} ≥ {adx_threshold} (tendência válida)")
+                tags.append("FILTER:ADX_OK")
+        
         return Signal(
             action="SELL",
             confidence=confidence,
-            reasons=[f"EMA crossover bearish: EMA{fast_period} cruza abaixo EMA{slow_period}, distância {distance_pct:.3%}"],
-            tags=["CLASSIC:EMA", "CLASSIC:EMA_CROSSDOWN"],
-            meta={"ema_fast": curr_fast, "ema_slow": curr_slow, "distance_pct": distance_pct}
+            reasons=reasons,
+            tags=tags,
+            meta={"ema_fast": curr_fast, "ema_slow": curr_slow, "distance_pct": distance_pct, **({"adx": curr_adx} if curr_adx is not None else {})}
         )
     
-    return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:EMA"], reasons=["Sem cruzamento"])
+    return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:EMA"], reasons=["Sem cruzamento"]) 
 
 
 def macd_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
     """
     MACD: linha MACD cruza acima/abaixo signal line.
     Confidence aumenta com histograma expandindo.
+    NEW: filtro opcional por ADX para evitar sinais em tendência fraca.
     """
     params = params or {}
     fast = params.get('fast', 12)
     slow = params.get('slow', 26)
     signal_period = params.get('signal', 9)
+    use_adx_filter = params.get('use_adx_filter', False)
+    adx_threshold = params.get('adx_threshold', 25)
+    strict_adx = params.get('strict_adx', False)
     
     closes = candles['close']
     macd_line, signal_line, histogram = calculate_macd(closes, fast, slow, signal_period)
@@ -162,35 +221,86 @@ def macd_signal(candles: pd.DataFrame, params: dict = None) -> Signal:
     if len(macd_line) < 2:
         return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:MACD"], reasons=["Dados insuficientes"])
     
+    # Opcional: calcular ADX
+    curr_adx = None
+    if use_adx_filter:
+        try:
+            adx, _, _ = calculate_adx(candles, period=14)
+            curr_adx = float(adx.iloc[-1]) if not np.isnan(adx.iloc[-1]) else 0.0
+        except Exception:
+            curr_adx = 0.0
+    
     prev_macd, prev_signal = macd_line.iloc[-2], signal_line.iloc[-2]
     curr_macd, curr_signal = macd_line.iloc[-1], signal_line.iloc[-1]
     curr_hist = histogram.iloc[-1]
     
     # Crossover bullish
     if prev_macd <= prev_signal and curr_macd > curr_signal:
-        hist_strength = abs(curr_hist) / closes.iloc[-1] * 100  # Histograma em % do preço
+        hist_strength = abs(curr_hist) / (closes.iloc[-1] if closes.iloc[-1] != 0 else 1) * 100
         confidence = min(0.5 + hist_strength * 5, 1.0)
+        reasons = [f"MACD crossover bullish: MACD cruza acima signal, histograma {curr_hist:.4f}"]
+        tags = ["CLASSIC:MACD", "CLASSIC:MACD_CROSSUP"]
+        
+        if use_adx_filter:
+            if curr_adx < adx_threshold:
+                if strict_adx:
+                    return Signal(
+                        action="HOLD",
+                        confidence=0.0,
+                        reasons=reasons + [f"ADX fraco {curr_adx:.1f} < {adx_threshold}"],
+                        tags=tags + ["FILTER:ADX_WEAK"],
+                        meta={"macd": curr_macd, "signal": curr_signal, "histogram": curr_hist, "adx": curr_adx}
+                    )
+                else:
+                    confidence = max(confidence * 0.6, 0.1)
+                    reasons.append(f"ADX fraco {curr_adx:.1f} < {adx_threshold} (conf reduzida)")
+                    tags.append("FILTER:ADX_WEAK")
+            else:
+                reasons.append(f"ADX {curr_adx:.1f} ≥ {adx_threshold} (tendência válida)")
+                tags.append("FILTER:ADX_OK")
+        
         return Signal(
             action="BUY",
             confidence=confidence,
-            reasons=[f"MACD crossover bullish: MACD cruza acima signal, histograma {curr_hist:.4f}"],
-            tags=["CLASSIC:MACD", "CLASSIC:MACD_CROSSUP"],
-            meta={"macd": curr_macd, "signal": curr_signal, "histogram": curr_hist}
+            reasons=reasons,
+            tags=tags,
+            meta={"macd": curr_macd, "signal": curr_signal, "histogram": curr_hist, **({"adx": curr_adx} if curr_adx is not None else {})}
         )
     
     # Crossover bearish
     if prev_macd >= prev_signal and curr_macd < curr_signal:
-        hist_strength = abs(curr_hist) / closes.iloc[-1] * 100
+        hist_strength = abs(curr_hist) / (closes.iloc[-1] if closes.iloc[-1] != 0 else 1) * 100
         confidence = min(0.5 + hist_strength * 5, 1.0)
+        reasons = [f"MACD crossover bearish: MACD cruza abaixo signal, histograma {curr_hist:.4f}"]
+        tags = ["CLASSIC:MACD", "CLASSIC:MACD_CROSSDOWN"]
+        
+        if use_adx_filter:
+            if curr_adx < adx_threshold:
+                if strict_adx:
+                    return Signal(
+                        action="HOLD",
+                        confidence=0.0,
+                        reasons=reasons + [f"ADX fraco {curr_adx:.1f} < {adx_threshold}"],
+                        tags=tags + ["FILTER:ADX_WEAK"],
+                        meta={"macd": curr_macd, "signal": curr_signal, "histogram": curr_hist, "adx": curr_adx}
+                    )
+                else:
+                    confidence = max(confidence * 0.6, 0.1)
+                    reasons.append(f"ADX fraco {curr_adx:.1f} < {adx_threshold} (conf reduzida)")
+                    tags.append("FILTER:ADX_WEAK")
+            else:
+                reasons.append(f"ADX {curr_adx:.1f} ≥ {adx_threshold} (tendência válida)")
+                tags.append("FILTER:ADX_OK")
+        
         return Signal(
             action="SELL",
             confidence=confidence,
-            reasons=[f"MACD crossover bearish: MACD cruza abaixo signal, histograma {curr_hist:.4f}"],
-            tags=["CLASSIC:MACD", "CLASSIC:MACD_CROSSDOWN"],
-            meta={"macd": curr_macd, "signal": curr_signal, "histogram": curr_hist}
+            reasons=reasons,
+            tags=tags,
+            meta={"macd": curr_macd, "signal": curr_signal, "histogram": curr_hist, **({"adx": curr_adx} if curr_adx is not None else {})}
         )
     
-    return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:MACD"], reasons=["Sem cruzamento"])
+    return Signal(action="HOLD", confidence=0.0, tags=["CLASSIC:MACD"], reasons=["Sem cruzamento"]) 
 
 
 def rsi_signal(candles: pd.DataFrame, params: dict = None) -> Signal:

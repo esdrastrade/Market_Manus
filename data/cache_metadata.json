@@ -218,5 +218,35 @@
     "columns": 6,
     "cached_at": "2025-10-09T21:10:14.108043",
     "file_size_kb": 297.09
+  },
+  "ETHUSDT_15_200125_until_201025": {
+    "symbol": "ETHUSDT",
+    "interval": "15",
+    "start_date": "2025-01-20",
+    "end_date": "2025-10-20",
+    "candles": 26208,
+    "columns": 6,
+    "cached_at": "2025-10-20T01:30:00.900145",
+    "file_size_kb": 942.89
+  },
+  "BTCUSDT_5_010125_until_201025": {
+    "symbol": "BTCUSDT",
+    "interval": "5",
+    "start_date": "2025-01-01",
+    "end_date": "2025-10-20",
+    "candles": 84096,
+    "columns": 6,
+    "cached_at": "2025-10-20T03:18:55.579817",
+    "file_size_kb": 2962.38
+  },
+  "BTCUSDT_15_010125_until_201025": {
+    "symbol": "BTCUSDT",
+    "interval": "15",
+    "start_date": "2025-01-01",
+    "end_date": "2025-10-20",
+    "candles": 28032,
+    "columns": 6,
+    "cached_at": "2025-10-20T04:30:38.965977",
+    "file_size_kb": 1086.84
   }
 }

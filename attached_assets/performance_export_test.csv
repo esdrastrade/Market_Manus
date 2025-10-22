@@ -1,0 +1,43 @@
+Data,Ativo,Timeframe,Período,Modo,Combinação,Estratégias,Trades,Win Rate (%),ROI (%),Manus AI,Semantic Kernel
+2025-10-20T01:31:32.083020,ETHUSDT,15,2025-01-20 → 2025-10-20,WEIGHTED,Custom,vwap_volume|smc_order_blocks|smc_liquidity_sweep|smc_fvg,1292,32.74,-0.3,Não,Não
+2025-10-09T21:14:16.938768,BTCUSDT,5,2025-09-10 → 2025-10-10,ANY,Custom,cpr|vwap_volume|williams_r,180,44.44,-0.05,Não,Não
+2025-10-09T21:11:30.764916,BTCUSDT,5,2025-09-10 → 2025-10-10,WEIGHTED,Custom,cpr|vwap_volume|williams_r,77,46.75,0.05,Não,Não
+2025-10-09T21:06:26.392293,BTCUSDT,15,2025-05-09 → 2025-10-09,ALL,Custom,smc_bos|adx|macd|vwap_volume|parabolic_sar,0,0.0,0.0,Não,Não
+2025-10-09T21:03:12.797152,BTCUSDT,15,2025-05-09 → 2025-10-09,ANY,Custom,smc_bos|adx|macd|vwap_volume|parabolic_sar,523,34.42,-0.2,Não,Não
+2025-10-09T21:00:08.318447,BTCUSDT,15,2025-05-09 → 2025-10-09,WEIGHTED,Custom,smc_bos|adx|macd|vwap_volume|parabolic_sar,231,39.39,0.24,Não,Não
+2025-10-09T20:57:04.663496,BTCUSDT,15,2025-05-09 → 2025-10-09,MAJORITY,Custom,smc_bos|adx|macd|vwap_volume|parabolic_sar,231,39.39,0.24,Não,Não
+2025-10-09T20:48:51.667396,ETHUSDT,5,2025-09-09 → 2025-10-09,WEIGHTED,Custom,cpr|rsi_mean_reversion|vwap_volume,98,38.78,0.11,Sim,Sim
+2025-10-09T20:37:50.794272,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,fibonacci|parabolic_sar,9,33.33,-0.0,Não,Não
+2025-10-09T20:35:00.405756,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,fibonacci|parabolic_sar,9,33.33,-0.0,Não,Não
+2025-10-09T20:33:45.906488,BTCUSDT,15,2025-09-09 → 2025-10-10,WEIGHTED,Custom,fibonacci|parabolic_sar,9,33.33,-0.0,Sim,Sim
+2025-10-09T20:08:26.091715,BTCUSDT,5,2025-09-09 → 2025-10-09,WEIGHTED,Custom,cpr|ema_crossover|adx|vwap,6,33.33,-0.03,Não,Não
+2025-10-09T19:26:03.230837,BNBUSDT,15,2025-01-09 → 2025-10-09,WEIGHTED,Custom,smc_liquidity_sweep|smc_fvg|smc_order_blocks|vwap|cpr,1144,34.79,0.15,Sim,Sim
+2025-10-09T17:54:38.241120,BTCUSDT,240,2025-01-09 → 2025-10-09,WEIGHTED,Custom,vwap_volume|smc_bos|smc_choch|cpr,77,27.27,-0.14,Não,Não
+2025-10-09T17:48:51.964175,ETHUSDT,15,2025-07-09 → 2025-10-09,WEIGHTED,Custom,rsi_mean_reversion|bollinger_breakout|williams_r|vwap,313,38.02,0.38,Não,Não
+2025-10-09T17:06:54.920315,ETHUSDT,15,2025-07-09 → 2025-10-09,WEIGHTED,Custom,cpr|ema_crossover|adx|vwap,33,39.39,0.06,Sim,Sim
+2025-10-09T16:45:27.676270,ETHUSDT,15,2025-07-09 → 2025-10-09,WEIGHTED,Custom,cpr|ema_crossover|adx|vwap,33,39.39,0.06,Sim,Sim
+2025-10-09T16:34:02.336764,ADAUSDT,15,2025-07-09 → 2025-10-09,WEIGHTED,Custom,macd|rsi_mean_reversion|smc_choch|vwap_volume,163,35.58,0.12,Sim,Sim
+2025-10-09T14:22:40.108478,BTCUSDT,5,2025-07-09 → 2025-10-09,WEIGHTED,Custom,smc_bos|bollinger_breakout|adx|vwap_volume,158,44.3,0.07,Sim,Sim
+2025-10-09T14:16:08.289499,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,smc_bos|bollinger_breakout|adx|vwap_volume,33,39.39,0.05,Não,Não
+2025-10-09T14:14:55.319538,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,smc_bos|bollinger_breakout|adx|vwap_volume,33,39.39,0.05,Não,Não
+2025-10-09T14:14:49.016859,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,smc_bos|bollinger_breakout|adx|vwap_volume,33,39.39,0.05,Não,Não
+2025-10-09T14:13:22.974369,ETHUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,rsi_mean_reversion|macd|stochastic|fibonacci|vwap_volume|smc_order_blocks|smc_choch|smc_bos|smc_fvg,73,39.73,0.14,Sim,Sim
+2025-10-09T13:55:30.861184,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,rsi_mean_reversion|bollinger_breakout|williams_r|vwap,48,39.58,0.06,Não,Não
+2025-10-09T13:54:27.635149,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,rsi_mean_reversion|bollinger_breakout|williams_r|vwap,48,39.58,0.06,Não,Não
+2025-10-09T13:39:36.762395,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,vwap_volume|smc_order_blocks|smc_liquidity_sweep|smc_fvg,78,32.05,-0.06,Não,Não
+2025-10-09T13:39:01.713770,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,macd|rsi_mean_reversion|parabolic_sar|vwap_volume,32,31.25,-0.03,Não,Não
+2025-10-09T13:23:36.722956,BTCUSDT,1,2025-09-09 → 2025-10-09,WEIGHTED,Custom,cpr|parabolic_sar|vwap_volume,332,30.42,-0.85,Sim,Sim
+2025-10-09T13:17:13.761791,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,smc_choch|rsi_mean_reversion|macd|parabolic_sar,27,44.44,0.07,Não,Não
+2025-10-09T13:16:56.781462,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,smc_choch|rsi_mean_reversion|macd|parabolic_sar,27,44.44,0.07,Não,Não
+2025-10-09T13:16:45.210260,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,cpr|parabolic_sar|vwap_volume,59,37.29,0.03,Não,Não
+2025-10-09T12:46:38.008593,BTCUSDT,5,2025-09-09 → 2025-10-09,WEIGHTED,Custom,fibonacci|rsi_mean_reversion|stochastic|smc_order_blocks,73,47.95,-0.04,Não,Não
+2025-10-09T12:43:48.371169,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,fibonacci|rsi_mean_reversion|stochastic|smc_order_blocks,27,40.74,0.03,Não,Não
+2025-10-09T12:43:45.782376,BTCUSDT,15,2025-09-09 → 2025-10-09,WEIGHTED,Custom,fibonacci|rsi_mean_reversion|stochastic|smc_order_blocks,27,40.74,0.03,Não,Não
+2025-10-08T23:56:55.816525,BTCUSDT,15m,2025-09-09 → 2025-10-09,WEIGHTED,Custom,smc_bos|adx|macd|vwap_volume|parabolic_sar,95,43.16,-0.09,Não,Não
+2025-10-08T23:35:00.592352,BTCUSDT,15m,2025-09-09 → 2025-10-09,WEIGHTED,Custom,smc_bos|adx|macd|vwap_volume|parabolic_sar,95,43.16,-0.09,Não,Não
+2025-10-08T22:41:43.130371,BTCUSDT,15m,2025-09-09 → 2025-10-09,WEIGHTED,Custom,ema_crossover|adx|parabolic_sar|macd,39,43.59,-0.03,Não,Não
+2025-10-08T22:40:43.126273,BTCUSDT,1h,2025-09-09 → 2025-10-09,WEIGHTED,Custom,ema_crossover|adx|parabolic_sar|macd,39,43.59,-0.03,Não,Não
+2025-10-07T22:47:14.607429,BTCUSDT,15,2024-01-01 → 2025-01-01,WEIGHTED,🎯 Order Block Hunter,smc_order_blocks|fibonacci|vwap_volume,643,36.39,0.41,Sim,Sim
+2025-10-07T22:27:02.664009,BTCUSDT,60,2024-01-01 → 2025-01-01,WEIGHTED,🎯 Order Block Hunter,smc_order_blocks|fibonacci|vwap_volume,741,34.01,0.12,Sim,Sim
+2025-10-07T22:17:10.642595,BTCUSDT,60,2024-01-01 → 2025-01-01,WEIGHTED,🎯 Order Block Hunter,smc_order_blocks|fibonacci|vwap_volume,255,34.9,0.1,Sim,Sim
+2025-10-07T21:47:18.869593,BTCUSDT,60,2023-01-01 → 2025-10-07,ALL,💎 Diamond Hands (Ultra Conservador),smc_bos|smc_order_blocks|ema_crossover|adx|vwap|macd,0,0.0,0.0,Não,Não

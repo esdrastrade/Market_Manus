@@ -546,7 +546,10 @@ def confluence_decision(candles: pd.DataFrame, symbol: str, timeframe: str, conf
             adx_signal, stochastic_signal, fibonacci_signal,
             ma_ribbon_signal, momentum_combo_signal, pivot_point_signal
         )
-        
+        # NEW: importar VWAP e PSAR
+        from market_manus.strategies.vwap import vwap_signal
+        from market_manus.strategies.parabolic_sar import parabolic_sar_signal
+
         detectors["CLASSIC:EMA"] = lambda: ema_crossover_signal(candles, config.get("ema", {}))
         detectors["CLASSIC:MACD"] = lambda: macd_signal(candles, config.get("macd", {}))
         detectors["CLASSIC:RSI"] = lambda: rsi_signal(candles, config.get("rsi", {}))
@@ -554,7 +557,10 @@ def confluence_decision(candles: pd.DataFrame, symbol: str, timeframe: str, conf
         detectors["CLASSIC:ADX"] = lambda: adx_signal(candles, config.get("adx", {}))
         detectors["CLASSIC:STOCH"] = lambda: stochastic_signal(candles, config.get("stoch", {}))
         detectors["CLASSIC:FIB"] = lambda: fibonacci_signal(candles, config.get("fib", {}))
-        
+        # NEW: adicionar detectores VWAP e PSAR com parâmetros opcionais
+        detectors["CLASSIC:VWAP"] = lambda: vwap_signal(candles, config.get("vwap", {}))
+        detectors["CLASSIC:PSAR"] = lambda: parabolic_sar_signal(candles, config.get("psar", {}))
+
         # Detectores de Scalping (NEW - Investopedia)
         detectors["CLASSIC:RIBBON"] = lambda: ma_ribbon_signal(candles, config.get("ribbon", {}))
         detectors["CLASSIC:MOMENTUM"] = lambda: momentum_combo_signal(candles, config.get("momentum", {}))

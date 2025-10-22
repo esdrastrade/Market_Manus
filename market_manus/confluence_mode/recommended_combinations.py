@@ -134,6 +134,36 @@ class RecommendedCombinations:
                 "target_win_rate": "75-82%",
                 "best_timeframes": ["1m", "5m", "15m"],
                 "why_it_works": "FVG mostra imbalance, Sweep identifica traps, CPR+VWAP definem zonas de smart money"
+            },
+            {
+                "id": 23,
+                "name": "⚡ CPR VWAP Scalper Pro",
+                "strategies": ["cpr", "vwap", "parabolic_sar", "stochastic"],
+                "mode": "WEIGHTED",
+                "description": "Entradas rápidas em zonas CPR com valor via VWAP",
+                "target_win_rate": "72-79%",
+                "best_timeframes": ["1m", "3m", "5m"],
+                "why_it_works": "CPR define zonas intraday; VWAP mostra valor justo; PSAR trail; Stochastic dá timing"
+            },
+            {
+                "id": 24,
+                "name": "🎯 Microtrend EMA Scalper",
+                "strategies": ["ema_crossover", "stochastic", "cpr", "vwap_volume"],
+                "mode": "WEIGHTED",
+                "description": "Scalping de micro-tendências com confirmação de volume",
+                "target_win_rate": "73-80%",
+                "best_timeframes": ["1m", "5m", "15m"],
+                "why_it_works": "EMAs rápidas capturam microtrends; Stoch em extremos; CPR/VWAP+Vol validam rupturas"
+            },
+            {
+                "id": 25,
+                "name": "🚀 Squeeze Burst Scalper",
+                "strategies": ["bollinger_breakout", "parabolic_sar", "vwap", "cpr"],
+                "mode": "WEIGHTED",
+                "description": "Explosões pós-squeeze com alinhamento de valor",
+                "target_win_rate": "70-76%",
+                "best_timeframes": ["1m", "3m", "5m"],
+                "why_it_works": "Bollinger squeeze → breakout; PSAR reage rápido; VWAP/CPR alinham entradas"
             }
         ]
     
@@ -313,7 +343,7 @@ class RecommendedCombinations:
         all_combos = RecommendedCombinations.get_all_combinations()
         
         print("="*80)
-        print("📋 TODAS AS COMBINAÇÕES RECOMENDADAS (22 Total)")
+        print(f"📋 TODAS AS COMBINAÇÕES RECOMENDADAS ({RecommendedCombinations.get_total_combinations()} Total)")
         print("="*80)
         
         for category, combos in all_combos.items():

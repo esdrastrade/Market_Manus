@@ -329,8 +329,7 @@ A interface web de backtest permite configurar combinações de estratégias e p
    • Capital Final: $13,450.00
    • Retorno Total: +34.5%
    • Sharpe Ratio: 2.18
-═══════════════════════════════════════════════════════════════
-```
+══════════════════════════════════════════════════════════════```
 
 ### Real-Time Metrics
 
@@ -516,7 +515,7 @@ set BINANCE_API_KEY=sua_key_aqui       # Windows CMD
 
 ## 🎯 Próximos Passos
 
-### Roadmap v2.2 (Q4 2024)
+### Roadmap v2.2 (Q4 2025)
 
 - [ ] **AI Signal Optimization**: Usar OpenAI para ajustar pesos dinamicamente
 - [ ] **Multi-Exchange Support**: Adicionar Coinbase, Kraken
@@ -524,102 +523,9 @@ set BINANCE_API_KEY=sua_key_aqui       # Windows CMD
 - [ ] **Portfolio Management**: Multi-asset portfolio balancing
 - [ ] **Alertas via Telegram**: Notificações em tempo real
 
-### Roadmap v3.0 (Q1 2025)
+### Roadmap v3.0 (Q1 2026)
 
 - [ ] **Machine Learning Integration**: Modelos preditivos com scikit-learn
 - [ ] **Options Trading**: Estratégias de opções cripto
 - [ ] **Social Trading**: Copy trading e ranking de estratégias
 - [ ] **Web Dashboard**: Interface web com React + FastAPI
-
----
-
-## 📝 Changelog (Atualizações Recentes)
-
-- Interface Web de Backtest atualizada com painel de Parâmetros Avançados dinâmicos.
-- UI `backtest.html`:
-  - Remoção de marcadores diffs estranhos.
-  - `STRATEGY_PARAM_DEFS` expandido para: `vwap`, `vwap_volume`, `ema_crossover`, `macd`, `bollinger_breakout`, `rsi_mean_reversion`, `stochastic`, `williams_r`, `adx`, `parabolic_sar`, `cpr`, `order_flow_scalper`, `smc_bos`, `smc_order_blocks`, `smc_liquidity_sweep`.
-  - Coleta dinâmica via `collectStrategyParams()` e envio como `strategy_params` na requisição.
-- Backend:
-  - `confluence_mode_module.py` agora parametriza estratégias: `macd` (fast/slow/signal_period), `stochastic` (period/oversold/overbought), `williams_r` (period/oversold/overbought), `adx` (period/threshold), `parabolic_sar` (af_start/af_step/af_max), `vwap_volume` (parâmetros próprios), `cpr` (parâmetros próprios), `order_flow_scalper` (parâmetros próprios), SMC (`smc_bos`, `smc_order_blocks`, `smc_liquidity_sweep` com ajustes como `min_displacement`, `min_range`, `body_ratio`).
-  - Helper `/_calculate_macd` atualizado para aceitar `fast`, `slow`, `signal_period`.
-  - `web_interface/app.py` aceita `strategy_params_in` no request, com fallback seguro se ausente, e atribui direto para `confluence_module.strategy_params`.
-- Validação: Chaves das estratégias confirmadas no backend (`strategies_order` e `available_strategies`).
-- Preview: Servidor Flask com debug em `http://127.0.0.1:5001/backtest`.
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Para contribuir:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
----
-
-## ⚠️ Disclaimer
-
-**ESTE SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIAS DE QUALQUER TIPO.**
-
-- Trading de criptomoedas envolve **riscos substanciais** de perda
-- Este sistema é para **fins educacionais e de pesquisa**
-- **NÃO** é aconselhamento financeiro
-- **Teste extensivamente** em paper trading antes de usar capital real
-- O desenvolvedor **não se responsabiliza** por perdas financeiras
-
-**Use por sua conta e risco.**
-
----
-
-## 📞 Suporte
-
-- **Issues**: [GitHub Issues](https://github.com/esdrastrade/Market_Manus/issues)
-- **Documentação**: Consulte `replit.md` para detalhes técnicos
-- **API Docs**: Veja `.env.example` para configuração de APIs
-
----
-
-**Desenvolvido com ❤️ para a comunidade de trading algorítmico**
-
-*Market Manus v2.1 - Onde Smart Money encontra análise técnica clássica.*
-
-### 🔥 18 Estratégias de Trading
-
-#### **Clássicas (12)**
-1. RSI Mean Reversion
-2. EMA Crossover
-3. Bollinger Bands
-4. MACD
-5. Stochastic
-6. Williams %R
-7. ADX Trend Strength
-8. Fibonacci Retracement
-9. Parabolic SAR
-10. VWAP
-11. VWAP + Volume Combo
-12. CPR (Central Pivot Range)
-
-#### **Smart Money Concepts (5)**
-1. BOS (Break of Structure)
-2. CHoCH (Change of Character)
-3. Order Blocks
-4. FVG (Fair Value Gap)
-5. Liquidity Sweep
-
-#### **Microestrutura (1)**
-1. Order Flow Scalper — depende de métricas de order book (spread, imbalance, CVD) em tempo real. Em backtests offline, retorna HOLD sem dados L2.
-
-## 🔬 Combinações Recomendadas (Atualizações Recentes)
-- Novas combinações de scalping:
-  - 23: ⚡ CPR VWAP Scalper Pro — cpr, vwap, parabolic_sar, stochastic
-  - 24: 🎯 Microtrend EMA Scalper — ema_crossover, stochastic, cpr, vwap_volume
-  - 25: 🚀 Squeeze Burst Scalper — bollinger_breakout, parabolic_sar, vwap, cpr
-- O total de combinações agora é dinâmico no sistema (API/UI).

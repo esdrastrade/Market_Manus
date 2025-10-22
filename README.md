@@ -15,7 +15,8 @@ Sistema profissional de trading automatizado que integra **IA**, **Smart Money C
 
 - **📡 WebSocket Real-Time**: Streaming ao vivo da Binance.US com latência < 200ms
 - **🎨 Rich UI Live**: Interface profissional com painéis atualizando em tempo real
-- **🧠 13 Estratégias Completas**: 8 clássicas + 5 Smart Money Concepts
+- **🖥️ Interface Web de Backtest**: Parâmetros avançados dinâmicos por estratégia
+- **🧠 18 Estratégias Completas**: 12 clássicas + 5 SMC + 1 microestrutura
 - **📊 Market Sentiment Analysis**: Análise de sentimento agregada de múltiplas fontes (Fear & Greed, CoinGecko, CryptoPanic, Bybit)
 - **⚖️ Confluence Lab**: Sistema de scoring ponderado com 4 modos (ALL, MAJORITY, WEIGHTED, ANY)
 - **🛡️ Regime Filters**: ADX, ATR, BB Width para validação de condições de mercado
@@ -244,10 +245,49 @@ python main.py
 
 ---
 
+## 🖥️ Interface Web de Backtest (Atualizado)
+
+A interface web de backtest permite configurar combinações de estratégias e parâmetros avançados por estratégia de forma dinâmica.
+
+- Inicialização:
+  - `python web_start.py` (recomendado)
+  - ou `python web_interface/app.py` (porta padrão 5000)
+- Acesso:
+  - `http://127.0.0.1:5001/backtest` (se iniciado com `web_start.py` em debug)
+  - `http://0.0.0.0:5000/backtest` (inicialização padrão do Flask)
+
+### Parâmetros Avançados Dinâmicos
+- O painel "Parâmetros Avançados" é colapsável e renderiza controles com base nas estratégias selecionadas.
+- Os parâmetros são coletados automaticamente e enviados como `strategy_params` no POST do backtest.
+- Chaves de estratégias alinhadas ao engine:
+  - `rsi_mean_reversion`, `ema_crossover`, `bollinger_breakout`, `macd`, `stochastic`, `williams_r`, `adx`, `parabolic_sar`, `vwap`, `vwap_volume`, `cpr`, `order_flow_scalper`, `smc_bos`, `smc_order_blocks`, `smc_liquidity_sweep`
+
+### Exemplo de Payload (simplificado)
+```json
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "15m",
+  "strategies": ["ema_crossover", "macd", "vwap_volume", "cpr"],
+  "strategy_params": {
+    "ema_crossover": {"fast_period": 9, "slow_period": 21},
+    "macd": {"fast": 12, "slow": 26, "signal_period": 9},
+    "vwap_volume": {"band_multiplier": 2.0, "volume_threshold": 1.5},
+    "cpr": {"sensitivity": 1.0}
+  }
+}
+```
+
+### Observações
+- Se `strategy_params` não for enviado, o backend usa defaults internos.
+- Configure API keys para evitar erros na inicialização dos provedores de dados.
+  - `BINANCE_API_KEY` / `BINANCE_API_SECRET`
+  - Opcional: `BYBIT_API_KEY` / `BYBIT_API_SECRET`
+
 ## 🔑 APIs Necessárias
 
 ### Obrigatórias
 
+```
 | API | Uso | Como Obter |
 |-----|-----|------------|
 | **Binance.US** | Dados de mercado (OHLCV, WebSocket) | [binance.us/api](https://binance.us) - Criar API key Read-Only |
@@ -271,7 +311,7 @@ python main.py
 
 ```
 📊 RESULTADOS DO BACKTEST
-════════════════════════════════════════════════════════════════
+════════════════════════════════════════════════
 📅 Período: 2024-09-01 até 2024-10-04 (33 dias)
 📈 Total de Candles: 1,584 (carregados via API Binance)
 ✅ Taxa de Sucesso da API: 100.0%
@@ -289,7 +329,7 @@ python main.py
    • Capital Final: $13,450.00
    • Retorno Total: +34.5%
    • Sharpe Ratio: 2.18
-════════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════════════
 ```
 
 ### Real-Time Metrics
@@ -377,7 +417,7 @@ Market_Manus/
 │   │   └── market_data_ws.py        # WebSocket Binance
 │   │
 │   ├── engines/                     # Execution engines
-│   │   ├── realtime_strategy_engine.py  # WebSocket real-time
+│   │   ├── realtime_strategy_engine.py  # WebSocket real-time + paper trading com slippage L2 (VWAP)
 │   │   └── stream_runtime.py
 │   │
 │   ├── sentiment/                   # Market sentiment
@@ -493,6 +533,20 @@ set BINANCE_API_KEY=sua_key_aqui       # Windows CMD
 
 ---
 
+## 📝 Changelog (Atualizações Recentes)
+
+- Interface Web de Backtest atualizada com painel de Parâmetros Avançados dinâmicos.
+- UI `backtest.html`:
+  - Remoção de marcadores diffs estranhos.
+  - `STRATEGY_PARAM_DEFS` expandido para: `vwap`, `vwap_volume`, `ema_crossover`, `macd`, `bollinger_breakout`, `rsi_mean_reversion`, `stochastic`, `williams_r`, `adx`, `parabolic_sar`, `cpr`, `order_flow_scalper`, `smc_bos`, `smc_order_blocks`, `smc_liquidity_sweep`.
+  - Coleta dinâmica via `collectStrategyParams()` e envio como `strategy_params` na requisição.
+- Backend:
+  - `confluence_mode_module.py` agora parametriza estratégias: `macd` (fast/slow/signal_period), `stochastic` (period/oversold/overbought), `williams_r` (period/oversold/overbought), `adx` (period/threshold), `parabolic_sar` (af_start/af_step/af_max), `vwap_volume` (parâmetros próprios), `cpr` (parâmetros próprios), `order_flow_scalper` (parâmetros próprios), SMC (`smc_bos`, `smc_order_blocks`, `smc_liquidity_sweep` com ajustes como `min_displacement`, `min_range`, `body_ratio`).
+  - Helper `/_calculate_macd` atualizado para aceitar `fast`, `slow`, `signal_period`.
+  - `web_interface/app.py` aceita `strategy_params_in` no request, com fallback seguro se ausente, e atribui direto para `confluence_module.strategy_params`.
+- Validação: Chaves das estratégias confirmadas no backend (`strategies_order` e `available_strategies`).
+- Preview: Servidor Flask com debug em `http://127.0.0.1:5001/backtest`.
+
 ## 🤝 Contribuindo
 
 Contribuições são bem-vindas! Para contribuir:
@@ -536,3 +590,36 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 **Desenvolvido com ❤️ para a comunidade de trading algorítmico**
 
 *Market Manus v2.1 - Onde Smart Money encontra análise técnica clássica.*
+
+### 🔥 18 Estratégias de Trading
+
+#### **Clássicas (12)**
+1. RSI Mean Reversion
+2. EMA Crossover
+3. Bollinger Bands
+4. MACD
+5. Stochastic
+6. Williams %R
+7. ADX Trend Strength
+8. Fibonacci Retracement
+9. Parabolic SAR
+10. VWAP
+11. VWAP + Volume Combo
+12. CPR (Central Pivot Range)
+
+#### **Smart Money Concepts (5)**
+1. BOS (Break of Structure)
+2. CHoCH (Change of Character)
+3. Order Blocks
+4. FVG (Fair Value Gap)
+5. Liquidity Sweep
+
+#### **Microestrutura (1)**
+1. Order Flow Scalper — depende de métricas de order book (spread, imbalance, CVD) em tempo real. Em backtests offline, retorna HOLD sem dados L2.
+
+## 🔬 Combinações Recomendadas (Atualizações Recentes)
+- Novas combinações de scalping:
+  - 23: ⚡ CPR VWAP Scalper Pro — cpr, vwap, parabolic_sar, stochastic
+  - 24: 🎯 Microtrend EMA Scalper — ema_crossover, stochastic, cpr, vwap_volume
+  - 25: 🚀 Squeeze Burst Scalper — bollinger_breakout, parabolic_sar, vwap, cpr
+- O total de combinações agora é dinâmico no sistema (API/UI).
